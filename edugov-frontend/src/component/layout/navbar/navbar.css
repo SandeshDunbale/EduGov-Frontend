@@ -1,0 +1,238 @@
+/* src/component/layout/navbar/navbar.css */
+
+.edugov-navbar-alt {
+  background-color: #1E293B; /* Deep Navy */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 3px solid #0284C7; /* Muted Teal anchor line */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+}
+
+.navbar-container-alt {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 60px; /* REDUCED HEIGHT from 72px to 60px */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* LAYOUT FIX FOR PERFECT CENTERING 
+  Forces left and right sides to take up equal space 
+*/
+.navbar-brand-alt {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navbar-links-alt {
+  flex: 2; /* Takes up the most space in the middle */
+  display: flex;
+  justify-content: center; /* Perfectly centers links */
+  gap: 2.5rem; 
+}
+
+.navbar-actions-alt {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Brand Identity - Upgraded Aesthetic */
+/* --- REPLACE ONLY THIS SECTION IN YOUR CSS --- */
+
+/* Brand Identity - Upgraded Aesthetic */
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 0.2rem; /* Space between SVG and text */
+}
+
+.edugov-svg-icon {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.logo-link:hover .edugov-svg-icon {
+  transform: translateY(-3px); /* Subtle hover lift for the logo */
+}
+
+.brand-text-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.brand-edu {
+  color: #0284C7; /* Muted Teal */
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.brand-gov {
+  color: #FFFFFF; /* Crisp White */
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+/* Navigation Links */
+.nav-item-alt {
+  color: #F8FAFC; 
+  text-decoration: none;
+  font-size: 1rem; /* Scaled down slightly for slimmer navbar */
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease, transform 0.2s ease;
+  padding-bottom: 3px;
+}
+
+.nav-item-alt:hover, 
+.nav-item-alt:focus {
+  color: #0284C7; 
+  transform: translateY(-2px);
+}
+
+/* Actions Area */
+.search-wrapper {
+  position: relative;
+}
+
+.search-input-alt {
+  padding: 0.4rem 1rem; /* Slightly reduced padding */
+  background-color: #2F4156; 
+  border: 1px solid #2F4156;
+  border-radius: 20px; 
+  outline: none;
+  font-size: 0.8rem;
+  width: 200px;
+  color: #F8FAFC;
+  transition: all 0.3s ease;
+}
+
+.search-input-alt::placeholder {
+  color: #94A3B8; 
+}
+
+.search-input-alt:focus {
+  background-color: #1E293B;
+  border-color: #0284C7;
+  width: 230px; 
+}
+
+/* Auth Button */
+.auth-button-alt {
+  padding: 0.4rem 1.1rem; /* Scaled down to match navbar */
+  background-color: transparent;
+  color: #F8FAFC;
+  border: 2px solid #0284C7; 
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.auth-button-alt:hover {
+  background-color: #0284C7;
+  color: #FFFFFF;
+}
+
+.auth-button-alt:active {
+  transform: scale(0.96);
+}
+
+
+/* --- Dropdown Menu Upgrades --- */
+
+/* --- Dropdown Menu Fixes --- */
+
+.auth-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.auth-dropdown-container:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.auth-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 15px; /* Creates the visual gap */
+  background-color: #1E293B;
+  border: 1px solid #2F4156;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1050;
+  animation: slideDown 0.2s ease forwards;
+}
+
+/* 📍 THIS IS THE FIX: The Invisible Hover Bridge */
+.auth-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -15px; /* Reaches up across the gap to the button */
+  left: 0;
+  right: 0;
+  height: 15px;
+  background-color: transparent; 
+}
+
+.dropdown-item {
+  padding: 0.85rem 1.25rem;
+  color: #F8FAFC;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+  border-radius: 0 0 8px 8px;
+}
+.dropdown-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.dropdown-item:hover {
+  background-color: #0284C7; 
+  color: #FFFFFF;
+  padding-left: 1.5rem; 
+}
+
+.dropdown-icon {
+  font-size: 1.1rem;
+}
+
+.admin-item {
+  color: #94A3B8; 
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
