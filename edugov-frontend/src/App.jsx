@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-import Home from './pages/home/home';
+
+// Context
+import { AuthProvider } from './context/AuthContext';
+
 // Layout Components
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
-import { AuthProvider } from './context/AuthContext';
 
-// Dummy Component to prove routing works inside your layout
+// General Pages
+import Home from './pages/home/home';
+
+// Compliance Pages
+import ComplianceDashboard from './pages/compliance/dashboard';
+import SystemScan from './pages/compliance/scan';
+import ComplianceRecords from './pages/compliance/records';
+import ManualEntry from './pages/compliance/entry';
+
+// Auditor Pages
+import AuditorDashboard from './pages/auditor/dashboard';
+import PendingAudits from './pages/auditor/pending';
+import SubmitApprovals from './pages/auditor/approvals';
+import AuditList from './pages/auditor/AuditList'; // 👈 Added here
+
+// Dummy Component for testing
 const PageContent = () => {
   const location = useLocation();
   return (
@@ -24,30 +41,24 @@ const PageContent = () => {
   );
 };
 
-// We moved the layout inside this component so we can read the URL
 const AppContent = () => {
   const location = useLocation();
   const [currentRole, setCurrentRole] = useState('STUDENT');
 
-  // 1. Define all public pages where the Sidebar should NOT appear
+  // Define all public pages where the Sidebar should NOT appear
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
-  
-  // 2. Check if the current URL is in that list
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
     <div className="App">
-      {/* Global Top Navigation (Modal now lives inside here!) */}
       <Navbar />
       
       <div className="app-body">
-        
-        {/* Only render the Sidebar if we are on a secure dashboard page */}
+        {/* Only render Sidebar on non-public pages */}
         {!isPublicPage && <Sidebar role={currentRole} />}
         
         <main className="main-content">
-          
-          {/* Hide the Developer Test Dropdown on public pages too */}
+          {/* Developer Test Dropdown */}
           {!isPublicPage && (
             <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -69,18 +80,27 @@ const AppContent = () => {
             </div>
           )}
 
-          {/* React Router Page Routing */}
           <Routes>
             <Route path="/" element={<Home />} />
             
-            {/* The catch-all route for your simulated dashboard pages */}
+            {/* Compliance Officer Routes */}
+            <Route path="/compliance/dashboard" element={<ComplianceDashboard />} />
+            <Route path="/compliance/scan" element={<SystemScan />} />
+            <Route path="/compliance/records" element={<ComplianceRecords />} />
+            <Route path="/compliance/entry" element={<ManualEntry />} />
+            
+            {/* Government Auditor Routes */}
+            <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
+            <Route path="/auditor/pending" element={<PendingAudits />} />
+            <Route path="/auditor/approvals" element={<SubmitApprovals />} />
+            <Route path="/auditor/audits" element={<AuditList />} /> {/* 👈 Backend route */}
+            
+            {/* Catch-all */}
             <Route path="/*" element={<PageContent />} />
           </Routes>
-
         </main>
       </div>
       
-      {/* Global Footer */}
       <Footer />
     </div>
   );
@@ -88,12 +108,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      {/* AppContent now lives inside the Router, allowing it to read the URL */}
-      <AppContent />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-
 
 export default App;
