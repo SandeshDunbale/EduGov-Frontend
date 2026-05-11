@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import './App.css';
-import Home from './pages/home/home';
-// Layout Components
+
+// Pages & Components
+import Home from './pages/home/Home';
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
-import { AuthProvider } from './context/AuthContext';
 
-// Dummy Component to prove routing works inside your layout
+// Dummy Component to prove secure routing works
 const PageContent = () => {
   const location = useLocation();
   return (
@@ -24,63 +25,36 @@ const PageContent = () => {
   );
 };
 
-// We moved the layout inside this component so we can read the URL
 const AppContent = () => {
   const location = useLocation();
-  const [currentRole, setCurrentRole] = useState('STUDENT');
-
-  // 1. Define all public pages where the Sidebar should NOT appear
-  const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
   
-  // 2. Check if the current URL is in that list
+  // 📍 Pull the dynamically logged-in user from AuthContext
+  const { user } = useAuth();
+
+  // Define public pages where Sidebar is hidden
+  const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
     <div className="App">
-      {/* Global Top Navigation (Modal now lives inside here!) */}
       <Navbar />
       
       <div className="app-body">
         
-        {/* Only render the Sidebar if we are on a secure dashboard page */}
-        {!isPublicPage && <Sidebar role={currentRole} />}
+        {/* 📍 Only render Sidebar if on a secure page AND the user is actually logged in */}
+        {!isPublicPage && user && (
+          <Sidebar role={user.role} user={user} />
+        )}
         
         <main className="main-content">
-          
-          {/* Hide the Developer Test Dropdown on public pages too */}
-          {!isPublicPage && (
-            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontWeight: '600', color: '#1E293B' }}>Developer Test Mode:</span>
-                <label style={{ fontSize: '0.9rem', color: '#475569' }}>Simulate Role As:</label>
-                <select 
-                  value={currentRole}
-                  onChange={(e) => setCurrentRole(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #CBD5E1', outline: 'none', cursor: 'pointer' }}
-                >
-                  <option value="STUDENT">Student</option>
-                  <option value="FACULTY">Faculty</option>
-                  <option value="UNIV_ADMIN">University Admin</option>
-                  <option value="PROG_MANAGER">Program Manager</option>
-                  <option value="COMPLIANCE_OFFICER">Compliance Officer</option>
-                  <option value="GOVT_AUDITOR">Government Auditor</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* React Router Page Routing */}
           <Routes>
             <Route path="/" element={<Home />} />
-            
-            {/* The catch-all route for your simulated dashboard pages */}
+            {/* Catch-all route for dashboards */}
             <Route path="/*" element={<PageContent />} />
           </Routes>
-
         </main>
+
       </div>
-      
-      {/* Global Footer */}
       <Footer />
     </div>
   );
@@ -89,11 +63,10 @@ const AppContent = () => {
 function App() {
   return (
     <BrowserRouter>
-      {/* AppContent now lives inside the Router, allowing it to read the URL */}
       <AppContent />
     </BrowserRouter>
   );
 }
 
-
+// 📍 Notice NO ReactDOM.createRoot here. That belongs in index.js/main.jsx!
 export default App;
