@@ -1,9 +1,19 @@
-// src/api/axios.js
 import axios from 'axios';
 
 const API = axios.create({
-    // baseURL: 'http://localhost:8080/api/auth', // ❌ WRONG (Direct to service)
-    baseURL: 'http://localhost:8002',    // ✅ RIGHT (Through the Gateway)
+  baseURL: 'http://localhost:8002',
+});
+
+// ✅ Attach JWT automatically
+API.interceptors.request.use((config) => {
+
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });
 
 export default API;

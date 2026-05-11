@@ -7,6 +7,11 @@ import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
 import { AuthProvider } from './context/AuthContext';
+import ManageResources from './pages/manager/resources/ManageResources';
+import ManageInfrastructure from './pages/manager/resources/ManageInfrastructure';
+import ManagerRequestsPage from './pages/manager/resources/ManagerRequestsPage';
+import RequestFormPage from './pages/request/RequestFormPage';
+
 
 // Dummy Component to prove routing works inside your layout
 const PageContent = () => {
@@ -31,7 +36,7 @@ const AppContent = () => {
 
   // 1. Define all public pages where the Sidebar should NOT appear
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
-  
+
   // 2. Check if the current URL is in that list
   const isPublicPage = publicRoutes.includes(location.pathname);
 
@@ -39,21 +44,21 @@ const AppContent = () => {
     <div className="App">
       {/* Global Top Navigation (Modal now lives inside here!) */}
       <Navbar />
-      
+
       <div className="app-body">
-        
+
         {/* Only render the Sidebar if we are on a secure dashboard page */}
         {!isPublicPage && <Sidebar role={currentRole} />}
-        
+
         <main className="main-content">
-          
+
           {/* Hide the Developer Test Dropdown on public pages too */}
           {!isPublicPage && (
             <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <span style={{ fontWeight: '600', color: '#1E293B' }}>Developer Test Mode:</span>
                 <label style={{ fontSize: '0.9rem', color: '#475569' }}>Simulate Role As:</label>
-                <select 
+                <select
                   value={currentRole}
                   onChange={(e) => setCurrentRole(e.target.value)}
                   style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #CBD5E1', outline: 'none', cursor: 'pointer' }}
@@ -72,14 +77,68 @@ const AppContent = () => {
           {/* React Router Page Routing */}
           <Routes>
             <Route path="/" element={<Home />} />
-            
+
             {/* The catch-all route for your simulated dashboard pages */}
             <Route path="/*" element={<PageContent />} />
+
+            <Route
+              path="/manager/resources"
+              element={
+                currentRole === "PROG_MANAGER" ? (
+                  <ManageResources />
+                ) : (
+                  <PageContent />
+                )
+              }
+            />
+            <Route
+              path="/manager/infrastructure"
+              element={
+                currentRole === "PROG_MANAGER" ? (
+                  <ManageInfrastructure />
+                ) : (
+                  <PageContent />
+                )
+              }
+            />
+            <Route
+              path="/manager/requests"
+              element={
+                currentRole === "PROG_MANAGER" ? (
+                  <ManagerRequestsPage role={currentRole} />
+                ) : (
+                  <PageContent />
+                )
+              }
+            />
+            <Route
+              path="/student/request"
+              element={
+                currentRole === "STUDENT" ? (
+                  <RequestFormPage role="STUDENT" />
+                ) : (
+                  <PageContent />
+                )
+              }
+            />
+            <Route
+              path="/faculty/request"
+              element={
+                currentRole === "FACULTY" ? (
+                  <RequestFormPage role="FACULTY" />
+                ) : (
+                  <PageContent />
+                )
+              }
+            />
+            
+
+
           </Routes>
 
         </main>
       </div>
-      
+
       {/* Global Footer */}
       <Footer />
     </div>

@@ -1,0 +1,65 @@
+/* MAIN WRAPPER ✅ CENTERED */
+.infra-wrapper {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* CARD OVERRIDE */
+.infra-card {
+  margin-bottom: 25px;
+}
+
+/* FORM ✅ IMPROVED */
+.infra-form-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+/* INPUTS */
+.infra-form-grid input,
+.infra-form-grid select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+}
+
+/* BUTTON */
+.infra-btn {
+  height: 40px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+/* TABLE WRAPPER ✅ PREVENT OVERFLOW */
+.infra-table-wrapper {
+  overflow-x: auto;
+}
+
+/* ✅ RESPONSIVE */
+
+/* TABLET */
+@media (max-width: 900px) {
+  .infra-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+  .infra-wrapper {
+    padding: 10px;
+  }
+
+  .infra-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .infra-btn {
+    width: 100%;
+  }
+}

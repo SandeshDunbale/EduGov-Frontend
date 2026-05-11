@@ -1,0 +1,214 @@
+/* ================= WRAPPER ================= */
+.container-fluid {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ================= HEADER ================= */
+.bg-white.p-4 {
+  border-radius: 14px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  border: none !important;
+}
+
+.edugov-text-navy {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* ================= FILTER BAR ================= */
+.card.p-3 {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.form-select,
+.form-control {
+  border-radius: 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  font-size: 14px;
+}
+
+/* ================= MAIN CARD ================= */
+.card {
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+}
+
+/* ================= TABLE ================= */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead {
+  background: #f1f5f9;
+}
+
+.table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.table td {
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ================= STATUS BADGES ================= */
+.badge {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.btn {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ✅ APPROVE */
+.btn-success {
+  background: #16a34a !important;
+  border: 1px solid #16a34a !important;
+}
+
+.btn-success:hover {
+  background: white !important;
+  color: #16a34a !important;
+}
+
+/* ✅ REJECT */
+.btn-outline-danger {
+  border: 1px solid #dc2626 !important;
+  color: #dc2626 !important;
+}
+
+.btn-outline-danger:hover {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+/* ✅ DISABLED */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================= PAGINATION ================= */
+.d-flex.justify-content-center > button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: white;
+}
+
+.d-flex.justify-content-center > button:hover:not(:disabled) {
+  background: #0284c7;
+  color: white;
+  border-color: #0284c7;
+}
+
+/* ================= MODAL ================= */
+.modal {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  padding: 10px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ================= EMPTY ================= */
+.text-center h5 {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* ================= LOADER ================= */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* ================= TOAST ================= */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #1e293b;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  z-index: 999;
+  animation: fadeInOut 2.5s ease;
+}
+
+/* ANIMATION */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+  .container-fluid {
+    padding: 10px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 12px;
+  }
+
+  .d-flex.justify-content-center {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .form-select,
+  .form-control {
+    width: 100% !important;
+  }
+}
