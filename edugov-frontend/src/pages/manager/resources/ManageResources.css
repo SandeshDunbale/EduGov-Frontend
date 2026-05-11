@@ -4,6 +4,7 @@
   max-width: 1200px;
   margin: auto;
   font-family: "Inter", sans-serif;
+  color: #1f2937;
 }
 
 /* ================= HEADER ================= */
@@ -12,12 +13,19 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
 .page-title {
   font-size: 26px;
   font-weight: 600;
   color: #1e293b;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: #475569;
+  margin-top: 6px;
 }
 
 /* ================= SEARCH ================= */
@@ -28,7 +36,8 @@
   background: #ffffff;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
-  width: 260px;
+  width: 100%;
+  max-width: 320px;
 }
 
 .search-box input {
@@ -43,14 +52,39 @@
   padding: 24px;
   border-radius: 14px;
   margin-top: 24px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
 }
 
 /* ================= FORM ================= */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+}
+
+.form-grid > * {
+  min-width: 0;
+}
+
+.form-grid button {
+  min-height: 44px;
+  align-self: end;
+}
+
+.form-grid > * {
+  min-width: 0;
+}
+
+
+.form-grid button {
+  border-radius: 14px;
+  height: 48px;
+  align-self: end;
+  font-weight: 600;
+}
+.form-grid button {
+  min-height: 44px;
+  align-self: end;
 }
 
 .form-grid input,
@@ -64,8 +98,21 @@
 /* ================= TABLE ================= */
 .resource-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 10px;
+}
+
+.resource-table td,
+.resource-table th {
+  white-space: nowrap;
+}
+
+.resource-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f1f5f9;
 }
 
 .resource-table th {
@@ -119,11 +166,13 @@ button {
   background: #0284c7;
   color: white;
   border-color: #0284c7;
+  border-radius: 14px;
 }
 
 .btn-primary:hover {
   background: white;
   color: #0284c7;
+  box-shadow: 0 16px 30px rgba(2, 132, 199, 0.12);
 }
 
 /* EDIT */
@@ -131,11 +180,13 @@ button {
   background: #f59e0b;
   color: white;
   border-color: #f59e0b;
+  border-radius: 14px;
 }
 
 .btn-edit:hover {
   background: white;
   color: #f59e0b;
+  box-shadow: 0 16px 30px rgba(245, 158, 11, 0.12);
 }
 
 /* ALLOCATE */
@@ -143,11 +194,13 @@ button {
   background: #16a34a;
   color: white;
   border-color: #16a34a;
+  border-radius: 14px;
 }
 
 .btn-allocate:hover {
   background: white;
   color: #16a34a;
+  box-shadow: 0 16px 30px rgba(22, 163, 74, 0.12);
 }
 
 /* DELETE */
@@ -155,11 +208,13 @@ button {
   background: #dc2626;
   color: white;
   border-color: #dc2626;
+  border-radius: 14px;
 }
 
 .btn-delete:hover {
   background: white;
   color: #dc2626;
+  box-shadow: 0 16px 30px rgba(220, 38, 38, 0.12);
 }
 
 /* ✅ SMOOTH EFFECT */
@@ -173,6 +228,10 @@ button:hover {
   display: flex;
   justify-content: center;
   gap: 15px;
+}
+
+.pagination button {
+  min-width: 100px;
 }
 
 /* ================= MODAL ================= */
@@ -231,7 +290,17 @@ button:hover {
   .btn-edit,
   .btn-allocate,
   .btn-delete {
-    min-width: 80px;
-    font-size: 12px;
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .header-row,
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
   }
 }

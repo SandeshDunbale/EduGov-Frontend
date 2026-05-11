@@ -1,335 +1,343 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
-  submitResourceRequest,
-  submitInfrastructureRequest,
-  getRequestsByRequester,
+    submitResourceRequest,
+    submitInfrastructureRequest,
+    getRequestsByRequester,
 } from "../../api/resourceRequestApi";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const decodeJwtPayload = (token) => {
-  try {
-    const payload = token.split(".")[1];
-    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
-    const json = atob(padded);
-    return JSON.parse(json);
-  } catch (error) {
-    return null;
-  }
+    try {
+        const payload = token.split(".")[1];
+        const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+        return JSON.parse(atob(padded));
+    } catch {
+        return null;
+    }
 };
 
+const RESOURCE_TYPES = ["FUNDS", "LAB_MATERIAL", "EQUIPMENT"];
+const INFRA_TYPES = ["LIBRARY", "LAB", "CENTER"];
+
 const PAGE_CONFIG = {
-  STUDENT: {
-    title: "Request Resource",
-    description:
-      "Students can request resource items by entering the resource ID and quantity.",
-    fields: [
-      { name: "resourceId", label: "Resource ID", type: "number", placeholder: "Enter resource ID" },
-      { name: "quantity", label: "Quantity", type: "number", placeholder: "Enter quantity" },
-    ],
-    submitLabel: "Submit Resource Request",
-  },
-  FACULTY: {
-    title: "Request Infrastructure",
-    description:
-      "Faculty can request infrastructure items by entering the infrastructure ID.",
-    fields: [
-      { name: "infraId", label: "Infrastructure ID", type: "number", placeholder: "Enter infra ID" },
-    ],
-    submitLabel: "Submit Infrastructure Request",
-  },
+    STUDENT: {
+        title: "Request Resource",
+        description: "Students can select type and resource, then enter quantity.",
+        submitLabel: "Submit Resource Request",
+    },
+    FACULTY: {
+        title: "Request Infrastructure",
+        description: "Faculty can select type and infrastructure.",
+        submitLabel: "Submit Infrastructure Request",
+    },
 };
 
 function RequestFormPage({ role = "STUDENT" }) {
-  const { user, token } = useAuth();
-  const config = PAGE_CONFIG[role] || PAGE_CONFIG.STUDENT;
 
-  const tokenPayload = token ? decodeJwtPayload(token) : null;
-  const initialRequesterId =
-    user?.userId ||
-    user?.id ||
-    tokenPayload?.userId ||
-    tokenPayload?.user_id ||
-    tokenPayload?.id ||
-    tokenPayload?.sub ||
-    tokenPayload?.preferred_username ||
-    tokenPayload?.username ||
-    "";
+    const { user, token } = useAuth();
+    const config = PAGE_CONFIG[role];
 
-  const initialRequesterRole =
-    user?.role ||
-    tokenPayload?.role ||
-    tokenPayload?.roles ||
-    tokenPayload?.authorities ||
-    tokenPayload?.auth ||
-    "Unknown";
+    const tokenPayload = token ? decodeJwtPayload(token) : null;
 
-  const [requesterUserId, setRequesterUserId] = useState(initialRequesterId);
-  const [resourceId, setResourceId] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [infraId, setInfraId] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [requestHistory, setRequestHistory] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
+    const initialRequesterId =
+        user?.userId ||
+        tokenPayload?.userId ||
+        tokenPayload?.sub ||
+        "";
 
-  useEffect(() => {
-    if (!requesterUserId && initialRequesterId) {
-      setRequesterUserId(initialRequesterId);
-    }
-  }, [initialRequesterId, requesterUserId]);
+    const [requesterUserId, setRequesterUserId] = useState(initialRequesterId);
 
-  useEffect(() => {
+    const [type, setType] = useState("");
+    const [items, setItems] = useState([]);
+
+    const [resourceId, setResourceId] = useState("");
+    const [infraId, setInfraId] = useState("");
+    const [quantity, setQuantity] = useState("");
+
+    const [statusMessage, setStatusMessage] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const [requestHistory, setRequestHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
+
+    // ✅ Ensure ID
+    useEffect(() => {
+        if (!requesterUserId && initialRequesterId) {
+            setRequesterUserId(initialRequesterId);
+        }
+    }, [initialRequesterId, requesterUserId]);
+
+    // ✅ FETCH ITEMS (FIXED API CALL)
+    useEffect(() => {
+
+        if (!type) {
+            setItems([]);
+            return;
+        }
+
+        const url =
+            role === "STUDENT"
+                ? `http://localhost:8002/api/resources/by-type?type=${type}`
+                : `http://localhost:8002/api/infrastructure/by-type?type=${type}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const filtered =
+                    role === "FACULTY"
+                        ? data.filter(i => i.status === "AVAILABLE")
+                        : data;
+
+                setItems(filtered || []);
+            })
+            .catch(() => setItems([]));
+
+    }, [type, role]);
+
+    // ✅ FETCH HISTORY
     const fetchHistory = async () => {
-      if (!requesterUserId) {
-        setRequestHistory([]);
-        return;
-      }
 
-      setHistoryLoading(true);
-      try {
-        const response = await getRequestsByRequester(requesterUserId);
-        setRequestHistory(response.data || []);
-      } catch (err) {
-        setRequestHistory([]);
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
-    fetchHistory();
-  }, [requesterUserId]);
+        if (!requesterUserId) return;
 
-  const requireLogin = !token;
+        setHistoryLoading(true);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setStatusMessage("");
-
-    if (!requesterUserId) {
-      setError("Requester ID is required.");
-      return;
-    }
-
-    setLoading(true);
-
-    const payload = {
-      requesterUserId: Number(requesterUserId),
+        try {
+            const response = await getRequestsByRequester(requesterUserId);
+            setRequestHistory(response.data || []);
+        } catch {
+            setRequestHistory([]);
+        } finally {
+            setHistoryLoading(false);
+        }
     };
 
-    if (role === "STUDENT") {
-      if (!resourceId || !quantity) {
-        setError("Resource ID and quantity are required.");
-        setLoading(false);
-        return;
-      }
-      payload.resourceId = Number(resourceId);
-      payload.quantity = Number(quantity);
-    } else if (role === "FACULTY") {
-      if (!infraId) {
-        setError("Infrastructure ID is required.");
-        setLoading(false);
-        return;
-      }
-      payload.infraId = Number(infraId);
-    }
+    useEffect(() => {
+        fetchHistory();
+    }, [requesterUserId]);
 
-    try {
-      if (role === "STUDENT") {
-        await submitResourceRequest(payload);
-      } else {
-        await submitInfrastructureRequest(payload);
-      }
+    // ✅ SUBMIT
+    const handleSubmit = async (event) => {
 
-      setStatusMessage(`${config.title} submitted successfully.`);
-      setResourceId("");
-      setQuantity("");
-      setInfraId("");
-      setNote("");
-      setTimeout(() => setStatusMessage(""), 3000);
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Unable to submit request. Please check your values and try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        event.preventDefault();
+        setError("");
+        setStatusMessage("");
 
-  return (
-    <div className="container-fluid mt-4">
-      <div className="bg-white p-4 mb-4 rounded shadow-sm">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
-          <div>
-            <h2 className="edugov-text-navy mb-2">{config.title}</h2>
-            <p className="mb-0 text-muted">{config.description}</p>
-          </div>
-          <div className="text-end">
-            <span className="badge bg-info text-dark me-2">
-              Role: {role.replace("_", " ")}
-            </span>
-            <span className="badge bg-secondary">
-              Token: {token ? "Available" : "Missing"}
-            </span>
-          </div>
-        </div>
-      </div>
+        if (!requesterUserId) {
+            setError("Requester ID is required.");
+            return;
+        }
 
-      {!token && (
-        <div className="alert alert-warning">
-          <strong>Login required:</strong> A valid JWT token must be present in localStorage under <code>token</code>.
-        </div>
-      )}
+        setLoading(true);
 
-      {user && user.role && user.role !== role && (
-        <div className="alert alert-info">
-          Note: logged-in role is <strong>{user.role}</strong>, but this form is for <strong>{role}</strong>.
-          To submit correctly, use the matching role token or switch to the appropriate request page.
-        </div>
-      )}
+        const payload = {
+            requesterUserId: Number(requesterUserId),
+        };
 
-      {(user || tokenPayload) && (
-        <div className="card p-4 mb-4">
-          <h5>User details</h5>
-          <div className="row gx-3 gy-2">
-            <div className="col-sm-6">
-              <div className="form-group">
-                <label className="form-label">Requester ID</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={requesterUserId}
-                  onChange={(e) => setRequesterUserId(e.target.value)}
-                  placeholder="User ID"
-                />
-              </div>
-            </div>
-            <div className="col-sm-6">
-              <div className="form-group">
-                <label className="form-label">Requester Role</label>
-                <input
-                  type="text"
-                  className="form-control"
-                    value={initialRequesterRole}
-                  disabled
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        try {
+            if (role === "STUDENT") {
 
-      {tokenPayload && (
-        <div className="card p-3 mb-4 bg-light">
-          <h6 className="mb-2">Decoded token payload</h6>
-          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "0.9rem" }}>
-            {JSON.stringify(tokenPayload, null, 2)}
-          </pre>
-        </div>
-      )}
+                if (!resourceId || !quantity) {
+                    setError("Please select resource and enter quantity.");
+                    setLoading(false);
+                    return;
+                }
 
-      <div className="card p-4">
-        <form onSubmit={handleSubmit}>
-          <div className="row gy-3">
-            {config.fields.map((field) => (
-              <div className="col-md-6" key={field.name}>
-                <label className="form-label">{field.label}</label>
-                <input
-                  type={field.type}
-                  className="form-control"
-                  value={field.name === "resourceId" ? resourceId : field.name === "quantity" ? quantity : infraId}
-                  placeholder={field.placeholder}
-                  onChange={(e) => {
-                    if (field.name === "resourceId") setResourceId(e.target.value);
-                    if (field.name === "quantity") setQuantity(e.target.value);
-                    if (field.name === "infraId") setInfraId(e.target.value);
-                  }}
-                  min="1"
-                />
-              </div>
-            ))}
-          </div>
+                payload.resourceId = Number(resourceId);
+                payload.quantity = Number(quantity);
 
-          {error && <div className="alert alert-danger mt-4">{error}</div>}
-          {statusMessage && <div className="alert alert-success mt-4">{statusMessage}</div>}
+                await submitResourceRequest(payload);
 
-          <div className="mt-4 d-flex flex-wrap gap-2">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading || !token}
-            >
-              {loading ? "Sending request..." : config.submitLabel}
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={() => {
-                setResourceId("");
-                setQuantity("");
-                setInfraId("");
-                setError("");
+            } else {
+
+                if (!infraId) {
+                    setError("Please select infrastructure.");
+                    setLoading(false);
+                    return;
+                }
+
+                payload.infraId = Number(infraId);
+
+                await submitInfrastructureRequest(payload);
+            }
+
+            setStatusMessage(`${config.title} submitted successfully ✅`);
+
+            // ⏱️ AUTO REMOVE AFTER 3 SECONDS
+            setTimeout(() => {
                 setStatusMessage("");
-              }}
-            >
-              Reset form
-            </button>
-          </div>
-        </form>
-      </div>
+            }, 3000);
 
-      <div className="card p-4 mt-4">
-        <h5 className="mb-3">My Requests</h5>
-        {historyLoading ? (
-          <div className="text-center py-4">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
+            setType("");
+            setItems([]);
+            setResourceId("");
+            setInfraId("");
+            setQuantity("");
+
+            fetchHistory();
+
+        } catch (err) {
+            setError("Submission failed");
+
+            // ⏱️ Auto clear error also
+            setTimeout(() => {
+                setError("");
+            }, 3000);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="container-fluid mt-4">
+
+            {/* HEADER */}
+            <div className="bg-white p-4 mb-4 rounded shadow-sm">
+                <h2 className="mb-2">{config.title}</h2>
+                <p className="text-muted">{config.description}</p>
             </div>
-          </div>
-        ) : requestHistory.length === 0 ? (
-          <div className="alert alert-secondary mb-0">
-            No requests found for this user yet.
-          </div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-striped table-bordered mb-0">
-              <thead className="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Request ID</th>
-                  <th>Item Type</th>
-                  <th>Item ID</th>
-                  <th>Quantity</th>
-                  <th>Status</th>
-                  <th>Requested At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requestHistory.map((req, index) => (
-                  <tr key={req.requestId ?? index}>
-                    <td>{index + 1}</td>
-                    <td>{req.requestId}</td>
-                    <td>{req.itemType}</td>
-                    <td>
-                      {req.itemType === "RESOURCE"
-                        ? req.resource?.resourceId || "-"
-                        : req.infrastructure?.infraId || "-"}
-                    </td>
-                    <td>{req.quantity ?? "-"}</td>
-                    <td>{req.status}</td>
-                    <td>{req.createdAt ? new Date(req.createdAt).toLocaleString() : "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+
+            {/* FORM */}
+            <div className="card p-4">
+
+                <form onSubmit={handleSubmit}>
+
+                    <div className="row gy-3">
+
+                        {/* TYPE */}
+                        <div className="col-md-6">
+                            <label className="form-label">Type</label>
+                            <select
+                                className="form-control"
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
+                            >
+                                <option value="">Select Type</option>
+                                {(role === "STUDENT" ? RESOURCE_TYPES : INFRA_TYPES)
+                                    .map(t => (
+                                        <option key={t}>{t}</option>
+                                    ))}
+                            </select>
+                        </div>
+
+                        {/* ITEM */}
+                        <div className="col-md-6">
+                            <label className="form-label">
+                                {role === "STUDENT" ? "Resource" : "Infrastructure"}
+                            </label>
+
+                            <select
+                                className="form-control"
+                                value={role === "STUDENT" ? resourceId : infraId}
+                                onChange={(e) =>
+                                    role === "STUDENT"
+                                        ? setResourceId(e.target.value)
+                                        : setInfraId(e.target.value)
+                                }
+                            >
+                                <option value="">Select</option>
+
+                                {items.map(item => (
+                                    <option
+                                        key={item.resourceId || item.infraId}
+                                        value={item.resourceId || item.infraId}
+                                    >
+                                        {role === "STUDENT"
+                                            ? `${item.type} - Qty: ${item.quantity}`
+                                            : `${item.type} - ${item.location}`}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* QUANTITY */}
+                        {role === "STUDENT" && (
+                            <div className="col-md-6">
+                                <label className="form-label">Quantity</label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(e.target.value)}
+                                    min="1"
+                                />
+                            </div>
+                        )}
+
+                    </div>
+
+                    {error && <div className="alert alert-danger mt-3">{error}</div>}
+                    {statusMessage && <div className="alert alert-success mt-3">{statusMessage}</div>}
+
+                    <div className="mt-4">
+                        <button
+                            className="btn btn-primary d-flex align-items-center gap-2"
+                            disabled={loading || !token}
+                        >
+                            {loading && (
+                                <span
+                                    className="spinner-border spinner-border-sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                ></span>
+                            )}
+
+                            {loading ? "Sending request..." : config.submitLabel}
+                        </button>
+
+                    </div>
+
+                </form>
+            </div>
+
+            {/* ✅ ✅ RESTORED TABLE */}
+            <div className="card p-4 mt-4">
+                <h5 className="mb-3">My Requests</h5>
+
+                {historyLoading ? (
+                    <div className="text-center">
+                        <div className="spinner-border" />
+                    </div>
+                ) : requestHistory.length === 0 ? (
+                    <div className="alert alert-secondary">No requests found</div>
+                ) : (
+                    <div className="table-responsive">
+                        <table className="table table-striped table-bordered">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>ID</th>
+                                    <th>Item Type</th>
+                                    <th>Category</th>
+                                    <th>Qty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {requestHistory.map((req, index) => (
+                                    <tr key={req.requestId}>
+                                        <td>{index + 1}</td>
+                                        <td>{req.requestId}</td>
+                                        <td>{req.itemType}</td>
+                                        <td>
+                                            {req.itemType === "RESOURCE"
+                                                ? req.resourceType
+                                                : req.infrastructureType}
+                                        </td>
+                                        <td>{req.quantity ?? "-"}</td>
+                                        <td>{req.status}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+        </div>
+    );
 }
 
 export default RequestFormPage;

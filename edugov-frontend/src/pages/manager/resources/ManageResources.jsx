@@ -48,11 +48,25 @@ const ManageResources = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
+    // Edge case: Quantity must be positive integer
+    const qty = Number(form.quantity);
+    if (isNaN(qty) || qty <= 0) {
+      setErrorModal("Quantity must be a positive number.");
+      return;
+    }
+
+    // Edge case: Program ID must be positive integer
+    const progId = Number(form.programId);
+    if (isNaN(progId) || progId <= 0) {
+      setErrorModal("Program ID must be a positive number.");
+      return;
+    }
+
     try {
       await createResource({
         ...form,
-        programId: Number(form.programId),
-        quantity: Number(form.quantity)
+        programId: progId,
+        quantity: qty
       });
 
       setForm({
@@ -70,11 +84,16 @@ const ManageResources = () => {
 
       let message = "Something went wrong.";
 
-      if (backendMsg.includes("Program not found")) {
-        message = "Invalid Program ID. Please enter a valid one.";
-      } else if (backendMsg.includes("Dependent service")) {
+      if (backendMsg.includes("Program ID")) {
+        message = backendMsg;   // ✅ directly show backend message
+      }
+      else if (backendMsg.includes("Dependent service")) {
         message = "Service unavailable. Try again shortly.";
       }
+      else if (backendMsg.includes("quantity")) {
+        message = backendMsg;
+      }
+
 
       setErrorModal(message);
     }
@@ -140,7 +159,7 @@ const ManageResources = () => {
 
           <select name="type" value={form.type} onChange={handleChange}>
             <option value="FUNDS">FUNDS</option>
-            <option value="LAB">LAB</option>
+            <option value="LAB_MATERIAL">LAB_MATERIAL</option>
             <option value="EQUIPMENT">EQUIPMENT</option>
           </select>
 
@@ -225,88 +244,88 @@ const ManageResources = () => {
       </div>
 
       {/* ✅ SUCCESS */}
-{successModal && (
-  <div className="modal">
-    <div className="modal-content success-box">
-      <h3>✅ Success</h3>
-      <p>Resource created successfully!</p>
+      {successModal && (
+        <div className="modal">
+          <div className="modal-content success-box">
+            <h3>✅ Success</h3>
+            <p>Resource created successfully!</p>
 
-      <div className="modal-actions">
-        <button className="btn-primary" onClick={() => setSuccessModal(false)}>OK</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={() => setSuccessModal(false)}>OK</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ✅ ERROR */}
- {errorModal && (
-  <div className="modal">
-    <div className="modal-content error-box">
-      <h3>⚠️ Unable to Process</h3>
-      <p>{errorModal}</p>
+      {errorModal && (
+        <div className="modal">
+          <div className="modal-content error-box">
+            <h3>⚠️ Unable to Process</h3>
+            <p>{errorModal}</p>
 
-      <div className="modal-actions">
-        <button className="btn-primary" onClick={() => setErrorModal("")}>Close</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={() => setErrorModal("")}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-{editModal && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Edit Resource</h3>
+      {editModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Edit Resource</h3>
 
-      <input
-        value={editModal.quantity}
-        onChange={(e) =>
-          setEditModal({ ...editModal, quantity: e.target.value })
-        }
-      />
+            <input
+              value={editModal.quantity}
+              onChange={(e) =>
+                setEditModal({ ...editModal, quantity: e.target.value })
+              }
+            />
 
-      <div className="modal-actions">
-        <button className="btn-primary" onClick={handleUpdate}>Save</button>
-        <button className="btn-secondary" onClick={() => setEditModal(null)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={handleUpdate}>Save</button>
+              <button className="btn-secondary" onClick={() => setEditModal(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ✅ ALLOCATE MODAL */}
       {allocateModal && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Allocate Resource</h3>
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Allocate Resource</h3>
 
-      <input
-        value={allocateModal.qty}
-        onChange={(e) =>
-          setAllocateModal({ ...allocateModal, qty: e.target.value })
-        }
-      />
+            <input
+              value={allocateModal.qty}
+              onChange={(e) =>
+                setAllocateModal({ ...allocateModal, qty: e.target.value })
+              }
+            />
 
-      <div className="modal-actions">
-        <button className="btn-allocate" onClick={handleAllocate}>Allocate</button>
-        <button className="btn-secondary" onClick={() => setAllocateModal(null)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-actions">
+              <button className="btn-allocate" onClick={handleAllocate}>Allocate</button>
+              <button className="btn-secondary" onClick={() => setAllocateModal(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       {/* ✅ DELETE MODAL */}
-     {deleteModal && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Confirm Delete</h3>
+      {deleteModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Confirm Delete</h3>
 
-      <div className="modal-actions">
-        <button className="btn-delete" onClick={handleDelete}>Delete</button>
-        <button className="btn-secondary" onClick={() => setDeleteModal(null)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-actions">
+              <button className="btn-delete" onClick={handleDelete}>Delete</button>
+              <button className="btn-secondary" onClick={() => setDeleteModal(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
