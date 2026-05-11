@@ -1,145 +1,136 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import './App.css';
-import Home from './pages/home/home';
-// Layout Components
-import Navbar from './component/layout/navbar/navbar';
-import Sidebar from './component/layout/sidebar/sidebar';
-import Footer from './component/layout/footer/footer';
-import { AuthProvider } from './context/AuthContext';
-import ManageResources from './pages/manager/resources/ManageResources';
-import ManageInfrastructure from './pages/manager/resources/ManageInfrastructure';
-import ManagerRequestsPage from './pages/manager/resources/ManagerRequestsPage';
-import RequestFormPage from './pages/request/RequestFormPage';
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useAuth, AuthProvider } from "./context/AuthContext";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
+// Layout
+import Navbar from "./component/layout/navbar/navbar";
+import Sidebar from "./component/layout/sidebar/sidebar";
+import Footer from "./component/layout/footer/footer";
 
-// Dummy Component to prove routing works inside your layout
+// Core Pages
+import Home from "./pages/home/Home";
+
+// ✅ YOUR MODULE (Resource Management)
+import ManageResources from "./pages/manager/resources/ManageResources";
+import ManageInfrastructure from "./pages/manager/resources/ManageInfrastructure";
+import ManagerRequestsPage from "./pages/manager/resources/ManagerRequestsPage";
+import RequestFormPage from "./pages/request/RequestFormPage";
+
+// ✅ TEAMMATE MODULE (Projects / Grants)
+// import ProjectsPage from "./pages/faculty/projects/ProjectsPage";
+// import CreateProjectPage from "./pages/faculty/projects/CreateProjectPage";
+// import ProjectDetailsPage from "./pages/faculty/projects/ProjectDetailsPage";
+// import EditProjectPage from "./pages/faculty/projects/EditProjectPage";
+// import GrantsPage from "./pages/faculty/grants/GrantsPage";
+// import ApproveGrantsPage from "./pages/manager/ApproveGrantsPage";
+// ManagerDashboard from "./pages/manager/ManagerDashboard";
+
+// ✅ Fallback Page
 const PageContent = () => {
   const location = useLocation();
   return (
-    <div style={{ marginTop: '20px', padding: '0 20px' }}>
+    <div style={{ marginTop: "20px", padding: "20px" }}>
       <h2>Simulated Dashboard Area</h2>
-      <p style={{ padding: '15px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '6px', display: 'inline-block' }}>
-        Current URL Path: <strong style={{ color: '#0284C7' }}>{location.pathname}</strong>
-      </p>
-      <p style={{ color: '#666', marginTop: '10px' }}>
-        Your secure governance modules will render here after login.
+      <p style={{ padding: "15px", backgroundColor: "#fff", border: "1px solid #ddd" }}>
+        Current URL: <b>{location.pathname}</b>
       </p>
     </div>
   );
 };
 
-// We moved the layout inside this component so we can read the URL
 const AppContent = () => {
   const location = useLocation();
-  const [currentRole, setCurrentRole] = useState('STUDENT');
+  const { user } = useAuth();
 
-  // 1. Define all public pages where the Sidebar should NOT appear
-  const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
+  const [currentRole, setCurrentRole] = useState("STUDENT");
 
-  // 2. Check if the current URL is in that list
+  // ✅ Public pages
+  const publicRoutes = ["/", "/about", "/academic-programs", "/contact"];
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
-    <div className="App">
-      {/* Global Top Navigation (Modal now lives inside here!) */}
+    <div className="App d-flex flex-column min-vh-100">
       <Navbar />
 
-      <div className="app-body">
+      <div className="app-body d-flex flex-grow-1">
 
-        {/* Only render the Sidebar if we are on a secure dashboard page */}
-        {!isPublicPage && <Sidebar role={currentRole} />}
+        {/* ✅ Sidebar only once */}
+        {!isPublicPage && user && (
+          <Sidebar role={currentRole} user={user} />
+        )}
 
-        <main className="main-content">
+        <main className="main-content w-100">
 
-          {/* Hide the Developer Test Dropdown on public pages too */}
+          {/* ✅ Dev Role Switch */}
           {!isPublicPage && (
-            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontWeight: '600', color: '#1E293B' }}>Developer Test Mode:</span>
-                <label style={{ fontSize: '0.9rem', color: '#475569' }}>Simulate Role As:</label>
-                <select
-                  value={currentRole}
-                  onChange={(e) => setCurrentRole(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #CBD5E1', outline: 'none', cursor: 'pointer' }}
-                >
-                  <option value="STUDENT">Student</option>
-                  <option value="FACULTY">Faculty</option>
-                  <option value="UNIV_ADMIN">University Admin</option>
-                  <option value="PROG_MANAGER">Program Manager</option>
-                  <option value="COMPLIANCE_OFFICER">Compliance Officer</option>
-                  <option value="GOVT_AUDITOR">Government Auditor</option>
-                </select>
-              </div>
+            <div
+              style={{
+                padding: "10px",
+                background: "#f8fafc",
+                borderBottom: "1px solid #ddd",
+                marginBottom: "15px",
+              }}
+            >
+              <span style={{ marginRight: "10px" }}>Test Role:</span>
+
+              <select
+                value={currentRole}
+                onChange={(e) => setCurrentRole(e.target.value)}
+              >
+                <option value="STUDENT">Student</option>
+                <option value="FACULTY">Faculty</option>
+                <option value="PROG_MANAGER">Program Manager</option>
+                <option value="UNIV_ADMIN">University Admin</option>
+                <option value="COMPLIANCE_OFFICER">Compliance</option>
+                <option value="GOVT_AUDITOR">Auditor</option>
+              </select>
             </div>
           )}
 
-          {/* React Router Page Routing */}
+          {/* ✅ ROUTES */}
           <Routes>
+
+            {/* PUBLIC */}
             <Route path="/" element={<Home />} />
 
-            {/* The catch-all route for your simulated dashboard pages */}
+            {/* ✅ RESOURCE SYSTEM */}
+            <Route path="/manager/resources"
+              element={currentRole === "PROG_MANAGER" ? <ManageResources /> : <PageContent />}
+            />
+            <Route path="/manager/infrastructure"
+              element={currentRole === "PROG_MANAGER" ? <ManageInfrastructure /> : <PageContent />}
+            />
+            <Route path="/manager/requests"
+              element={currentRole === "PROG_MANAGER" ? <ManagerRequestsPage role={currentRole} /> : <PageContent />}
+            />
+
+            <Route path="/student/request"
+              element={currentRole === "STUDENT" ? <RequestFormPage role="STUDENT" /> : <PageContent />}
+            />
+
+            <Route path="/faculty/request"
+              element={currentRole === "FACULTY" ? <RequestFormPage role="FACULTY" /> : <PageContent />}
+            />
+
+            {/* ✅ TEAMMATE MODULE */}
+            {/* <Route path="/faculty/projects" element={<ProjectsPage />} />
+            <Route path="/faculty/projects/create" element={<CreateProjectPage />} />
+            <Route path="/faculty/projects/edit/:projectId" element={<EditProjectPage />} />
+            <Route path="/faculty/projects/:projectId" element={<ProjectDetailsPage />} />
+            <Route path="/faculty/grants" element={<GrantsPage />} />
+            <Route path="/manager/grants/approve" element={<ApproveGrantsPage />} /> */}
+            {/* <Route path="/manager/dashboard" element={<ManagerDashboard />} /> */}
+
+            {/* ✅ FALLBACK */}
             <Route path="/*" element={<PageContent />} />
-
-            <Route
-              path="/manager/resources"
-              element={
-                currentRole === "PROG_MANAGER" ? (
-                  <ManageResources />
-                ) : (
-                  <PageContent />
-                )
-              }
-            />
-            <Route
-              path="/manager/infrastructure"
-              element={
-                currentRole === "PROG_MANAGER" ? (
-                  <ManageInfrastructure />
-                ) : (
-                  <PageContent />
-                )
-              }
-            />
-            <Route
-              path="/manager/requests"
-              element={
-                currentRole === "PROG_MANAGER" ? (
-                  <ManagerRequestsPage role={currentRole} />
-                ) : (
-                  <PageContent />
-                )
-              }
-            />
-            <Route
-              path="/student/request"
-              element={
-                currentRole === "STUDENT" ? (
-                  <RequestFormPage role="STUDENT" />
-                ) : (
-                  <PageContent />
-                )
-              }
-            />
-            <Route
-              path="/faculty/request"
-              element={
-                currentRole === "FACULTY" ? (
-                  <RequestFormPage role="FACULTY" />
-                ) : (
-                  <PageContent />
-                )
-              }
-            />
-            
-
 
           </Routes>
 
         </main>
       </div>
 
-      {/* Global Footer */}
       <Footer />
     </div>
   );
@@ -147,12 +138,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      {/* AppContent now lives inside the Router, allowing it to read the URL */}
-      <AppContent />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-
 
 export default App;
