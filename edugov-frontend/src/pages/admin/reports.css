@@ -1,0 +1,37 @@
+.action-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.second-row { margin-top: 10px; margin-bottom: 30px; }
+
+.admin-select, .admin-input {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+.admin-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary { background: #2563eb; color: white; }
+
+.reports-visual-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.empty-report-card {
+    background: #fff;
+    border: 1px dashed #cbd5e1;
+    height: 300px;
+    border-radius: 12px;
+    padding: 20px;
+}

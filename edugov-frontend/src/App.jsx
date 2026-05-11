@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import Home from './pages/home/home';
+import 'bootstrap/dist/css/bootstrap.min.css';
+ 
+
 // Layout Components
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
 import { AuthProvider } from './context/AuthContext';
+
+// New Admin Components
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminReports from './pages/admin/AdminReports';
 
 // Dummy Component to prove routing works inside your layout
 const PageContent = () => {
@@ -24,10 +31,9 @@ const PageContent = () => {
   );
 };
 
-// We moved the layout inside this component so we can read the URL
 const AppContent = () => {
   const location = useLocation();
-  const [currentRole, setCurrentRole] = useState('STUDENT');
+  const [currentRole, setCurrentRole] = useState('UNIV_ADMIN');
 
   // 1. Define all public pages where the Sidebar should NOT appear
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
@@ -37,17 +43,15 @@ const AppContent = () => {
 
   return (
     <div className="App">
-      {/* Global Top Navigation (Modal now lives inside here!) */}
       <Navbar />
       
       <div className="app-body">
-        
         {/* Only render the Sidebar if we are on a secure dashboard page */}
         {!isPublicPage && <Sidebar role={currentRole} />}
         
         <main className="main-content">
           
-          {/* Hide the Developer Test Dropdown on public pages too */}
+          {/* Hide the Developer Test Dropdown on public pages */}
           {!isPublicPage && (
             <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -69,18 +73,21 @@ const AppContent = () => {
             </div>
           )}
 
-          {/* React Router Page Routing */}
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             
-            {/* The catch-all route for your simulated dashboard pages */}
+            {/* Admin Dashboard Routes */}
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/reports" element={<AdminReports />} />
+
+            {/* Catch-all for other modules */}
             <Route path="/*" element={<PageContent />} />
           </Routes>
 
         </main>
       </div>
       
-      {/* Global Footer */}
       <Footer />
     </div>
   );
@@ -88,12 +95,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      {/* AppContent now lives inside the Router, allowing it to read the URL */}
-      <AppContent />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-
 
 export default App;
