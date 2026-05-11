@@ -55,6 +55,8 @@ const Navbar = () => {
                 <Link to="/login" className="dropdown-item">
                   <span className="dropdown-icon">🎓</span> Academic Portal
                 </Link>
+
+                
                 
                 {/* 📍 FIX: Changed from a Link to a Button to trigger the Modal */}
                 <button 

@@ -6,7 +6,14 @@ import Home from './pages/home/home';
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
+import UserManagement from './component/Admin/UserManagement';
 import { AuthProvider } from './context/AuthContext';
+
+
+
+// Correct paths for App.jsx (located in src folder)
+import LoginPage from './component/common/login';
+import Register from './component/Registration/BasicDetails';
 
 // Dummy Component to prove routing works inside your layout
 const PageContent = () => {
@@ -30,7 +37,7 @@ const AppContent = () => {
   const [currentRole, setCurrentRole] = useState('STUDENT');
 
   // 1. Define all public pages where the Sidebar should NOT appear
-  const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
+  const publicRoutes = ['/', '/about', '/academic-programs', '/contact','/login', '/register'];
   
   // 2. Check if the current URL is in that list
   const isPublicPage = publicRoutes.includes(location.pathname);
@@ -72,9 +79,19 @@ const AppContent = () => {
           {/* React Router Page Routing */}
           <Routes>
             <Route path="/" element={<Home />} />
-            
+
+
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path ="/admin/user-management" element={<UserManagement/>}/>
+                      
+
+ 
             {/* The catch-all route for your simulated dashboard pages */}
             <Route path="/*" element={<PageContent />} />
+
+
+  
           </Routes>
 
         </main>
