@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import {
     submitResourceRequest,
-    submitInfrastructureRequest,
     getRequestsByRequester,
-} from "../../api/resourceRequestApi";
+} from "../../../api/resourceRequestApi";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./StudentResourceRequest.css";
 
 const decodeJwtPayload = (token) => {
     try {
@@ -19,25 +19,9 @@ const decodeJwtPayload = (token) => {
 };
 
 const RESOURCE_TYPES = ["FUNDS", "LAB_MATERIAL", "EQUIPMENT"];
-const INFRA_TYPES = ["LIBRARY", "LAB", "CENTER"];
 
-const PAGE_CONFIG = {
-    STUDENT: {
-        title: "Request Resource",
-        description: "Students can select type and resource, then enter quantity.",
-        submitLabel: "Submit Resource Request",
-    },
-    FACULTY: {
-        title: "Request Infrastructure",
-        description: "Faculty can select type and infrastructure.",
-        submitLabel: "Submit Infrastructure Request",
-    },
-};
-
-function RequestFormPage({ role = "STUDENT" }) {
-
+function StudentResourceRequest() {
     const { user, token } = useAuth();
-    const config = PAGE_CONFIG[role];
 
     const tokenPayload = token ? decodeJwtPayload(token) : null;
 
@@ -48,14 +32,11 @@ function RequestFormPage({ role = "STUDENT" }) {
         "";
 
     const [requesterUserId, setRequesterUserId] = useState(initialRequesterId);
-
     const [type, setType] = useState("");
     const [programId, setProgramId] = useState("");
     const [programs, setPrograms] = useState([]);
     const [items, setItems] = useState([]);
-
     const [resourceId, setResourceId] = useState("");
-    const [infraId, setInfraId] = useState("");
     const [quantity, setQuantity] = useState("");
 
     const [statusMessage, setStatusMessage] = useState("");
@@ -65,18 +46,64 @@ function RequestFormPage({ role = "STUDENT" }) {
     const [requestHistory, setRequestHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
     const [statusFilter, setStatusFilter] = useState("ALL");
+    const [selectedResource, setSelectedResource] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 5;
 
     const filteredRequests =
         statusFilter === "ALL"
             ? requestHistory
             : requestHistory.filter(req => req.status === statusFilter);
+
+    const indexOfLast = currentPage * recordsPerPage;
+    const indexOfFirst = indexOfLast - recordsPerPage;
+
+    const currentRecords = filteredRequests.slice(indexOfFirst, indexOfLast);
+
+    const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+    // ✅ Generate smart page numbers with ellipsis
+    const getPageNumbers = () => {
+        const pages = [];
+        
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            pages.push(1);
+            
+            if (currentPage > 3) {
+                pages.push("...");
+            }
+            
+            const start = Math.max(2, currentPage - 1);
+            const end = Math.min(totalPages - 1, currentPage + 1);
+            
+            for (let i = start; i <= end; i++) {
+                if (!pages.includes(i)) {
+                    pages.push(i);
+                }
+            }
+            
+            if (currentPage < totalPages - 2) {
+                pages.push("...");
+            }
+            
+            pages.push(totalPages);
+        }
+        
+        return pages;
+    };
+
     // ✅ Ensure ID
     useEffect(() => {
         if (!requesterUserId && initialRequesterId) {
             setRequesterUserId(initialRequesterId);
         }
     }, [initialRequesterId, requesterUserId]);
-    // ✅ FETCH PROGRAMS (FIXED CLEAN)
+
+    // ✅ FETCH PROGRAMS
     useEffect(() => {
         fetch("http://localhost:8002/api/resources/programs")
             .then(res => {
@@ -92,42 +119,26 @@ function RequestFormPage({ role = "STUDENT" }) {
             });
     }, []);
 
-
-    // ✅ FETCH ITEMS WITH TYPE + PROGRAM ✅
+    // ✅ FETCH RESOURCES BY TYPE + PROGRAM
     useEffect(() => {
-
         if (!type || !programId) {
             setItems([]);
             return;
         }
 
-        const url =
-            role === "STUDENT"
-                ? `http://localhost:8002/api/resources/by-type-program?type=${type}&programId=${programId}`
-                : `http://localhost:8002/api/infrastructure/by-type-program?type=${type}&programId=${programId}`;
-
-        fetch(url)
+        fetch(`http://localhost:8002/api/resources/by-type-program?type=${type}&programId=${programId}`)
             .then(res => res.json())
             .then(data => {
-
-                const filtered =
-                    role === "FACULTY"
-                        ? data.filter(i => i.status === "AVAILABLE")
-                        : data;
-
-                setItems(filtered || []);
+                setItems(Array.isArray(data) ? data : []);
             })
             .catch(() => setItems([]));
-
-    }, [type, programId, role]);
+    }, [type, programId]);
 
     // ✅ FETCH HISTORY
     const fetchHistory = async () => {
-
         if (!requesterUserId) return;
 
         setHistoryLoading(true);
-
         try {
             const response = await getRequestsByRequester(requesterUserId);
             setRequestHistory(response.data || []);
@@ -144,7 +155,6 @@ function RequestFormPage({ role = "STUDENT" }) {
 
     // ✅ SUBMIT
     const handleSubmit = async (event) => {
-
         event.preventDefault();
         setError("");
         setStatusMessage("");
@@ -154,60 +164,44 @@ function RequestFormPage({ role = "STUDENT" }) {
             return;
         }
 
+        if (!resourceId || !quantity) {
+            setError("Please select resource and enter quantity.");
+            return;
+        }
+
+        if (selectedResource && Number(quantity) > selectedResource.quantity) {
+            setError(
+                `Requested quantity exceeds available stock. Only ${selectedResource.quantity} units are currently available.`
+            );
+            return;
+        }
         setLoading(true);
 
         const payload = {
             requesterUserId: Number(requesterUserId),
+            resourceId: Number(resourceId),
+            quantity: Number(quantity),
         };
 
         try {
-            if (role === "STUDENT") {
+            await submitResourceRequest(payload);
 
-                if (!resourceId || !quantity) {
-                    setError("Please select resource and enter quantity.");
-                    setLoading(false);
-                    return;
-                }
+            setStatusMessage("Request Resource submitted successfully ✅");
 
-                payload.resourceId = Number(resourceId);
-                payload.quantity = Number(quantity);
-
-                await submitResourceRequest(payload);
-
-            } else {
-
-                if (!infraId) {
-                    setError("Please select infrastructure.");
-                    setLoading(false);
-                    return;
-                }
-
-                payload.infraId = Number(infraId);
-
-                await submitInfrastructureRequest(payload);
-            }
-
-            setStatusMessage(`${config.title} submitted successfully ✅`);
-
-            // ⏱️ AUTO REMOVE AFTER 3 SECONDS
             setTimeout(() => {
                 setStatusMessage("");
             }, 3000);
-
 
             setType("");
             setProgramId("");
             setItems([]);
             setResourceId("");
-            setInfraId("");
             setQuantity("");
 
             fetchHistory();
 
         } catch (err) {
             setError("Submission failed");
-
-            // ⏱️ Auto clear error also
             setTimeout(() => {
                 setError("");
             }, 3000);
@@ -221,15 +215,13 @@ function RequestFormPage({ role = "STUDENT" }) {
 
             {/* HEADER */}
             <div className="bg-white p-4 mb-4 rounded shadow-sm">
-                <h2 className="mb-2">{config.title}</h2>
-                <p className="text-muted">{config.description}</p>
+                <h2 className="mb-2">Request Resource</h2>
+                <p className="text-muted">Students can select type and resource, then enter quantity.</p>
             </div>
 
             {/* FORM */}
             <div className="card p-4">
-
                 <form onSubmit={handleSubmit}>
-
                     <div className="row gy-3">
 
                         {/* TYPE */}
@@ -241,13 +233,13 @@ function RequestFormPage({ role = "STUDENT" }) {
                                 onChange={(e) => setType(e.target.value)}
                             >
                                 <option value="">Select Type</option>
-                                {(role === "STUDENT" ? RESOURCE_TYPES : INFRA_TYPES)
-                                    .map(t => (
-                                        <option key={t}>{t}</option>
-                                    ))}
+                                {RESOURCE_TYPES.map(t => (
+                                    <option key={t} value={t}>{t}</option>
+                                ))}
                             </select>
                         </div>
-                        {/* ✅ PROGRAM */}
+
+                        {/* PROGRAM */}
                         <div className="col-md-6">
                             <label className="form-label">Program</label>
                             <select
@@ -256,7 +248,6 @@ function RequestFormPage({ role = "STUDENT" }) {
                                 onChange={(e) => setProgramId(e.target.value)}
                             >
                                 <option value="">Select Program</option>
-
                                 {Array.isArray(programs) && programs.map(p => (
                                     <option key={p.programId} value={p.programId}>
                                         {p.title}
@@ -265,49 +256,52 @@ function RequestFormPage({ role = "STUDENT" }) {
                             </select>
                         </div>
 
-                        {/* ITEM */}
+                        {/* RESOURCE */}
                         <div className="col-md-6">
-                            <label className="form-label">
-                                {role === "STUDENT" ? "Resource" : "Infrastructure"}
-                            </label>
-
+                            <label className="form-label">Resource</label>
                             <select
                                 className="form-control"
-                                value={role === "STUDENT" ? resourceId : infraId}
-                                onChange={(e) =>
-                                    role === "STUDENT"
-                                        ? setResourceId(e.target.value)
-                                        : setInfraId(e.target.value)
-                                }
+                                value={resourceId}
+                                onChange={(e) => {
+                                    const selected = items.find(i => i.resourceId == e.target.value);
+                                    setResourceId(e.target.value);
+                                    setSelectedResource(selected);
+                                    setQuantity("");
+                                }}
                             >
-                                <option value="">Select</option>
-
+                                <option value="">Select Resource</option>
                                 {items.map(item => (
                                     <option
-                                        key={item.resourceId || item.infraId}
-                                        value={item.resourceId || item.infraId}
+                                        key={item.resourceId}
+                                        value={item.resourceId}
+                                        disabled={item.quantity === 0}
                                     >
-                                        {role === "STUDENT"
-                                            ? `${item.type} - Qty: ${item.quantity}`
-                                            : `${item.type} - ${item.location}`}
+                                        {item.type} - Qty: {item.quantity}
                                     </option>
                                 ))}
                             </select>
+
+                            {selectedResource && (
+                                <small className="text-muted d-block mt-1">
+                                    Available: {selectedResource.quantity}
+                                </small>
+                            )}
+
                         </div>
 
                         {/* QUANTITY */}
-                        {role === "STUDENT" && (
-                            <div className="col-md-6">
-                                <label className="form-label">Quantity</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    value={quantity}
-                                    onChange={(e) => setQuantity(e.target.value)}
-                                    min="1"
-                                />
-                            </div>
-                        )}
+                        <div className="col-md-6">
+                            <label className="form-label">Quantity</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value)}
+                                min="1"
+                                max={selectedResource?.quantity || undefined}
+                                placeholder="Enter quantity"
+                            />
+                        </div>
 
                     </div>
 
@@ -316,6 +310,7 @@ function RequestFormPage({ role = "STUDENT" }) {
 
                     <div className="mt-4">
                         <button
+                            type="submit"
                             className="btn btn-primary d-flex align-items-center gap-2"
                             disabled={loading || !token}
                         >
@@ -326,49 +321,56 @@ function RequestFormPage({ role = "STUDENT" }) {
                                     aria-hidden="true"
                                 ></span>
                             )}
-
-                            {loading ? "Sending request..." : config.submitLabel}
+                            {loading ? "Sending request..." : "Submit Resource Request"}
                         </button>
-
                     </div>
 
                 </form>
             </div>
 
-
-            {/* ✅ ✅ RESTORED TABLE */}
+            {/* REQUEST HISTORY TABLE */}
             <div className="card p-4 mt-4">
-                
                 <h5 className="mb-3">My Requests</h5>
+
                 <div className="mb-3 d-flex gap-2 flex-wrap">
                     <button
                         className={`btn btn-sm ${statusFilter === "ALL" ? "btn-dark" : "btn-outline-dark"}`}
-                        onClick={() => setStatusFilter("ALL")}
+                        onClick={() => {
+                            setStatusFilter("ALL");
+                            setCurrentPage(1);
+                        }}
                     >
                         All
                     </button>
-
                     <button
                         className={`btn btn-sm ${statusFilter === "SUBMITTED" ? "btn-primary" : "btn-outline-primary"}`}
-                        onClick={() => setStatusFilter("SUBMITTED")}
+                        onClick={() => {
+                            setStatusFilter("SUBMITTED");
+                            setCurrentPage(1);
+                        }}
                     >
                         Submitted
                     </button>
-
                     <button
                         className={`btn btn-sm ${statusFilter === "APPROVED" ? "btn-success" : "btn-outline-success"}`}
-                        onClick={() => setStatusFilter("APPROVED")}
+                        onClick={() => {
+                            setStatusFilter("APPROVED");
+                            setCurrentPage(1);
+                        }}
                     >
                         Approved
                     </button>
-
                     <button
                         className={`btn btn-sm ${statusFilter === "DECLINED" ? "btn-danger" : "btn-outline-danger"}`}
-                        onClick={() => setStatusFilter("DECLINED")}
+                        onClick={() => {
+                            setStatusFilter("DECLINED");
+                            setCurrentPage(1);
+                        }}
                     >
                         Declined
                     </button>
                 </div>
+
                 {historyLoading ? (
                     <div className="text-center">
                         <div className="spinner-border" />
@@ -390,9 +392,9 @@ function RequestFormPage({ role = "STUDENT" }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredRequests.map((req, index) => (
+                                {currentRecords.map((req, index) => (
                                     <tr key={req.requestId}>
-                                        <td>{index + 1}</td>
+                                        <td className="row-number">#{(currentPage - 1) * recordsPerPage + index + 1}</td>
                                         <td>{req.requestId}</td>
                                         <td>{req.itemType}</td>
                                         <td>
@@ -402,17 +404,88 @@ function RequestFormPage({ role = "STUDENT" }) {
                                         </td>
                                         <td>{req.programName || "N/A"}</td>
                                         <td>{req.quantity ?? "-"}</td>
-                                        <td>{req.status}</td>
+                                        <td>
+                                            <span className={`status-badge ${req.status.toLowerCase()}`}>
+                                                {req.status}
+                                            </span>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 )}
+
+                {/* ✅ MODERN PAGINATION */}
+                {filteredRequests.length > 0 && (
+                    <div className="pagination-controls mt-4">
+                        <div className="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                            
+                            {/* First Button */}
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(1)}
+                            >
+                                First
+                            </button>
+
+                            {/* Previous Button */}
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(prev => prev - 1)}
+                            >
+                                Previous
+                            </button>
+
+                            {/* Page Numbers */}
+                            <div className="btn-group">
+                                {getPageNumbers().map((page, idx) => (
+                                    page === "..." ? (
+                                        <span key={`ellipsis-${idx}`} className="btn btn-ellipsis">...</span>
+                                    ) : (
+                                        <button
+                                            key={page}
+                                            className={`btn btn-sm ${
+                                                currentPage === page
+                                                    ? "btn-primary"
+                                                    : "btn-outline-secondary"
+                                            }`}
+                                            onClick={() => setCurrentPage(page)}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                ))}
+                            </div>
+
+                            {/* Next Button */}
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                disabled={currentPage >= totalPages}
+                                onClick={() => setCurrentPage(prev => prev + 1)}
+                            >
+                                Next
+                            </button>
+
+                            {/* Last Button */}
+                            <button
+                                className="btn btn-outline-secondary btn-sm"
+                                disabled={currentPage >= totalPages}
+                                onClick={() => setCurrentPage(totalPages)}
+                            >
+                                Last
+                            </button>
+
+                        </div>
+                    </div>
+                )}
+
             </div>
 
         </div>
     );
 }
 
-export default RequestFormPage;
+export default StudentResourceRequest;

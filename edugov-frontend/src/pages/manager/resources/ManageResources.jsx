@@ -77,6 +77,7 @@ const ManageResources = () => {
       });
 
       setSuccessModal(true);
+      setCurrentPage(1);
       loadResources();
 
     } catch (err) {
@@ -85,7 +86,7 @@ const ManageResources = () => {
       let message = "Something went wrong.";
 
       if (backendMsg.includes("Program ID")) {
-        message = backendMsg;   // ✅ directly show backend message
+        message = backendMsg;
       }
       else if (backendMsg.includes("Dependent service")) {
         message = "Service unavailable. Try again shortly.";
@@ -93,7 +94,6 @@ const ManageResources = () => {
       else if (backendMsg.includes("quantity")) {
         message = backendMsg;
       }
-
 
       setErrorModal(message);
     }
@@ -130,6 +130,48 @@ const ManageResources = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  // ✅ Generate page numbers with smart ellipsis
+  const getPageNumbers = () => {
+    const pages = [];
+    
+    if (totalPages <= 5) {
+      // Show all pages if 5 or less
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      // Add ellipsis and middle pages
+      if (currentPage > 3) {
+        pages.push('...');
+      }
+      
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) {
+          pages.push(i);
+        }
+      }
+      
+      // Add ellipsis before last page
+      if (currentPage < totalPages - 2) {
+        pages.push('...');
+      }
+      
+      // Always show last page
+      if (!pages.includes(totalPages)) {
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
 
   return (
     <div className="resource-container">
@@ -204,8 +246,9 @@ const ManageResources = () => {
                 </td>
               </tr>
             ) : (
-              paginatedData.map(r => (
+              paginatedData.map((r, idx) => (
                 <tr key={r.resourceId}>
+                  <td className="row-number">#{(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}</td>
                   <td>{r.resourceId}</td>
                   <td>{r.programId}</td>
                   <td>{r.type}</td>
@@ -235,12 +278,47 @@ const ManageResources = () => {
           </tbody>
         </table>
 
-        {/* PAGINATION */}
-        <div className="pagination">
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>⬅ Prev</button>
-          <span>Page {currentPage} of {totalPages || 1}</span>
-          <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => p + 1)}>Next ➡</button>
-        </div>
+        {/* ✅ MODERN PAGINATION */}
+        {!search && filtered.length > 0 && (
+          <div className="pagination-controls">
+            <div className="pagination-wrapper">
+              {/* Previous Button */}
+              <button
+                className="pagination-btn pagination-prev"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => p - 1)}
+              >
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="pagination-numbers">
+                {getPageNumbers().map((page, idx) => (
+                  page === '...' ? (
+                    <span key={`ellipsis-${idx}`} className="pagination-ellipsis">...</span>
+                  ) : (
+                    <button
+                      key={page}
+                      className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </button>
+                  )
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <button
+                className="pagination-btn pagination-next"
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage(p => p + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ✅ SUCCESS */}
