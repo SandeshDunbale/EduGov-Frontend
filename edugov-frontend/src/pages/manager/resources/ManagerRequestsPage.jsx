@@ -251,8 +251,8 @@ function ManagerRequestsPage({ role = "PROG_MANAGER" }) {
 
       {/* Filter Bar */}
       <div className="card p-3 mb-4">
-        <div className="row align-items-center gy-3">
-          <div className="col-md-6">
+        <div className="row align-items-center gy-3 filter-row">
+          <div className="col-md-9 search-section">
             <input
               type="text"
               className="form-control"
@@ -261,25 +261,27 @@ function ManagerRequestsPage({ role = "PROG_MANAGER" }) {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="col-md-6 d-flex flex-wrap gap-2">
-            {REQUEST_STATUS_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={
-                  statusFilter === option.value
-                    ? "btn btn-primary btn-sm"
-                    : "btn btn-outline-secondary btn-sm"
-                }
-                onClick={() => {
-                  setStatusFilter(option.value);
-                  setCurrentPage(0);
-                }}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+          
+<div className="col-md-6 d-flex justify-content-end align-items-center">
+  <div className="status-dropdown-wrapper">
+    <select
+      className="status-dropdown"
+      value={statusFilter}
+      onChange={(e) => {
+        setStatusFilter(e.target.value);
+        setCurrentPage(0);
+      }}
+    >
+      {REQUEST_STATUS_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+
+
         </div>
       </div>
 

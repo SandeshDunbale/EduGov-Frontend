@@ -24,7 +24,7 @@ const ManageResources = () => {
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [programs, setPrograms] = useState([]);
   const [form, setForm] = useState({
     programId: "",
     type: "FUNDS",
@@ -56,11 +56,12 @@ const ManageResources = () => {
     }
 
     // Edge case: Program ID must be positive integer
-    const progId = Number(form.programId);
-    if (isNaN(progId) || progId <= 0) {
-      setErrorModal("Program ID must be a positive number.");
+    if (!form.programId) {
+      setErrorModal("Please select a program.");
       return;
     }
+
+    const progId = Number(form.programId);
 
     try {
       await createResource({
@@ -77,6 +78,7 @@ const ManageResources = () => {
       });
 
       setSuccessModal(true);
+      setTimeout(() => setSuccessModal(false), 3000);
       setCurrentPage(1);
       loadResources();
 
@@ -96,28 +98,62 @@ const ManageResources = () => {
       }
 
       setErrorModal(message);
+      setTimeout(() => setErrorModal(""), 3000);
     }
   };
 
+  useEffect(() => {
+    fetch("http://localhost:8002/api/resources/programs")
+      .then(res => res.json())
+      .then(data => setPrograms(data))
+      .catch(() => setPrograms([]));
+
+  }, []);
+
   const handleUpdate = async () => {
-    await updateResource(editModal.resourceId, editModal);
-    setEditModal(null);
-    loadResources();
+    try {
+      await updateResource(editModal.resourceId, editModal);
+      setEditModal(null);
+      loadResources();
+    } catch {
+      setErrorModal("Update failed.");
+      setTimeout(() => setErrorModal(""), 3000);
+    }
   };
 
   const handleAllocate = async () => {
-    await allocateResource(
-      allocateModal.resourceId,
-      Number(allocateModal.qty)
-    );
-    setAllocateModal(null);
-    loadResources();
+
+    if (!allocateModal || !allocateModal.resourceId) return;
+    if (!allocateModal.qty || Number(allocateModal.qty) <= 0) {
+      setErrorModal("Enter valid quantity.");
+      return;
+    }
+
+    try {
+      await allocateResource(
+        allocateModal.resourceId,
+        Number(allocateModal.qty)
+      );
+      setAllocateModal(null);
+      loadResources();
+    } catch {
+      setErrorModal("Allocation failed.");
+      setTimeout(() => setErrorModal(""), 3000);
+    }
   };
 
+
   const handleDelete = async () => {
-    await deleteResource(deleteModal.resourceId);
-    setDeleteModal(null);
-    loadResources();
+    try {
+      await deleteResource(deleteModal.resourceId);
+      setDeleteModal(null);
+      loadResources();
+    } catch (err) {
+      setErrorModal(
+        err.response?.data?.message || "Delete failed."
+      );
+      setTimeout(() => setErrorModal(""), 3000);
+    }
   };
 
   const filtered = resources.filter(r =>
@@ -134,7 +170,7 @@ const ManageResources = () => {
   // ✅ Generate page numbers with smart ellipsis
   const getPageNumbers = () => {
     const pages = [];
-    
+
     if (totalPages <= 5) {
       // Show all pages if 5 or less
       for (let i = 1; i <= totalPages; i++) {
@@ -143,33 +179,33 @@ const ManageResources = () => {
     } else {
       // Always show first page
       pages.push(1);
-      
+
       // Add ellipsis and middle pages
       if (currentPage > 3) {
         pages.push('...');
       }
-      
+
       // Show pages around current page
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
-      
+
       for (let i = start; i <= end; i++) {
         if (!pages.includes(i)) {
           pages.push(i);
         }
       }
-      
+
       // Add ellipsis before last page
       if (currentPage < totalPages - 2) {
         pages.push('...');
       }
-      
+
       // Always show last page
       if (!pages.includes(totalPages)) {
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
@@ -197,7 +233,21 @@ const ManageResources = () => {
         <h3>Create Resource</h3>
 
         <form className="form-grid" onSubmit={handleCreate}>
-          <input name="programId" value={form.programId} onChange={handleChange} placeholder="Program ID" required />
+          <select
+            name="programId"
+            value={form.programId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Program</option>
+
+            {programs.map(p => (
+              <option key={p.programId} value={p.programId}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+
 
           <select name="type" value={form.type} onChange={handleChange}>
             <option value="FUNDS">FUNDS</option>
@@ -205,7 +255,14 @@ const ManageResources = () => {
             <option value="EQUIPMENT">EQUIPMENT</option>
           </select>
 
-          <input type="number" name="quantity" value={form.quantity} onChange={handleChange} placeholder="Quantity" required />
+          <input 
+            type="number" 
+            name="quantity" 
+            value={form.quantity} 
+            onChange={handleChange} 
+            placeholder="Quantity" 
+            required 
+          />
 
           <select name="status" value={form.status} onChange={handleChange}>
             <option value="AVAILABLE">AVAILABLE</option>
@@ -214,7 +271,7 @@ const ManageResources = () => {
             <option value="RETIRED">RETIRED</option>
           </select>
 
-          <button className="btn-primary">+ Add Resource</button>
+          <button type="submit" className="btn-primary">+ Add Resource</button>
         </form>
       </div>
 
@@ -222,66 +279,80 @@ const ManageResources = () => {
       <div className="card">
         <h3>All Resources</h3>
 
-        <table className="resource-table">
+        <div className="table-wrapper">
+          <table className="resource-table">
 
-          {/* ✅ FIXED HEADER */}
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Program</th>
-              <th>Type</th>
-              <th>Quantity</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {paginatedData.length === 0 ? (
+            {/* ✅ FIXED HEADER */}
+            <thead>
               <tr>
-                <td colSpan="6" className="no-data">
-                  {search
-                    ? "🔍 No resources found"
-                    : "🚫 No resources available"}
-                </td>
+                <th>#</th>
+                <th>ID</th>
+                <th>Program</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ) : (
-              paginatedData.map((r, idx) => (
-                <tr key={r.resourceId}>
-                  <td className="row-number">#{(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}</td>
-                  <td>{r.resourceId}</td>
-                  <td>{r.programId}</td>
-                  <td>{r.type}</td>
-                  <td>{r.quantity}</td>
+            </thead>
 
-                  <td>
-                    <span className={`status-badge ${r.status.toLowerCase()}`}>
-                      {r.status}
-                    </span>
-                  </td>
-
-                  <td>
-                    {/* ✅ FIXED STATE UPDATE */}
-                    <button className="btn-edit" onClick={() => setEditModal({ ...r })}>Edit</button>
-
-                    <button className="btn-allocate" onClick={() => setAllocateModal({ ...r, qty: "" })}>
-                      Allocate
-                    </button>
-
-                    <button className="btn-delete" onClick={() => setDeleteModal({ ...r })}>
-                      Delete
-                    </button>
+            <tbody>
+              {paginatedData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="no-data">
+                    {search
+                      ? "🔍 No resources found"
+                      : "🚫 No resources available"}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                paginatedData.map((r, idx) => (
+                  <tr key={r.resourceId}>
+                    <td className="row-number">#{(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}</td>
+                    <td>{r.resourceId}</td>
+
+                    <td>{programs.find(p => p.programId === r.programId)?.title || r.programId}</td>
+
+                    <td>{r.type}</td>
+                    <td>{r.quantity}</td>
+
+                    <td>
+                      <span className={`status-badge ${r.status.toLowerCase()}`}>
+                        {r.status}
+                      </span>
+                    </td>
+
+                    <td className="action-cell">
+                      {/* ✅ FIXED STATE UPDATE */}
+                      <button className="btn-edit" onClick={() => setEditModal({ ...r })}>Edit</button>
+
+                      <button className="btn-allocate" onClick={() => setAllocateModal({ ...r, qty: "" })}>
+                        Allocate
+                      </button>
+
+                      <button className="btn-delete" onClick={() => setDeleteModal({ ...r })}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* ✅ MODERN PAGINATION */}
-        {!search && filtered.length > 0 && (
+        {filtered.length > 0 && totalPages > 1 && (
           <div className="pagination-controls">
             <div className="pagination-wrapper">
+              {/* First Button
+              <button
+                className="pagination-btn pagination-first"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(1)}
+              >
+                First
+              </button> */}
+
               {/* Previous Button */}
               <button
                 className="pagination-btn pagination-prev"
@@ -316,6 +387,15 @@ const ManageResources = () => {
               >
                 Next
               </button>
+
+              {/* Last Button */}
+              {/* <button
+                className="pagination-btn pagination-last"
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                Last
+              </button> */}
             </div>
           </div>
         )}
@@ -355,10 +435,13 @@ const ManageResources = () => {
             <h3>Edit Resource</h3>
 
             <input
+              type="number"
               value={editModal.quantity}
               onChange={(e) =>
                 setEditModal({ ...editModal, quantity: e.target.value })
               }
+              placeholder="Quantity"
+              min="1"
             />
 
             <div className="modal-actions">
@@ -376,10 +459,13 @@ const ManageResources = () => {
             <h3>Allocate Resource</h3>
 
             <input
+              type="number"
               value={allocateModal.qty}
               onChange={(e) =>
                 setAllocateModal({ ...allocateModal, qty: e.target.value })
               }
+              placeholder="Quantity to allocate"
+              min="1"
             />
 
             <div className="modal-actions">
@@ -396,6 +482,7 @@ const ManageResources = () => {
         <div className="modal">
           <div className="modal-content">
             <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this resource?</p>
 
             <div className="modal-actions">
               <button className="btn-delete" onClick={handleDelete}>Delete</button>
