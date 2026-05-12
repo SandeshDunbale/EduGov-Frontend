@@ -65,34 +65,34 @@ function StudentResourceRequest() {
     // ✅ Generate smart page numbers with ellipsis
     const getPageNumbers = () => {
         const pages = [];
-        
+
         if (totalPages <= 5) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
             pages.push(1);
-            
+
             if (currentPage > 3) {
                 pages.push("...");
             }
-            
+
             const start = Math.max(2, currentPage - 1);
             const end = Math.min(totalPages - 1, currentPage + 1);
-            
+
             for (let i = start; i <= end; i++) {
                 if (!pages.includes(i)) {
                     pages.push(i);
                 }
             }
-            
+
             if (currentPage < totalPages - 2) {
                 pages.push("...");
             }
-            
+
             pages.push(totalPages);
         }
-        
+
         return pages;
     };
 
@@ -168,6 +168,10 @@ function StudentResourceRequest() {
             setError("Please select resource and enter quantity.");
             return;
         }
+        if (Number(quantity) <= 0) {
+            setError("Quantity must be greater than 0.");
+            return;
+        }
 
         if (selectedResource && Number(quantity) > selectedResource.quantity) {
             setError(
@@ -216,7 +220,7 @@ function StudentResourceRequest() {
             {/* HEADER */}
             <div className="bg-white p-4 mb-4 rounded shadow-sm">
                 <h2 className="mb-2">Request Resource</h2>
-                <p className="text-muted">Students can select type and resource, then enter quantity.</p>
+                {/* <p className="text-muted">Students can select type and resource, then enter quantity.</p> */}
             </div>
 
             {/* FORM */}
@@ -420,7 +424,7 @@ function StudentResourceRequest() {
                 {filteredRequests.length > 0 && (
                     <div className="pagination-controls mt-4">
                         <div className="d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                            
+
                             {/* First Button */}
                             <button
                                 className="btn btn-outline-secondary btn-sm"
@@ -447,11 +451,10 @@ function StudentResourceRequest() {
                                     ) : (
                                         <button
                                             key={page}
-                                            className={`btn btn-sm ${
-                                                currentPage === page
+                                            className={`btn btn-sm ${currentPage === page
                                                     ? "btn-primary"
                                                     : "btn-outline-secondary"
-                                            }`}
+                                                }`}
                                             onClick={() => setCurrentPage(page)}
                                         >
                                             {page}

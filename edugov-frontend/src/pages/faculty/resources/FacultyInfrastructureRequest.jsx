@@ -64,34 +64,34 @@ function FacultyInfrastructureRequest() {
     // ✅ Generate smart page numbers with ellipsis
     const getPageNumbers = () => {
         const pages = [];
-        
+
         if (totalPages <= 5) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
             pages.push(1);
-            
+
             if (currentPage > 3) {
                 pages.push("...");
             }
-            
+
             const start = Math.max(2, currentPage - 1);
             const end = Math.min(totalPages - 1, currentPage + 1);
-            
+
             for (let i = start; i <= end; i++) {
                 if (!pages.includes(i)) {
                     pages.push(i);
                 }
             }
-            
+
             if (currentPage < totalPages - 2) {
                 pages.push("...");
             }
-            
+
             pages.push(totalPages);
         }
-        
+
         return pages;
     };
 
@@ -126,7 +126,10 @@ function FacultyInfrastructureRequest() {
         }
 
         fetch(`http://localhost:8002/api/infrastructure/by-type-program?type=${type}&programId=${programId}`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch infrastructure");
+                return res.json();
+            })
             .then(data => {
                 console.log("INFRA DATA:", data);
                 const filtered = Array.isArray(data) ? data : [];
@@ -204,12 +207,12 @@ function FacultyInfrastructureRequest() {
     };
 
     return (
-        <div className="container-fluid mt-4">
+        <div className="container-fluid mt-0">
 
             {/* HEADER */}
-            <div className="bg-white p-4 mb-4 rounded shadow-sm">
+            <div className="bg-white p-4 mb-3 rounded shadow-sm">
                 <h2 className="mb-2">Request Infrastructure</h2>
-                <p className="text-muted">Faculty can select type and infrastructure.</p>
+                {/* <p className="text-muted">Faculty can select type and infrastructure.</p> */}
             </div>
 
             {/* FORM */}
@@ -264,6 +267,13 @@ function FacultyInfrastructureRequest() {
                                     </option>
                                 ))}
                             </select>
+
+                            {items.length === 0 && (
+                                <small className="text-muted d-block mt-1">
+                                    No infrastructure available for selected criteria
+                                </small>
+                            )}
+
                         </div>
 
                     </div>
@@ -381,7 +391,7 @@ function FacultyInfrastructureRequest() {
                 {filteredRequests.length > 0 && (
                     <div className="pagination-controls mt-4">
                         <div className="d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                            
+
                             {/* First Button */}
                             <button
                                 className="btn btn-outline-secondary btn-sm"
@@ -408,11 +418,10 @@ function FacultyInfrastructureRequest() {
                                     ) : (
                                         <button
                                             key={page}
-                                            className={`btn btn-sm ${
-                                                currentPage === page
-                                                    ? "btn-primary"
-                                                    : "btn-outline-secondary"
-                                            }`}
+                                            className={`btn btn-sm ${currentPage === page
+                                                ? "btn-primary"
+                                                : "btn-outline-secondary"
+                                                }`}
                                             onClick={() => setCurrentPage(page)}
                                         >
                                             {page}

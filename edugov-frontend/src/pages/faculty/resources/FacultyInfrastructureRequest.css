@@ -1,3 +1,6 @@
+.container-fluid {
+  margin-top: 0 !important;
+}
 /* ================= ROW NUMBER STYLING ================= */
 .row-number {
   text-align: center;
