@@ -1,0 +1,36 @@
+/* src/pages/faculty/ProjectDetailsPage.css */
+
+.details-container {
+  max-width: 1000px;
+}
+
+.btn-back {
+  color: #6c757d; /* Bootstrap text-muted */
+  transition: color 0.2s ease-in-out;
+}
+
+.btn-back:hover {
+  color: #1e3a5f; /* EduGov Navy */
+}
+
+.text-navy {
+  color: #1e3a5f;
+}
+
+.code-highlight {
+  background-color: #f8f9fa;
+  color: #d63384; /* Pinkish color for code */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.info-grid-box {
+  background-color: #f8f9fa; /* Light gray */
+  border: 2px dashed #dee2e6; /* Dashed border */
+  border-radius: 0.5rem;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
