@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import './App.css';
-import Home from './pages/home/home';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
- 
+import './App.css';
 
 // Layout Components
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
-import { AuthProvider } from './context/AuthContext';
 
-// New Admin Components
+// Pages
+import Home from './pages/home/home';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminReports from './pages/admin/AdminReports';
 
-// Dummy Component to prove routing works inside your layout
+// Dummy Component for unbuilt pages
 const PageContent = () => {
   const location = useLocation();
   return (
@@ -33,27 +32,29 @@ const PageContent = () => {
 
 const AppContent = () => {
   const location = useLocation();
+  const { user } = useAuth(); // Pull real logged-in user
+  
+  // State for Developer Simulation Mode
   const [currentRole, setCurrentRole] = useState('UNIV_ADMIN');
 
-  // 1. Define all public pages where the Sidebar should NOT appear
+  // Define public pages where Sidebar/Test Mode is hidden
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
-  
-  // 2. Check if the current URL is in that list
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
-    <div className="App">
+    <div className="App d-flex flex-column min-vh-100">
       <Navbar />
       
-      <div className="app-body">
-        {/* Only render the Sidebar if we are on a secure dashboard page */}
-        {!isPublicPage && <Sidebar role={currentRole} />}
+      <div className="app-body d-flex flex-grow-1">
+        {/* Render Sidebar on secure pages. Uses currentRole for simulation or user.role for real auth */}
+        {!isPublicPage && (
+          <Sidebar role={user ? user.role : currentRole} />
+        )}
         
-        <main className="main-content">
-          
-          {/* Hide the Developer Test Dropdown on public pages */}
+        <main className="main-content w-100">
+          {/* Developer Test Mode Dropdown (Hidden on public pages) */}
           {!isPublicPage && (
-            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
+            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <span style={{ fontWeight: '600', color: '#1E293B' }}>Developer Test Mode:</span>
                 <label style={{ fontSize: '0.9rem', color: '#475569' }}>Simulate Role As:</label>
@@ -76,18 +77,16 @@ const AppContent = () => {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            
-            {/* Admin Dashboard Routes */}
+
+            {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/reports" element={<AdminReports />} />
 
-            {/* Catch-all for other modules */}
+            {/* Catch-all */}
             <Route path="/*" element={<PageContent />} />
           </Routes>
-
         </main>
       </div>
-      
       <Footer />
     </div>
   );

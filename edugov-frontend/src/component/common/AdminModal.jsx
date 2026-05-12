@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext'; // Path to your AuthContext
+import { useAuth } from '../../context/AuthContext'; 
 import { useNavigate } from 'react-router-dom';
 import './admin-modal.css';
 
-const AdminModal = ({ isOpen, onClose }) => {
+const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
   const [showPassword, setShowPassword] = useState(false);
   
-  // 1. Local states for form inputs and status
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +17,6 @@ const AdminModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // 2. Integration with the Backend Service
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -28,11 +26,46 @@ const AdminModal = ({ isOpen, onClose }) => {
 
     if (result.success) {
       setIsLoading(false);
-      onClose(); // Close the modal on success
-      navigate('/admin/dashboard'); // Redirect to admin panel
+      onClose(); // Close the modal
+
+      // 📍 ROUTING LOGIC BASED ON ROLE
+      // Make sure your backend role names match these exactly!
+      const userRole = result.user?.role; 
+
+      switch (userRole) {
+        case 'UNIV_ADMIN':
+        case 'ROLE_UNIV_ADMIN':
+          navigate('/dashboard/admin');
+          break;
+        case 'PROG_MANAGER':
+        case 'ROLE_PROG_MANAGER':
+          navigate('/dashboard/manager');
+          break;
+        case 'COMPLIANCE_OFFICER':
+        case 'ROLE_COMPLIANCE_OFFICER':
+          navigate('/dashboard/compliance');
+          break;
+        case 'GOVT_AUDITOR':
+        case 'ROLE_GOVT_AUDITOR':
+          navigate('/dashboard/auditor');
+          break;
+        case 'FACULTY':
+        case 'ROLE_FACULTY':
+          navigate('/dashboard/faculty');
+          break;
+        case 'STUDENT':
+        case 'ROLE_STUDENT':
+          navigate('/dashboard/student');
+          break;
+        default:
+          // Fallback if role is missing or unrecognized
+          navigate('/dashboard/default'); 
+          break;
+      }
+
     } else {
       setIsLoading(false);
-      setError(result.message); // Show "Invalid Credentials" or "Account Inactive"
+      setError(result.message);
     }
   };
 
@@ -46,7 +79,6 @@ const AdminModal = ({ isOpen, onClose }) => {
           <h3>System Administration</h3>
           <p>Secure gateway for university staff.</p>
           
-          {/* Display dynamic error messages from Spring Boot */}
           {error && <div className="modal-error-banner">{error}</div>}
         </div>
 
@@ -87,7 +119,9 @@ const AdminModal = ({ isOpen, onClose }) => {
           </div>
 
           <div className="modal-actions">
-            <a href="#forgot" className="recovery-link">Forgot Credentials?</a>
+              <button type="button" onClick={onForgotClick} className="recovery-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>
+                  Forgot Credentials?
+              </button>
           </div>
 
           <button 
