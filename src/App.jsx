@@ -20,6 +20,19 @@ import FacultyProfile from './component/profile/FacultyProfile';
 import LoginPage from './component/common/login';
 import Register from './component/Registration/BasicDetails';
 
+// 1. Admin Pages
+import AdminPrograms from './pages/Univ_Admin/Programs/AdminPrograms';
+import AdminCourses from './pages/Univ_Admin/Courses/AdminCourses';
+import AdminEnrollments from './pages/Univ_Admin/Enrollments/AdminEnrollments';
+
+// 2. Faculty Page
+import FacultyAssignedCourses from "./pages/faculty/AssignedCourses/FacultyAssignedCourses";
+import FacultyDashboard from './pages/faculty/Dashboard/FacultyDashboard';
+
+// 3. Student Page
+import StudentPrograms from './pages/Student/Programs/StudentPrograms';
+import StudentDashboard from './pages/Student/Dashboard/StudentDashboard';
+
 // Dummy Component to prove secure routing works
 const PageContent = () => {
   const location = useLocation();
@@ -28,9 +41,6 @@ const PageContent = () => {
       <h2>Simulated Dashboard Area</h2>
       <p style={{ padding: '15px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '6px', display: 'inline-block' }}>
         Current URL Path: <strong style={{ color: '#0284C7' }}>{location.pathname}</strong>
-      </p>
-      <p style={{ color: '#666', marginTop: '10px' }}>
-        Your secure governance modules will render here after login.
       </p>
     </div>
   );
@@ -41,7 +51,7 @@ const AppContent = () => {
 
   const [currentRole, setCurrentRole] = useState('STUDENT');
 
-  // 📍 Pull the dynamically logged-in user from AuthContext
+  // Pull the dynamically logged-in user from AuthContext
   const { user } = useAuth();
 
   // Define all public pages where the Sidebar should NOT appear
@@ -51,10 +61,7 @@ const AppContent = () => {
   return (
     <div className="App">
       <Navbar />
-      
       <div className="app-body">
-        
-        {/* 📍 Only render Sidebar if on a secure page AND the user is actually logged in */}
         {!isPublicPage && user && (
           <Sidebar role={user.role} user={user} />
         )}
@@ -75,13 +82,27 @@ const AppContent = () => {
             <Route path="/faculty/profile" element={<FacultyProfile />} />
             <Route path="/admin/user-management" element={<UserManagement />} />
             
+            {/* UNIVERSITY ADMIN GOVERNANCE ROUTES */}
+            <Route path="/admin/programs/create" element={<AdminPrograms />} />
+            <Route path="/admin/courses/create" element={<AdminCourses />} />
+            <Route path="/admin/enrollments/approve" element={<AdminEnrollments />} />
+
+            {/* FACULTY WORKSPACE ROUTES */}
+            <Route path="/faculty/courses" element={<FacultyAssignedCourses />} />
+            <Route path="/dashboard/faculty" element={<FacultyDashboard />} />
+
+            {/* STUDENT WORKSPACE ROUTES */}
+            <Route path="/student/programs" element={<StudentPrograms />} />
+            <Route path="/dashboard/student" element={<StudentDashboard />} />
+            
             {/* Catch-all route for dashboards */}
             <Route path="/*" element={<PageContent />} />
           </Routes>
         </main>
-
       </div>
-      <Footer />
+      <div className="app-footer">
+         <Footer />
+      </div>
     </div>
   );
 };
@@ -94,5 +115,4 @@ function App() {
   );
 }
 
-// 📍 Notice NO ReactDOM.createRoot here. That belongs in index.js/main.jsx!
 export default App;

@@ -1,0 +1,317 @@
+:root {
+    --edu-navy: #1f3b55;
+    --edu-navy-header: #294c6d;
+    --edu-beige: #f1ede5;
+    --edu-teal: #3bbfad;
+    --edu-red: #e53e3e;
+}
+
+.admin-container { 
+    padding: 25px; 
+    background-color: var(--edu-beige); 
+    min-height: 100vh; 
+    width: 100%;
+}
+
+.text-navy { color: var(--edu-navy); }
+.uppercase { text-transform: uppercase; letter-spacing: 0.8px; }
+
+/* Responsive Headers */
+@media (max-width: 768px) {
+    .admin-container { padding: 15px; }
+    .border-end-sm { border-right: none; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 10px; }
+}
+
+.btn-edu-header {
+    background-color: var(--edu-navy-header) !important;
+    color: white !important;
+    border: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-edu-header:hover { 
+    background-color: var(--edu-navy) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Tab Navigation Consistency */
+.tab-navigation .tab-link {
+    border: none;
+    background: transparent;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.tab-navigation .tab-link.active {
+    background-color: var(--edu-navy);
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Decision Buttons */
+.btn-action-approve {
+    background-color: var(--edu-teal);
+    color: white; border: none; font-size: 10px; font-weight: 800;
+    padding: 6px 10px; border-radius: 4px; text-transform: uppercase;
+}
+
+.btn-action-reject {
+    background-color: var(--edu-red);
+    color: white; border: none; font-size: 10px; font-weight: 800;
+    padding: 6px 10px; border-radius: 4px; text-transform: uppercase;
+}
+
+.btn-action-delete {
+    padding: 6px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; margin: 0 auto; color: var(--edu-red) !important;
+    transition: 0.2s;
+}
+
+.btn-action-delete:hover { background-color: #fee2e2; transform: scale(1.1); }
+
+/* Table Styles */
+.table-card { border: none; border-radius: 10px; background: white; }
+.table thead th { 
+    background-color: var(--edu-navy-header); color: white; 
+    font-weight: 600; border-bottom: 3px solid var(--edu-teal);
+    padding: 15px; font-size: 0.7rem;
+}
+
+.table td:last-child, .table th:last-child { min-width: 100px; }
+
+/* Badges */
+.badge-pill { padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 10px; display: inline-block; }
+.bg-pending { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+.bg-active { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.bg-inactive { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+.processed-label { font-size: 10px; font-weight: 800; color: #a0aec0; }
+.admin-stamp { font-size: 10px; color: #2c5282; background: #ebf8ff; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; }
+
+/* UI Helpers */
+.user-icon-circle { background: #e2e8f0; color: #4a5568; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;}
+.pagination-container { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.page-btn { border: 1px solid #dee2e6; background: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: var(--edu-navy); }
+.page-btn.active { background: var(--edu-navy); color: white; border-color: var(--edu-navy); }
+
+/* Modal Helpers */
+.border-end-sm { border-right: 1px solid #edf2f7; }
+.btn-close-white { filter: invert(1) grayscale(1) brightness(2); }
+
+@media (max-width: 992px) {
+    .table-responsive { font-size: 0.85rem; }
+}
+
+/* ... keep your previous CSS exactly as is ... */
+
+/* --- TOAST STYLES --- */
+.custom-toast-container {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.custom-toast {
+    background-color: var(--edu-navy);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 330px;
+    border-left: 6px solid var(--edu-teal);
+    position: relative;
+    overflow: hidden;
+}
+
+.toast-error {
+    border-left: 6px solid var(--edu-red) !important;
+}
+
+.toast-icon {
+    background-color: white;
+    color: var(--edu-navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-body {
+    font-size: 15px;
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+.toast-close-x {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.toast-loader-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--edu-teal);
+    width: 100%;
+    animation: toast-timer 3s linear forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-timer {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* ... keep your previous CSS exactly as is ... */
+
+/* --- TOAST STYLES --- */
+.custom-toast-container {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.custom-toast {
+    background-color: var(--edu-navy);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 330px;
+    border-left: 6px solid var(--edu-teal);
+    position: relative;
+    overflow: hidden;
+}
+
+.toast-error {
+    border-left: 6px solid var(--edu-red) !important;
+}
+
+.toast-icon {
+    background-color: white;
+    color: var(--edu-navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-body {
+    font-size: 15px;
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+.toast-close-x {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.toast-loader-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--edu-teal);
+    width: 100%;
+    animation: toast-timer 3s linear forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-timer {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* --- CONFIRMATION POPUP STYLES --- */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.confirm-icon {
+    margin-bottom: 15px;
+}
+
+.confirm-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.animate-pop {
+    animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.btn-navy {
+    background-color: var(--edu-navy);
+}
+.btn-navy:hover {
+    background-color: var(--edu-navy-header);
+}
+.btn-danger {
+    background-color: var(--edu-red);
+}

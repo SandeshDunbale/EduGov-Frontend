@@ -1,0 +1,67 @@
+:root {
+    --edu-navy: #1f3b55;
+    --edu-beige: #f1ede5;
+    --edu-teal: #3bbfad;
+}
+
+.faculty-workspace { background-color: var(--edu-beige); min-height: 100vh; font-family: 'Inter', sans-serif; }
+.text-navy { color: var(--edu-navy); }
+.bg-navy { background-color: var(--edu-navy) !important; }
+
+/* 📍 80% Height Scrollable Container */
+.assigned-box-scroll {
+    height: 70vh;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.7);
+    scrollbar-width: thin;
+    scrollbar-color: var(--edu-navy) transparent;
+}
+
+.assigned-box-scroll::-webkit-scrollbar { width: 6px; }
+.assigned-box-scroll::-webkit-scrollbar-thumb { background: var(--edu-navy); border-radius: 10px; }
+
+/* 📍 Card Specific Styling */
+.detailed-duty-card {
+    transition: all 0.3s ease;
+    background: white;
+    margin-bottom: 10px;
+}
+
+.detailed-duty-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+
+.bg-course-side { background-color: #ffffff; }
+.bg-program-side { background-color: #f1f5f9; }
+
+.text-description-limit {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.date-box {
+    border-left: 3.5px solid var(--edu-teal);
+}
+
+.icon-pill {
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+}
+
+.badge-pill { padding: 5px 15px; border-radius: 50px; font-size: 10px; }
+.bg-active { background: #e6fffa; color: #006d5b; border: 1px solid #b2f5ea; }
+.bg-program-tag { background: #eef2ff; color: #1e40af; border: 1px solid #dbeafe; }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.uppercase { text-transform: uppercase; letter-spacing: 1px; }
+
+.scroll-list { max-height: 300px; overflow-y: auto; background: white; }
+.list-item:hover { background-color: #f8fafc !important; }
+
+.search-mini .form-control {
+    border-radius: 10px; font-size: 13px; background: #ffffff; border: 1.5px solid #e2e8f0;
+}

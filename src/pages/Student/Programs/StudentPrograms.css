@@ -1,0 +1,210 @@
+/* Student Workspace UI Standardized */
+:root {
+    --edu-navy: #1f3b55;
+    --edu-beige: #f1ede5;
+    --edu-teal: #3bbfad;
+}
+
+.student-workspace {
+    background-color: var(--edu-beige);
+    min-height: 100vh;
+}
+
+.text-navy { color: var(--edu-navy); }
+.text-teal { color: var(--edu-teal); }
+
+/* Program Catalog Card Style */
+.program-card {
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    min-height: 330px; 
+    max-height: 380px;
+}
+
+.program-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Scrollable Logic for All Cards */
+.program-card-body, .course-card-body {
+    overflow-y: auto;
+}
+
+.program-card-body::-webkit-scrollbar, 
+.course-card-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.program-card-body::-webkit-scrollbar-thumb,
+.course-card-body::-webkit-scrollbar-thumb {
+    background: var(--edu-teal);
+    border-radius: 10px;
+}
+
+.program-card-body { max-height: 180px; }
+
+/* Course Detail Card Style */
+.course-detail-card {
+    border-radius: 16px;
+    border: 1px solid #eef2f7;
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.course-detail-card:hover {
+    transform: scale(1.01);
+}
+
+.card-accent {
+    height: 4px;
+    width: 45px;
+    background: var(--edu-teal);
+    border-radius: 10px;
+}
+
+.icon-circle {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.bg-navy { background: var(--edu-navy); }
+
+.btn-navy {
+    background: var(--edu-navy);
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-navy:hover {
+    background: var(--edu-teal);
+    color: white;
+}
+
+.btn-outline-navy {
+    border: 2px solid var(--edu-navy);
+    color: var(--edu-navy);
+    background: transparent;
+    font-weight: 700;
+}
+
+.btn-outline-navy:hover {
+    background: var(--edu-navy);
+    color: white;
+}
+
+.btn-edu-header {
+    background-color: var(--edu-teal);
+    color: white;
+    border: none;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-edu-header:hover {
+    background-color: var(--edu-navy);
+    transform: scale(1.01);
+}
+
+.badge-pill {
+    padding: 4px 14px;
+    border-radius: 50px;
+}
+
+.bg-active {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #d1fae5;
+}
+
+.bg-inactive {
+    background: #fff1f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.uppercase { text-transform: uppercase; letter-spacing: 1px; }
+
+.tiny { font-size: 10px; }
+
+@media (max-width: 768px) {
+    .search-card { margin-top: 10px; }
+    .program-card { min-height: 300px; }
+}
+
+/* --- TOAST NOTIFICATION STYLES (Based on Sample) --- */
+.custom-toast {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    background-color: var(--edu-navy);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 6px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 330px;
+    border-left: 6px solid var(--edu-teal);
+    animation: toast-slide 0.4s ease forwards;
+}
+
+.toast-error {
+    border-left: 6px solid #ef4444 !important;
+}
+
+.toast-icon-wrapper {
+    background-color: white;
+    color: var(--edu-navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-body {
+    font-size: 14px;
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+.toast-close-x {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.toast-loader-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--edu-teal);
+    width: 100%;
+    animation: toast-timer 3s linear forwards;
+}
+
+@keyframes toast-slide {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-timer {
+    from { width: 100%; }
+    to { width: 0%; }
+}

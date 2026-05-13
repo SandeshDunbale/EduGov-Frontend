@@ -1,0 +1,200 @@
+:root {
+ --edu-navy: #1f3b55;
+ --edu-navy-header: #294c6d;
+ --edu-beige: #f1ede5;
+ --edu-teal: #3bbfad;
+}
+
+.admin-container { 
+ padding: 25px; 
+ background-color: var(--edu-beige); 
+ min-height: 100vh; 
+ width: 100%;
+}
+
+.text-navy { color: var(--edu-navy); }
+.bg-navy { background-color: var(--edu-navy); }
+
+.btn-edu-header {
+ background-color: var(--edu-navy-header) !important;
+ color: white !important;
+ border: none;
+ font-weight: 600;
+ transition: 0.3s;
+}
+.btn-edu-header:hover { background-color: var(--edu-navy) !important; }
+
+.search-wrapper { 
+ position: relative; 
+ display: flex; 
+ align-items: center; 
+ width: 100%; 
+}
+.search-wrapper .icon-left { 
+ position: absolute; 
+ left: 12px; 
+ color: #6c757d; 
+ pointer-events: none; 
+}
+.search-wrapper .form-control, 
+.search-wrapper .form-select { 
+ padding-left: 40px !important; 
+ border-radius: 6px !important; 
+ height: 42px;
+ border: 1px solid #dcdcdc;
+}
+
+.table-card { border: none; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; }
+.table thead th { 
+ background-color: var(--edu-navy-header); 
+ color: white; 
+ font-weight: 600; 
+ border-bottom: 3px solid var(--edu-teal);
+ padding: 15px;
+ text-transform: uppercase;
+ font-size: 0.75rem;
+}
+
+.badge-pill { padding: 6px 14px; border-radius: 50px; font-weight: 600; font-size: 11px; display: inline-block; }
+.bg-active { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.bg-inactive { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+.pagination-container { 
+ display: flex; 
+ justify-content: center; 
+ padding: 15px; 
+ background: white; 
+ border-top: 1px solid #eee; 
+ gap: 8px; 
+}
+
+
+/* Remove Number Spinners from ID Input */
+input.no-spin::-webkit-outer-spin-button,
+input.no-spin::-webkit-inner-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number].no-spin {
+  appearance: textfield;
+}
+
+/* --- TOAST STYLES --- */
+.custom-toast-container {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.custom-toast {
+    background-color: var(--edu-navy);
+    color: white;
+    padding: 14px 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 330px;
+    border-left: 6px solid var(--edu-teal);
+    position: relative;
+    overflow: hidden;
+}
+
+.toast-icon {
+    background-color: white;
+    color: var(--edu-navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-body {
+    font-size: 15px;
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+.toast-close-x {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.toast-loader-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--edu-teal);
+    width: 100%;
+    animation: toast-timer 3s linear forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-timer {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* --- CONFIRMATION POPUP STYLES --- */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000; /* Higher than modal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.confirm-icon {
+    margin-bottom: 15px;
+}
+
+.confirm-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.animate-pop {
+    animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.btn-navy {
+    background-color: var(--edu-navy);
+}
+.btn-navy:hover {
+    background-color: var(--edu-navy-header);
+}
