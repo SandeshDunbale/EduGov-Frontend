@@ -2,14 +2,29 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Pages & Components
-import Home from './pages/home/Home';
+import Home from './pages/home/home';
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
 
-// Dummy Component to prove secure routing works
+// 1. Admin Pages
+import AdminPrograms from './pages/Univ_Admin/Programs/AdminPrograms';
+import AdminCourses from './pages/Univ_Admin/Courses/AdminCourses';
+import AdminEnrollments from './pages/Univ_Admin/Enrollments/AdminEnrollments';
+
+// 2. Faculty Page
+import FacultyAssignedCourses from "./pages/faculty/AssignedCourses/FacultyAssignedCourses";
+// 📍 ADDED: Faculty Dashboard Import
+import FacultyDashboard from './pages/faculty/Dashboard/FacultyDashboard';
+
+// 📍 3. Student Page - ADD THIS IMPORT
+import StudentPrograms from './pages/Student/Programs/StudentPrograms';
+// 📍 ADDED: Student Dashboard Import
+import StudentDashboard from './pages/Student/Dashboard/StudentDashboard';
+
 const PageContent = () => {
   const location = useLocation();
   return (
@@ -18,30 +33,21 @@ const PageContent = () => {
       <p style={{ padding: '15px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '6px', display: 'inline-block' }}>
         Current URL Path: <strong style={{ color: '#0284C7' }}>{location.pathname}</strong>
       </p>
-      <p style={{ color: '#666', marginTop: '10px' }}>
-        Your secure governance modules will render here after login.
-      </p>
     </div>
   );
 };
 
 const AppContent = () => {
   const location = useLocation();
-  
-  // 📍 Pull the dynamically logged-in user from AuthContext
   const { user } = useAuth();
 
-  // Define public pages where Sidebar is hidden
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
     <div className="App">
       <Navbar />
-      
       <div className="app-body">
-        
-        {/* 📍 Only render Sidebar if on a secure page AND the user is actually logged in */}
         {!isPublicPage && user && (
           <Sidebar role={user.role} user={user} />
         )}
@@ -49,13 +55,29 @@ const AppContent = () => {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* Catch-all route for dashboards */}
+
+            {/* UNIVERSITY ADMIN GOVERNANCE ROUTES */}
+            <Route path="/admin/programs/create" element={<AdminPrograms />} />
+            <Route path="/admin/courses/create" element={<AdminCourses />} />
+            <Route path="/admin/enrollments/approve" element={<AdminEnrollments />} />
+
+            {/* FACULTY WORKSPACE ROUTES */}
+            <Route path="/faculty/courses" element={<FacultyAssignedCourses />} />
+            {/* 📍 ADDED: Faculty Dashboard Route */}
+            <Route path="/dashboard/faculty" element={<FacultyDashboard />} />
+
+            {/* 📍 STUDENT WORKSPACE ROUTES */}
+            <Route path="/student/programs" element={<StudentPrograms />} />
+            {/* 📍 ADDED: Student Dashboard Route */}
+            <Route path="/dashboard/student" element={<StudentDashboard />} />
+            
             <Route path="/*" element={<PageContent />} />
           </Routes>
         </main>
-
       </div>
-      <Footer />
+      <div className="app-footer">
+         <Footer />
+      </div>
     </div>
   );
 };
@@ -68,5 +90,4 @@ function App() {
   );
 }
 
-// 📍 Notice NO ReactDOM.createRoot here. That belongs in index.js/main.jsx!
 export default App;
