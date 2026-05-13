@@ -61,7 +61,6 @@
     font-size: 0.95rem;
 }
 
-/* Formal Toggle Switch */
 .role-toggle-container {
     display: inline-flex;
     background-color: #f1f5f9;
@@ -117,6 +116,35 @@
     border-radius: 6px;
     font-size: 0.95rem;
     outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Password eye icon styling */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    padding-right: 45px;
+}
+
+.eye-icon-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.eye-icon-btn:hover {
+    color: #0f172a;
 }
 
 .input-invalid { border-color: #be123c !important; }
@@ -134,4 +162,20 @@
     letter-spacing: 1px;
     margin-top: 30px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-next:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.registration-success {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
