@@ -159,8 +159,9 @@ const ManagerDashboard = () => {
             <tbody>
               {filteredHistory.length > 0 ? (
                 filteredHistory.map((app) => (
-                  <tr key={app.applicationID}>
-                    <td>#{app.applicationID}</td>
+                 <tr key={app.applicationID || app.applicationId || app.id}>
+                    {/* 🟢 FIXED: Removed the '#' symbol and added ID fallbacks */}
+                    <td>{app.applicationID || app.applicationId || app.id || "N/A"}</td>
                     <td>{app.projectTitle || "Unknown Project"}</td>
                     <td>{app.submittedDate || "N/A"}</td> 
                     <td>₹{app.requestedAmount.toLocaleString()}</td>

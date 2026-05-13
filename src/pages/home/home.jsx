@@ -4,9 +4,9 @@ import React, { useRef, useState, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 
-import { Canvas, useFrame } from '@react-three/fiber';
+// import { Canvas, useFrame } from '@react-three/fiber';
 
-import { Environment, Float, PresentationControls, ContactShadows } from '@react-three/drei';
+// import { Environment, Float, PresentationControls, ContactShadows } from '@react-three/drei';
 
 import {
 
@@ -111,7 +111,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
         )}
 
 
-
+  {/*
         {/* 📖 OPEN BOOK */}
 
         {type === 'book' && (
@@ -211,7 +211,6 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
 };
 
 
-
 // --- Carousel Content Data ---
 
 const carouselSlides = [
@@ -292,7 +291,7 @@ const Home = () => {
 
      
 
-      {/* 1. THE 3D CANVAS */}
+      {/* 1. THE 3D CANVAS
 
       <div className="canvas-background">
 
@@ -342,7 +341,7 @@ const Home = () => {
 
         </Canvas>
 
-      </div>
+      </div> */}
 
 
 

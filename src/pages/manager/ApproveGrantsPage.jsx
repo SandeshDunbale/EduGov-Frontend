@@ -140,8 +140,8 @@ const ApproveGrantsPage = () => {
                 </thead>
                 <tbody className="border-top-0">
                   {pendingGrants.map((app) => (
-                    <tr key={app.applicationID}>
-                      <td className="ps-4 py-3 text-muted">#{app.applicationID}</td>
+                    <tr key={app.applicationID || app.applicationId || app.id}>
+                      <td className="ps-4 py-3 text-muted">{app.applicationID || app.applicationId || app.id || "N/A"}</td>
                       <td className="py-3 fw-semibold text-dark">
                         {app.faculty?.name || "Unknown Applicant"}
                       </td>

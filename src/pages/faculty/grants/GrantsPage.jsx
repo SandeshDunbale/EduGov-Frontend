@@ -179,7 +179,9 @@ const GrantsPage = () => {
                                         {/* 4. 👈 NEW: Map over currentApplications instead of filteredApplications */}
                                         {currentApplications.map((app) => (
                                             <tr key={app.applicationID}>
-                                                <td className="ps-4 py-3 text-muted">#{app.applicationID}</td>
+                                                <td className="ps-4 py-3 text-muted">
+    {app.applicationID || app.applicationId || app.id || "N/A"}
+</td>
                                                 <td className="py-3 fw-semibold text-dark">
                                                     {app.projectTitle || "Unknown Project"}
                                                 </td>
