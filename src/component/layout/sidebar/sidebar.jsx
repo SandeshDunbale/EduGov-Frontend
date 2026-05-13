@@ -25,7 +25,8 @@ const sidebarConfig = {
   ],
   UNIV_ADMIN: [
     { title: 'Dashboard', path: '/dashboard/admin', icon: LayoutDashboard },
-    { title: 'Users', path: '/admin/users/approve', icon: Users },
+    // 📍 Matching the App.jsx route exactly
+    { title: 'Users', path: '/admin/user-management', icon: Users }, 
     { title: 'Programs', path: '/admin/programs/create', icon: BookMarked },
     { title: 'Courses', path: '/admin/courses/create', icon: BookOpen },
     { title: 'Enrollments', path: '/admin/enrollments/approve', icon: CheckSquare },

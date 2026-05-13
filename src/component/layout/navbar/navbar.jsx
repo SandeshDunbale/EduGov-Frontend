@@ -50,7 +50,6 @@ const Navbar = () => {
       <div className="navbar-container-alt">
         
         {/* Brand Logo */}
-        {/* Brand Logo */}
         <div className="navbar-brand-alt">
           <Link to="/" className="logo-link">
             {/* Replace the SVG with your new image */}

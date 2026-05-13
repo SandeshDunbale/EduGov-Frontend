@@ -1,0 +1,106 @@
+/* ✅ REMOVE TABLE LINES */
+.table td, .table th {
+    border: none !important;
+}
+
+/* ✅ STATUS COLORS */
+.status-pill {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.status-pill.approved {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-pill.declined {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-pill.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ✅ PROCESSING */
+.processing-text {
+    display: flex;
+    align-items: center;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg);}
+}
+
+/* ✅ TABS */
+.tab-container {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #f3f4f6;
+    font-weight: 600;
+}
+
+.tab-btn.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* ✅ PROFILE GRID */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.detail-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 6px;
+    background: #f9f9f9;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: gray;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ✅ DOCUMENT UI */
+.doc-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #f8fafc;
+}
+
+.doc-status {
+    background: #e0f2fe;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { useAuth, AuthProvider } from './context/AuthContext';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Pages & Components
 import Home from './pages/home/Home';
@@ -11,6 +12,13 @@ import Contact from './pages/contact/Contact';
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
+
+// Module 2 Components
+import UserManagement from './component/Admin/UserManagement';
+import StudentProfile from './component/profile/StudentProfile';
+import FacultyProfile from './component/profile/FacultyProfile';
+import LoginPage from './component/common/login';
+import Register from './component/Registration/BasicDetails';
 
 // Dummy Component to prove secure routing works
 const PageContent = () => {
@@ -30,12 +38,14 @@ const PageContent = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  
+
+  const [currentRole, setCurrentRole] = useState('STUDENT');
+
   // 📍 Pull the dynamically logged-in user from AuthContext
   const { user } = useAuth();
 
-  // Define public pages where Sidebar is hidden
-  const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
+  // Define all public pages where the Sidebar should NOT appear
+  const publicRoutes = ['/', '/about', '/academic-programs', '/contact', '/login', '/register'];
   const isPublicPage = publicRoutes.includes(location.pathname);
 
   return (
@@ -53,10 +63,18 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             
-            {/* 📍 ADD THIS ROUTE */}
+            {/* Public Pages */}
             <Route path="/about" element={<About />} /> 
             <Route path="/academic-programs" element={<Committees />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Secure / Profile Pages */}
+            <Route path="/student/profile" element={<StudentProfile />} />
+            <Route path="/faculty/profile" element={<FacultyProfile />} />
+            <Route path="/admin/user-management" element={<UserManagement />} />
+            
             {/* Catch-all route for dashboards */}
             <Route path="/*" element={<PageContent />} />
           </Routes>

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext'; 
 import { useNavigate } from 'react-router-dom';
-import './admin-modal.css';
+import './admin-modal.css'; // Keeping your existing styling
 
-const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,8 +13,6 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  if (!isOpen) return null;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,43 +23,12 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
 
     if (result.success) {
       setIsLoading(false);
-      onClose(); // Close the modal
-
-      // 📍 ROUTING LOGIC BASED ON ROLE
-      // Make sure your backend role names match these exactly!
-      const userRole = result.user?.role; 
-
-      switch (userRole) {
-        case 'UNIV_ADMIN':
-        case 'ROLE_UNIV_ADMIN':
-          navigate('/dashboard/admin');
-          break;
-        case 'PROG_MANAGER':
-        case 'ROLE_PROG_MANAGER':
-          navigate('/dashboard/manager');
-          break;
-        case 'COMPLIANCE_OFFICER':
-        case 'ROLE_COMPLIANCE_OFFICER':
-          navigate('/dashboard/compliance');
-          break;
-        case 'GOVT_AUDITOR':
-        case 'ROLE_GOVT_AUDITOR':
-          navigate('/dashboard/auditor');
-          break;
-        case 'FACULTY':
-        case 'ROLE_FACULTY':
-          navigate('/dashboard/faculty');
-          break;
-        case 'STUDENT':
-        case 'ROLE_STUDENT':
-          navigate('/dashboard/student');
-          break;
-        default:
-          // Fallback if role is missing or unrecognized
-          navigate('/dashboard/default'); 
-          break;
+      // Logic to check role and navigate to the correct dashboard
+      if (result.role === 'STUDENT') {
+        navigate('/student/home/dashboard');
+      } else {
+        navigate('/faculty/home/cddashboard');
       }
-
     } else {
       setIsLoading(false);
       setError(result.message);
@@ -70,26 +36,25 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
   };
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
-      <div className="admin-modal-card" onClick={(e) => e.stopPropagation()}>
-        <button className="admin-modal-close" onClick={onClose}>✕</button>
-
+    <div className="admin-modal-overlay">
+      <div className="admin-modal-card">
+        {/* Header - Kept the same design */}
         <div className="admin-modal-header">
           <ShieldCheck className="admin-modal-icon" />
-          <h3>System Administration</h3>
-          <p>Secure gateway for university staff.</p>
+          <h3>EduGov Login</h3>
+          <p>Common portal for Student & Faculty access.</p>
           
           {error && <div className="modal-error-banner">{error}</div>}
         </div>
 
         <form onSubmit={handleLogin} className="admin-modal-form">
           <div className="modal-input-group">
-            <label>Administrator Email / ID</label>
+            <label>Official Email ID</label>
             <div className="modal-input-wrapper">
               <Mail className="input-icon" />
               <input 
                 type="email" 
-                placeholder="admin@edugov.edu" 
+                placeholder="name@edugov.edu" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
@@ -98,7 +63,7 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
           </div>
 
           <div className="modal-input-group">
-            <label>Secure Password</label>
+            <label>Password</label>
             <div className="modal-input-wrapper">
               <Lock className="input-icon" />
               <input 
@@ -119,9 +84,7 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
           </div>
 
           <div className="modal-actions">
-              <button type="button" onClick={onForgotClick} className="recovery-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>
-                  Forgot Credentials?
-              </button>
+            <a href="#forgot" className="recovery-link">Forgot Password?</a>
           </div>
 
           <button 
@@ -130,15 +93,33 @@ const AdminModal = ({ isOpen, onClose, onForgotClick }) => {
             disabled={isLoading}
           >
             {isLoading ? (
-              <>Authenticating... <Loader2 className="spinner-icon" /></>
+              <>Logging in... <Loader2 className="spinner-icon" /></>
             ) : (
-              <>Authenticate <ArrowRight className="submit-icon" /></>
+              <>Sign In <ArrowRight className="submit-icon" /></>
             )}
           </button>
+
+          {/* THE NEW LINK: Create Register */}
+          <div className="register-redirect-section" style={{ 
+            marginTop: '20px', 
+            textAlign: 'center', 
+            paddingTop: '15px', 
+            borderTop: '1px solid #eee' 
+          }}>
+            <p className="small text-muted mb-2">New to the platform?</p>
+            <button 
+              type="button" 
+              onClick={() => navigate('/register')} // This points to your BasicDetails route
+              className="btn btn-link p-0 text-decoration-none fw-bold"
+              style={{ color: '#0D1B2A', fontSize: '0.9rem' }}
+            >
+              <UserPlus size={16} className="me-1" /> Create Account / Register
+            </button>
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default AdminModal;
+export default LoginPage;

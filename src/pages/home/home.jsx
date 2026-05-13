@@ -115,7 +115,8 @@ const carouselSlides = [
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop",
+    // 📍 Image integrated from origin/module2_nidhi
+    image: "https://media.licdn.com/dms/image/v2/D4E12AQEdISWdLj7S_Q/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1660066499542?e=2147483647&v=beta&t=FeND2ZO_bn3_GC5KMXyicoe2QLEoz08oL0-weUDgKF4",
     title: "Data-Driven Intelligence",
     subtitle: "Real-time analytics dashboards for complete administrative and financial oversight."
   },

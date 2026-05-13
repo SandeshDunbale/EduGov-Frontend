@@ -24,12 +24,24 @@ export const AuthProvider = ({ children }) => {
             // 📍 IMPORTANT: The full path must be used here so the Gateway knows where to route it
             const response = await API.post('/api/auth/login', { email, password });
             
-            const { token, user } = response.data; // Spring Boot sends token and userDTO
+            // Extract token and userDTO (UserResponseDTO)
+            const { token, user } = response.data; 
 
             setToken(token);
             setUser(user);
+
+            // --- FIXED STORAGE LOGIC ---
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
+            
+            // 1. Save global userId for the Document Service
+            localStorage.setItem('userId', user.userId); 
+
+            // 2. Determine and save the correct Database ID for Profile Services
+            // Based on your DTO, if it's a student login, we use studentId. 
+            // If studentId isn't sent, we fallback to userId.
+            const profileId = user.studentId || user.userId;
+            localStorage.setItem('dbId', profileId);
 
             // 📍 Returns the user data back to the Modal so it knows exactly which dashboard to load
             return { success: true, user: user }; 
@@ -58,8 +70,8 @@ export const AuthProvider = ({ children }) => {
         } finally {
             // 2. Clear React state and LocalStorage
             // The 'finally' block ensures this ALWAYS runs, even if the backend API call fails.
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            // Using clear() to ensure the new userId and dbId are also wiped.
+            localStorage.clear();
             setToken(null);
             setUser(null);
         }
