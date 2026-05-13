@@ -1,41 +1,40 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
-
-// Context
-import { AuthProvider } from './context/AuthContext';
 
 // Layout Components
 import Navbar from './component/layout/navbar/navbar';
 import Sidebar from './component/layout/sidebar/sidebar';
 import Footer from './component/layout/footer/footer';
 
-// General Pages
-import Home from './pages/home/home';
+// Pages
+import Home from './pages/home/home.jsx';
 
-// Compliance Pages
-import ComplianceDashboard from './pages/compliance/dashboard';
-import SystemScan from './pages/compliance/scan';
-import ComplianceRecords from './pages/compliance/records';
-import ManualEntry from './pages/compliance/entry';
+// --- Compliance Officer Pages ---
+import ComplianceDashboard from './pages/compliance/ComplianceDashboard.jsx';
+import SystemScan from './pages/compliance/Systemscan.jsx'; // Check your folder if this is SystemScan.jsx
+import ComplianceRecords from './pages/compliance/ComplianceRecords.jsx';
+import ManualEntry from './pages/compliance/Manualentry.jsx'; // Check your folder if this is ManualEntry.jsx
+import ComplianceAuditPage from './pages/compliance/ComplianceAuditPage.jsx'; // ✅ Added for "Audit Management"
 
-// Auditor Pages
-import AuditorDashboard from './pages/auditor/dashboard';
-import PendingAudits from './pages/auditor/pending';
-import SubmitApprovals from './pages/auditor/approvals';
-import AuditList from './pages/auditor/AuditList'; // 👈 Added here
+// --- Government Auditor Pages ---
+import AuditorDashboard from './pages/auditor/AuditorDashboard.jsx';
+import PendingAudits from './pages/auditor/PendingAudits.jsx'; // ✅ Fixed Vite Import Error
+import SubmitApprovals from './pages/auditor/SubmitApprovals.jsx';
+import AuditorAuditList from './pages/auditor/AuditorAuditList.jsx'; // ✅ Fixed to use the Read-Only component
 
-// Dummy Component for testing
+// Placeholder for unmapped secure paths
 const PageContent = () => {
   const location = useLocation();
   return (
     <div style={{ marginTop: '20px', padding: '0 20px' }}>
-      <h2>Simulated Dashboard Area</h2>
+      <h2>Secure Governance Module</h2>
       <p style={{ padding: '15px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '6px', display: 'inline-block' }}>
-        Current URL Path: <strong style={{ color: '#0284C7' }}>{location.pathname}</strong>
+        Current Path: <strong style={{ color: '#0284C7' }}>{location.pathname}</strong>
       </p>
       <p style={{ color: '#666', marginTop: '10px' }}>
-        Your secure governance modules will render here after login.
+        Authorized content for your role is being rendered.
       </p>
     </div>
   );
@@ -43,31 +42,36 @@ const PageContent = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const [currentRole, setCurrentRole] = useState('STUDENT');
+  const { user } = useAuth();
+  
+  // Developer simulation role
+  const [simulatedRole, setSimulatedRole] = useState('STUDENT');
 
-  // Define all public pages where the Sidebar should NOT appear
+  // Define public pages where Sidebar/DevTools should NOT appear
   const publicRoutes = ['/', '/about', '/academic-programs', '/contact'];
   const isPublicPage = publicRoutes.includes(location.pathname);
+
+  // Use real user role if logged in, otherwise use simulated role
+  const activeRole = user ? user.role : simulatedRole;
 
   return (
     <div className="App">
       <Navbar />
       
-      <div className="app-body">
-        {/* Only render Sidebar on non-public pages */}
-        {!isPublicPage && <Sidebar role={currentRole} />}
+      <div className="app-body" style={{ display: 'flex' }}>
+        {/* Sidebar: Only visible on private/dashboard pages */}
+        {!isPublicPage && <Sidebar role={activeRole} user={user} />}
         
-        <main className="main-content">
-          {/* Developer Test Dropdown */}
-          {!isPublicPage && (
-            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '0 20px' }}>
+        <main className="main-content" style={{ flex: 1 }}>
+          {/* Developer Role Switcher: Only visible if NOT logged in and on private pages */}
+          {!isPublicPage && !user && (
+            <div style={{ padding: '15px', backgroundColor: '#F8FAFC', borderBottom: '2px solid #E2E8F0', marginBottom: '20px', borderRadius: '8px', margin: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontWeight: '600', color: '#1E293B' }}>Developer Test Mode:</span>
-                <label style={{ fontSize: '0.9rem', color: '#475569' }}>Simulate Role As:</label>
+                <span style={{ fontWeight: '600' }}>Dev Test Mode:</span>
                 <select 
-                  value={currentRole}
-                  onChange={(e) => setCurrentRole(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #CBD5E1', outline: 'none', cursor: 'pointer' }}
+                  value={simulatedRole}
+                  onChange={(e) => setSimulatedRole(e.target.value)}
+                  style={{ padding: '6px', borderRadius: '4px' }}
                 >
                   <option value="STUDENT">Student</option>
                   <option value="FACULTY">Faculty</option>
@@ -81,26 +85,28 @@ const AppContent = () => {
           )}
 
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             
-            {/* Compliance Officer Routes */}
+            {/* 👤 COMPLIANCE OFFICER Routes */}
             <Route path="/compliance/dashboard" element={<ComplianceDashboard />} />
             <Route path="/compliance/scan" element={<SystemScan />} />
             <Route path="/compliance/records" element={<ComplianceRecords />} />
             <Route path="/compliance/entry" element={<ManualEntry />} />
+            <Route path="/compliance/audit-management" element={<ComplianceAuditPage />} /> {/* ✅ New Menu Linked */}
             
-            {/* Government Auditor Routes */}
+            {/* 👤 GOVT AUDITOR Routes */}
             <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
             <Route path="/auditor/pending" element={<PendingAudits />} />
             <Route path="/auditor/approvals" element={<SubmitApprovals />} />
-            <Route path="/auditor/audits" element={<AuditList />} /> {/* 👈 Backend route */}
+            <Route path="/auditor/audits" element={<AuditorAuditList />} /> {/* ✅ Read-Only Linked */}
             
-            {/* Catch-all */}
-            <Route path="/*" element={<PageContent />} />
+            {/* Fallback for other internal paths */}
+            {!isPublicPage && <Route path="/*" element={<PageContent />} />}
           </Routes>
         </main>
       </div>
-      
+
       <Footer />
     </div>
   );

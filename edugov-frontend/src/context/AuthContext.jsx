@@ -1,58 +1,48 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+﻿import React, { createContext, useState, useContext, useEffect } from 'react';
+import API from '../api/axios';
 
 const AuthContext = createContext();
-
-// Frontend-only authentication: no backend calls.
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token') || null);
 
-    // If a token exists on refresh, you could potentially fetch user profile here
+    // ✅ Load user from localStorage
     useEffect(() => {
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
-            setUser(JSON.parse(savedUser));
-        } else {
-            // For development/testing: auto-login with mock credentials
-            const mockToken = 'dev-token-12345';
-            const mockUser = {
-                id: 1,
-                email: 'compliance@edugov.edu',
-                role: 'COMPLIANCE_OFFICER',
-                name: 'Compliance Officer'
-            };
-
-            setToken(mockToken);
-            setUser(mockUser);
-            localStorage.setItem('token', mockToken);
-            localStorage.setItem('user', JSON.stringify(mockUser));
+            try {
+                setUser(JSON.parse(savedUser));
+            } catch (e) {
+                console.error("Failed to parse user data");
+            }
         }
     }, []);
 
+    // ✅ Login
     const login = async (email, password) => {
-        const safeEmail = (email || '').trim();
-        if (!safeEmail || !password) {
-            return { success: false, message: 'Invalid credentials' };
+        try {
+            const response = await API.post('/api/auth/login', { email, password });
+
+            const { token, user } = response.data;
+
+            setToken(token);
+            setUser(user);
+
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+
+            return { success: true, user };
+
+        } catch (error) {
+            return {
+                success: false,
+                message: error.response?.data?.message || "Login Failed"
+            };
         }
-
-        const mockToken = 'frontend-only-token';
-        const mockUser = {
-            id: 1,
-            email: safeEmail,
-            role: 'COMPLIANCE_OFFICER',
-            name: 'Compliance Officer'
-        };
-
-        setToken(mockToken);
-        setUser(mockUser);
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-
-        return { success: true };
     };
 
-
+    // ✅ Logout
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -67,4 +57,5 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+// ✅ Hook
 export const useAuth = () => useContext(AuthContext);
