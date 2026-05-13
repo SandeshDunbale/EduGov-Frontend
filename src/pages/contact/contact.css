@@ -1,0 +1,252 @@
+/* src/pages/contact/contact.css */
+
+.contact-page {
+  padding: 4rem 2rem;
+  min-height: 100vh;
+  background-color: #0F172A;
+  background-image: 
+    radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.1), transparent 40%),
+    radial-gradient(circle at top left, rgba(2, 132, 199, 0.05), transparent 40%);
+  color: #F8FAFC;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Header Section */
+.contact-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 4rem auto;
+}
+
+.contact-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr; /* Form takes up slightly more space */
+  gap: 3rem;
+  align-items: start;
+}
+
+/* --- Left Side: Info Cards --- */
+.contact-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-glass-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.info-glass-card:hover {
+  transform: translateX(10px);
+  border-color: rgba(2, 132, 199, 0.4);
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.info-icon {
+  background: rgba(2, 132, 199, 0.15);
+  color: #38BDF8;
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-text h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #FFFFFF;
+}
+
+.info-text p {
+  color: #94A3B8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.info-text strong {
+  color: #CBD5E1;
+}
+
+/* --- Right Side: Form Card --- */
+.form-glass-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2.5rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.form-header-icon {
+  color: #38BDF8;
+}
+
+.form-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Form Inputs */
+.edugov-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-row {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.input-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  color: #F8FAFC;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.input-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.input-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%22%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  background-size: 0.65rem auto;
+}
+
+.input-group select option {
+  background-color: #1E293B;
+  color: #F8FAFC;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  border-color: #0284C7;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+/* Submit Button */
+.submit-btn {
+  background: #0284C7;
+  color: #FFFFFF;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #0369A1;
+  transform: translateY(-2px);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  background: #475569;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.spinner-icon {
+  animation: spin 1s linear infinite;
+}
+
+/* Success State */
+.success-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.success-icon {
+  color: #10B981;
+  margin-bottom: 1.5rem;
+}
+
+.success-state h3 {
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+
+.success-state p {
+  color: #94A3B8;
+  line-height: 1.6;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .contact-content {
+    grid-template-columns: 1fr; /* Stacks the info cards on top of the form on smaller screens */
+  }
+  
+  .input-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}

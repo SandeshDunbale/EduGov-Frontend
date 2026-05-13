@@ -1,0 +1,236 @@
+/* src/pages/about/about.css */
+
+/* src/pages/about/about.css */
+
+.about-page-container {
+  padding: 4rem 2rem;
+  min-height: 100vh; /* Ensures the dark background covers the whole screen */
+  
+  /* 📍 THIS IS THE FIX: A rich, dark gradient background */
+  background-color: #0F172A; 
+  background-image: 
+    radial-gradient(circle at top right, rgba(2, 132, 199, 0.15), transparent 40%),
+    radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.05), transparent 40%);
+  
+  color: #F8FAFC;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 📍 Constrain the width of the inner sections so it stays centered */
+/* 📍 Centers all the text and badges in the top Hero section */
+.about-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5rem;
+  padding-top: 2rem;
+}
+
+.hero-badge-alt {
+  display: inline-block;
+  background: rgba(2, 132, 199, 0.2);
+  color: #38BDF8;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+}
+
+.about-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: #FFFFFF;
+}
+
+.text-highlight {
+  color: #0284C7; /* Brand Blue */
+}
+
+.about-subtitle {
+  font-size: 1.2rem;
+  color: #94A3B8;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --- SHARED SECTION STYLES --- */
+.about-section {
+  margin-bottom: 6rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #FFFFFF;
+}
+
+.section-header p {
+  color: #94A3B8;
+  font-size: 1.1rem;
+}
+
+/* --- CORE PILLARS GRID --- */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(2, 132, 199, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon-wrapper {
+  background: rgba(2, 132, 199, 0.15);
+  color: #38BDF8;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.glass-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #F8FAFC;
+}
+
+.glass-card p {
+  color: #94A3B8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* --- ECOSYSTEM SECTION --- */
+.ecosystem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.eco-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
+}
+
+.eco-row:hover {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.eco-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #FFFFFF;
+}
+
+.student-icon { background: #10B981; } /* Emerald */
+.faculty-icon { background: #8B5CF6; } /* Light Blue */
+.admin-icon { background: #F59E0B; } /* Amber */
+.auditor-icon { background: #EF4444; } /* Red */
+
+.eco-content h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #F8FAFC;
+}
+
+.eco-content p {
+  color: #94A3B8;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* --- TECH STACK SECTION --- */
+.tech-glass-panel {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.1), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  border-radius: 20px;
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.tech-icon {
+  color: #38BDF8;
+  flex-shrink: 0;
+}
+
+.tech-text h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #FFFFFF;
+}
+
+.tech-text p {
+  color: #CBD5E1;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+.tech-text strong {
+  color: #38BDF8;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2.5rem;
+  }
+  
+  .tech-glass-panel {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .ecosystem-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

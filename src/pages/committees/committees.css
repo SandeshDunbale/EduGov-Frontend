@@ -1,0 +1,177 @@
+/* src/pages/committees/committees.css */
+
+.committees-page {
+  padding: 4rem 2rem;
+  min-height: 100vh;
+  background-color: #0F172A; /* Deep Navy to match the About page */
+  background-image: 
+    radial-gradient(circle at top center, rgba(2, 132, 199, 0.1), transparent 50%);
+  color: #F8FAFC;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Header Section */
+.committees-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 5rem auto;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(2, 132, 199, 0.2);
+  color: #38BDF8;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #FFFFFF;
+}
+
+.highlight {
+  color: #0284C7;
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: #94A3B8;
+  line-height: 1.6;
+}
+
+/* Grid Layout */
+.committees-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+}
+
+/* Glass Card Styling */
+.committee-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.committee-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(2, 132, 199, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon Header Block */
+.card-icon-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Dynamic Colors for Icons */
+.card-icon-header.emerald { background: rgba(16, 185, 129, 0.1); color: #34D399; }
+.card-icon-header.violet { background: rgba(139, 92, 246, 0.1); color: #A78BFA; }
+.card-icon-header.amber { background: rgba(245, 158, 11, 0.1); color: #FBBF24; }
+.card-icon-header.blue { background: rgba(59, 130, 246, 0.1); color: #60A5FA; }
+.card-icon-header.rose { background: rgba(244, 63, 94, 0.1); color: #FB7185; }
+
+/* Card Body */
+.card-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-body h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #FFFFFF;
+}
+
+.desc {
+  color: #94A3B8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+/* Meta Information (Chair & Schedule) */
+.committee-meta {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.meta-item:last-child {
+  margin-bottom: 0;
+}
+
+.meta-label {
+  color: #64748B;
+  font-weight: 600;
+}
+
+.meta-value {
+  color: #E2E8F0;
+  font-weight: 500;
+}
+
+/* Action Button */
+.view-details-btn {
+  width: 100%;
+  background: transparent;
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: #38BDF8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 2.5rem; }
+  .committees-page { padding: 2rem 1rem; }
+}
