@@ -1,32 +1,87 @@
 // @ts-nocheck
-import axios from '../api/axios';
-
-const GRANT_API_URL = "http://localhost:8002/api/grants"; 
+import api from '../api/axios'; // Uses the globally configured Axios instance
 
 export const GrantAPI = {
-    // This name MUST match exactly what the Dashboard calls 
-    getGrantHistory: (facultyId) => {
-        return axios.get(`${GRANT_API_URL}/history/${facultyId}`);
+    
+    // GET: Fetch the entire grant application history for a faculty member
+    getGrantHistory: async (facultyId) => {
+        try {
+            const response = await api.get(`/api/grants/history/${facultyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching grant history for faculty ${facultyId}:`, error);
+            throw error;
+        }
     },
 
-    // Maps to controller source [cite: 503, 508, 510, 515, 518]
-    applyForGrant: (projectId, facultyId, applicationData) => {
-        return axios.post(`${GRANT_API_URL}/apply/${projectId}`, applicationData, {
-            params: { facultyId }
-        });
+    // POST: Apply for a grant for a specific project
+    // Maps to controller source
+    applyForGrant: async (projectId, facultyId, applicationData) => {
+        try {
+            const response = await api.post(`/api/grants/apply/${projectId}`, applicationData, {
+                params: { facultyId }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error applying for grant for project ${projectId}:`, error);
+            throw error;
+        }
     },
-    getPendingApplications: () => {
-        return axios.get(`${GRANT_API_URL}/pending`);
+
+    // GET: Fetch all pending grant applications for the Program Manager
+    getPendingApplications: async () => {
+        try {
+            const response = await api.get('/api/grants/pending');
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching pending grants:", error);
+            throw error;
+        }
     },
-    submitDecision: (applicationId, userId, decision) => {
-        return axios.post(`${GRANT_API_URL}/decision/${applicationId}`, null, {
-            params: { userId, decision }
-        });
+
+    // POST: Submit the manager's decision (APPROVED or REJECTED)
+    submitDecision: async (applicationId, userId, decision) => {
+        try {
+            const response = await api.post(`/api/grants/decision/${applicationId}`, null, {
+                params: { userId, decision }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error processing decision for application ${applicationId}:`, error);
+            throw error;
+        }
     },
-    getGrantDetailsByProject: (projectId) => {
-        return axios.get(`${GRANT_API_URL}/project/${projectId}`);
+
+    // GET: Fetch details by project (Retained from local branch)
+    getGrantDetailsByProject: async (projectId) => {
+        try {
+            const response = await api.get(`/api/grants/project/${projectId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching grant details for project ${projectId}:`, error);
+            throw error;
+        }
     },
-    getAllGrants: () => {
-        return axios.get(`${GRANT_API_URL}/all`);
+
+    // GET: Fetch all grants (Retained from local branch)
+    getAllGrants: async () => {
+        try {
+            const response = await api.get('/api/grants/all');
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all grants:", error);
+            throw error;
+        }
+    },
+
+    // ---> NEW: Fetch decision history specifically for the Program Manager Dashboard
+    getManagerDecisionHistory: async (managerId) => {
+        try {
+            const response = await api.get(`/api/grants/history/manager/${managerId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching manager history for ${managerId}:`, error);
+            throw error;
+        }
     }
 };

@@ -1,0 +1,75 @@
+/* src/pages/faculty/ProjectDetailsPage.css */
+
+.details-container {
+  max-width: 1000px;
+}
+
+.btn-back {
+  color: #6c757d; /* Bootstrap text-muted */
+  transition: color 0.2s ease-in-out;
+}
+
+.btn-back:hover {
+  color: #1e3a5f; /* EduGov Navy */
+}
+
+.text-navy {
+  color: #1e3a5f;
+}
+
+.code-highlight {
+  background-color: #f8f9fa;
+  color: #d63384; /* Pinkish color for code */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.info-grid-box {
+  background-color: #f8f9fa; /* Light gray */
+  border: 2px dashed #dee2e6; /* Dashed border */
+  border-radius: 0.5rem;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+
+/* --- Modal & Input Fixes --- */
+
+.modal-content {
+  border-radius: 15px !important;
+  border: none !important;
+}
+
+.custom-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  width: 100%; /* Ensures it fills the modal width */
+}
+
+.custom-input-wrapper:focus-within {
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 95, 0.25);
+}
+
+.currency-label {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  border-right: 1px solid #ced4da;
+  color: #495057;
+  font-weight: 600;
+}
+
+.amount-input-field {
+  border: none !important;
+  padding: 12px !important;
+  flex: 1; /* This forces the input to take up all available horizontal space */
+  outline: none;
+  font-size: 1rem;
+}

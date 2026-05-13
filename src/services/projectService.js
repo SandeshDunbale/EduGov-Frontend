@@ -1,22 +1,50 @@
 // @ts-nocheck
-import axios from '../api/axios';
-
-const PROJECT_API_URL = "http://localhost:8002/api/projects"; 
+import api from '../api/axios'; // Uses the globally configured Axios instance
 
 export const ProjectAPI = {
+    // GET: Fetch all projects for a specific faculty member
     // This name MUST match exactly what the Dashboard calls 
-    getProjectsByFaculty: (facultyId) => {
-        return axios.get(`${PROJECT_API_URL}/faculty/${facultyId}`);
+    getProjectsByFaculty: async (facultyId) => {
+        try {
+            const response = await api.get(`/api/projects/faculty/${facultyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching projects for faculty ${facultyId}:`, error);
+            throw error;
+        }
     },
 
-    // Maps to controller source [cite: 449, 453, 455]
-    createProject: (facultyId, projectData) => {
-        return axios.post(`${PROJECT_API_URL}/${facultyId}`, projectData);
+    // POST: Create a new project
+    // Maps to controller source
+    createProject: async (facultyId, projectData) => {
+        try {
+            const response = await api.post(`/api/projects/${facultyId}`, projectData);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating project:", error);
+            throw error; 
+        }
     },
-    getProjectById: (projectId) => {
-        return axios.get(`${PROJECT_API_URL}/${projectId}`);
+
+    // GET: Fetch a single project by its ID
+    getProjectById: async (projectId) => {
+        try {
+            const response = await api.get(`/api/projects/${projectId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching project ${projectId}:`, error);
+            throw error;
+        }
     },
-    updateProject: (projectId, projectDetails) => {
-        return axios.put(`${PROJECT_API_URL}/${projectId}`, projectDetails);
+
+    // PUT: Update an existing project
+    updateProject: async (projectId, projectDetails) => {
+        try {
+            const response = await api.put(`/api/projects/${projectId}`, projectDetails);
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating project ${projectId}:`, error);
+            throw error;
+        }
     }
 };

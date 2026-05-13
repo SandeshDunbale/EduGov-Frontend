@@ -15,7 +15,7 @@
 /* The main content area expands to fill the remaining space next to the sidebar */
 .main-content {
   flex: 1; 
-  padding: 2rem;
+  padding: 0; /* CHANGED: Set to 0 to remove the white border on the Home page */
   background-color: whitesmoke; /* Warm Beige / Off-White background for contrast */
 }
 
