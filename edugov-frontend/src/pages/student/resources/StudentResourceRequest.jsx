@@ -425,14 +425,14 @@ function StudentResourceRequest() {
                     <div className="pagination-controls mt-4">
                         <div className="d-flex justify-content-center align-items-center gap-2 flex-wrap">
 
-                            {/* First Button */}
+                            {/* First Button
                             <button
                                 className="btn btn-outline-secondary btn-sm"
                                 disabled={currentPage === 1}
                                 onClick={() => setCurrentPage(1)}
                             >
                                 First
-                            </button>
+                            </button> */}
 
                             {/* Previous Button */}
                             <button
@@ -458,11 +458,13 @@ function StudentResourceRequest() {
                                             onClick={() => setCurrentPage(page)}
                                         >
                                             {page}
+                                            
                                         </button>
                                     )
                                 ))}
+                                <hr/>
                             </div>
-
+                            <hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/><hr/>
                             {/* Next Button */}
                             <button
                                 className="btn btn-outline-secondary btn-sm"
@@ -472,14 +474,14 @@ function StudentResourceRequest() {
                                 Next
                             </button>
 
-                            {/* Last Button */}
+                            {/* Last Button
                             <button
                                 className="btn btn-outline-secondary btn-sm"
                                 disabled={currentPage >= totalPages}
                                 onClick={() => setCurrentPage(totalPages)}
                             >
                                 Last
-                            </button>
+                            </button> */}
 
                         </div>
                     </div>

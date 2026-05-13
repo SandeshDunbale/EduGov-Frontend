@@ -33,8 +33,17 @@ const ManageResources = () => {
   });
 
   const loadResources = async () => {
+    
+  try {
     const res = await getAllResources();
-    setResources(res.data);
+    setResources(Array.isArray(res.data) ? res.data : []);
+  } catch (err) {
+    console.error("Resource fetch failed:", err);
+    setResources([]);
+    setErrorModal("Failed to load resources.");
+  }
+
+
   };
 
   useEffect(() => {
@@ -105,7 +114,16 @@ const ManageResources = () => {
   useEffect(() => {
     fetch("http://localhost:8002/api/resources/programs")
       .then(res => res.json())
-      .then(data => setPrograms(data))
+      
+.then(data => {
+  if (Array.isArray(data)) {
+    setPrograms(data);
+  } else {
+    console.error("Invalid programs data:", data);
+    setPrograms([]);
+  }
+})
+
       .catch(() => setPrograms([]));
 
   }, []);
@@ -155,6 +173,7 @@ const ManageResources = () => {
       setTimeout(() => setErrorModal(""), 3000);
     }
   };
+
 
   const filtered = resources.filter(r =>
     r.resourceId.toString().includes(search)
@@ -241,7 +260,8 @@ const ManageResources = () => {
           >
             <option value="">Select Program</option>
 
-            {programs.map(p => (
+            {Array.isArray(programs) && programs.map(p => (
+
               <option key={p.programId} value={p.programId}>
                 {p.title}
               </option>
