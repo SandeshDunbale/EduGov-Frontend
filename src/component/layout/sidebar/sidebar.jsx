@@ -13,6 +13,7 @@ const sidebarConfig = {
     { title: 'Profile', path: '/student/profile', icon: User },
     { title: 'Programs', path: '/student/programs', icon: BookOpen },
     { title: 'Resources', path: '/student/resources', icon: Library },
+    { title: 'Request Resource', path: '/student/request', icon: FileText },
     { title: 'Analytics', path: '/student/analytics', icon: BarChart },
   ],
   FACULTY: [
@@ -22,6 +23,7 @@ const sidebarConfig = {
     { title: 'Projects', path: '/faculty/projects', icon: FolderGit2 },
     { title: 'Grants', path: '/faculty/grants', icon: Coins },
     { title: 'Infrastructures', path: '/faculty/infrastructure', icon: Building2 },
+    { title: 'Request Infrastructure', path: '/faculty/request', icon: FileText },
   ],
   UNIV_ADMIN: [
     { title: 'Dashboard', path: '/dashboard/admin', icon: LayoutDashboard },

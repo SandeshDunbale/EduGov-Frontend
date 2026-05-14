@@ -1,0 +1,184 @@
+.container-fluid {
+  margin-top: 0 !important;
+}
+/* ================= ROW NUMBER STYLING ================= */
+.row-number {
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  width: 50px;
+}
+
+/* ================= STATUS BADGE ================= */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.status-badge.submitted {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-badge.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.declined {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ================= MODERN PAGINATION ================= */
+.pagination-controls {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.btn-group {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.btn {
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* PRIMARY BUTTON (Active Page) */
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  box-shadow: 0 8px 16px rgba(2, 132, 199, 0.2);
+}
+
+/* OUTLINE SECONDARY (Inactive Pages) */
+.btn-outline-secondary {
+  background-color: transparent !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #64748b !important;
+}
+
+.btn-outline-secondary:hover:not(:disabled) {
+  background-color: #f1f5f9 !important;
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+}
+
+/* ELLIPSIS BUTTON */
+.btn-ellipsis {
+  background-color: transparent !important;
+  border: none !important;
+  color: #94a3b8 !important;
+  cursor: default !important;
+  padding: 6px 4px;
+  min-width: auto;
+  font-weight: 500;
+}
+
+.btn-ellipsis:hover {
+  transform: none !important;
+}
+
+/* DISABLED STATE */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  min-width: auto;
+}
+
+/* FLEXBOX UTILITIES */
+.gap-2 {
+  gap: 8px !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .pagination-controls {
+    padding: 12px;
+  }
+
+  .pagination-controls .d-flex {
+    gap: 4px !important;
+  }
+
+  .btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .btn-group {
+    gap: 1px;
+    flex-wrap: wrap;
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pagination-controls {
+    padding: 10px;
+  }
+
+  .btn {
+    padding: 5px 6px;
+    font-size: 10px;
+    min-width: 28px;
+  }
+
+  .btn-sm {
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+
+  .pagination-controls .d-flex {
+    gap: 3px !important;
+  }
+
+  .btn-group {
+    gap: 1px;
+  }
+
+  .status-badge {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+}
