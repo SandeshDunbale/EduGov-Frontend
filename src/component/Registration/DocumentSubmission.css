@@ -132,6 +132,20 @@
     opacity: 0.9;
 }
 
+/* Toaster Customization for Blue Theme */
+.custom-toast {
+    background: #0D1B2A !important; /* Matches sidebar navy */
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ensure the success/error icons match a clean blue style */
+.custom-toast svg {
+    color: #38bdf8 !important; /* Sky blue icons */
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 992px) {
     .doc-page-wrapper {

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, RefreshCcw, ChevronLeft, ChevronRight, BookOpen, GraduationCap, User, Mail, AlertTriangle } from 'lucide-react';
 import { CourseAPI } from '../../../services/courseService';
-import { jwtDecode } from 'jwt-decode'; // Required for automatic token extraction
+import { ProgramAPI } from '../../../services/programService'; 
+import { FacultyAPI } from '../../../services/facultyService'; 
+import { jwtDecode } from 'jwt-decode';
 import './AdminCourses.css';
 
 const AdminCourses = () => {
@@ -25,6 +27,10 @@ const AdminCourses = () => {
     const [statusMsg, setStatusMsg] = useState('');
     const [valErrors, setValErrors] = useState({});
 
+    // --- DROPDOWN DATA STATE ---
+    const [programsList, setProgramsList] = useState([]);
+    const [facultyList, setFacultyList] = useState([]);
+
     const [page, setPage] = useState(1);
     const perPage = 5;
 
@@ -32,17 +38,14 @@ const AdminCourses = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
-
-    // --- NEW: CONFIRMATION POPUP STATE ---
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
     const [formData, setFormData] = useState({
         title: '', description: '', facultyId: '',
         program: { programId: '' }, status: 'ACTIVE',
-        createdByAdminId: null // Initialized as null, set dynamically on save/open
+        createdByAdminId: null 
     });
 
-    // --- NOTIFICATION STATE ---
     const [toast, setToast] = useState({ show: false, message: '' });
 
     const showNotification = (msg) => {
@@ -50,9 +53,25 @@ const AdminCourses = () => {
         setTimeout(() => setToast({ show: false, message: '' }), 3000);
     };
 
-    /** * LOAD ALL: Synchronized with CourseServiceImpl.getAllCourses()
-     * Captures "No courses found in the database." message directly from backend.
-     */
+    // --- FETCH DROPDOWN DATA ON MOUNT ---
+    useEffect(() => {
+        const fetchDropdownData = async () => {
+            try {
+                // Fetch Programs
+                const pRes = await ProgramAPI.getAll();
+                setProgramsList(pRes.data || []);
+
+                // --- UPDATED: Fetch APPROVED Faculty through FacultyAPI ---
+                const fRes = await FacultyAPI.getByStatus('APPROVE');
+                setFacultyList(fRes.data || []);
+            } catch (err) {
+                console.error("Error loading dropdown data", err);
+            }
+        };
+        fetchDropdownData();
+        loadAll();
+    }, []);
+
     const loadAll = async () => {
         setLoading(true);
         setStatusMsg('');
@@ -68,12 +87,6 @@ const AdminCourses = () => {
         } finally { setLoading(false); }
     };
 
-    useEffect(() => { loadAll(); }, []);
-
-    /**
-     * SEARCH BY ID: Synchronized with CourseServiceImpl.getCourseById(Long courseId)
-     * Replaces the entire list to ensure data integrity.
-     */
     const doIdSearch = async (val) => {
         if (!val) { loadAll(); return; }
         setLoading(true);
@@ -89,10 +102,6 @@ const AdminCourses = () => {
         } finally { setLoading(false); }
     };
 
-    /**
-     * SEARCH BY PROGRAM: Synchronized with CourseServiceImpl.getCoursesByProgramId(Long programId)
-     * Maps the List<CourseDTO> response directly to state.
-     */
     const doProgramSearch = async (val) => {
         if (!val) { loadAll(); return; }
         setLoading(true);
@@ -115,10 +124,6 @@ const AdminCourses = () => {
         }
     };
 
-    /**
-     * ON SAVE: Synchronized with createCourse and updateCourse logic.
-     * Handles specific APIExceptions like "Program is INACTIVE" or "Course title already exists".
-     */
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (isEdit) {
@@ -131,8 +136,6 @@ const AdminCourses = () => {
     const executeSave = async () => {
         setValErrors({});
         setShowConfirmPopup(false);
-        
-        // --- DYNAMIC ID ASSIGNMENT RIGHT BEFORE API CALL ---
         const activeAdminId = getAdminIdFromToken();
         const payload = {
             ...formData,
@@ -148,7 +151,7 @@ const AdminCourses = () => {
                 await CourseAPI.save(payload);
                 showNotification(`Course "${formData.title}" created successfully!`);
             }
-            setShowModal(false); // Modal automatically closes
+            setShowModal(false); 
             loadAll();
         } catch (err) {
             const backendData = err.response?.data;
@@ -157,7 +160,6 @@ const AdminCourses = () => {
                 backendData.details.split(', ').forEach(errStr => {
                     const parts = errStr.split(': ');
                     if (parts.length > 1) {
-                        // --- FIX: Storing only the message (parts[1]), not the key (parts[0]) ---
                         errorMap[parts[0].trim()] = parts[1].trim(); 
                     } else {
                         errorMap.global = errStr;
@@ -183,32 +185,27 @@ const AdminCourses = () => {
 
     return (
         <div className="admin-container container-fluid">
-            
-            {/* --- NOTIFICATION TOAST --- */}
+            {/* NOTIFICATION TOAST */}
             {toast.show && (
                 <div className="custom-toast-container">
                     <div className="custom-toast shadow-lg">
                         <div className="toast-icon">
                             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="3" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
-                        <div className="toast-body">
-                            {toast.message}
-                        </div>
+                        <div className="toast-body">{toast.message}</div>
                         <button className="toast-close-x" onClick={() => setToast({ show: false, message: '' })}>×</button>
                         <div className="toast-loader-bar"></div>
                     </div>
                 </div>
             )}
 
-            {/* --- MIDDLE SCREEN PERMISSION POPUP --- */}
+            {/* CONFIRMATION POPUP */}
             {showConfirmPopup && (
                 <div className="confirm-overlay">
                     <div className="confirm-card shadow-lg animate-pop">
-                        <div className="confirm-icon">
-                            <AlertTriangle size={40} color="#f59e0b" />
-                        </div>
+                        <div className="confirm-icon"><AlertTriangle size={40} color="#f59e0b" /></div>
                         <h4 className="fw-bold text-navy">Confirm Update</h4>
-                        <p className="text-muted">Are you sure ! You want to update this course's details?</p>
+                        <p className="text-muted">Are you sure! You want to update this course's details?</p>
                         <div className="confirm-actions">
                             <button className="btn btn-light px-4" onClick={() => setShowConfirmPopup(false)}>Cancel</button>
                             <button className="btn btn-navy px-4 text-white" onClick={executeSave}>Yes, Update</button>
@@ -234,6 +231,7 @@ const AdminCourses = () => {
                 </div>
             </div>
 
+            {/* SEARCH FILTERS */}
             <div className="card border-0 shadow-sm p-3 mb-4">
                 <div className="row g-3 align-items-end">
                     <div className="col-lg-4 col-md-6">
@@ -261,6 +259,7 @@ const AdminCourses = () => {
                 </div>
             </div>
 
+            {/* TABLE */}
             <div className="table-card overflow-hidden shadow-sm">
                 <div className="table-responsive">
                     <table className="table table-hover align-middle mb-0">
@@ -363,7 +362,7 @@ const AdminCourses = () => {
                 </div>
             )}
 
-            {/* FORM MODAL */}
+            {/* FORM MODAL WITH DROPDOWNS */}
             {showModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
                     <div className="modal-dialog modal-dialog-centered">
@@ -385,16 +384,33 @@ const AdminCourses = () => {
 
                                     <div className="row g-3 mb-3">
                                         <div className="col-6">
-                                            <label className="form-label small fw-bold text-muted uppercase">Program ID</label>
-                                            <input type="number" className="form-control no-spin"
-                                                disabled={isEdit} placeholder="PID..."
-                                                value={formData.program.programId} onChange={(e) => setFormData({ ...formData, program: { programId: e.target.value } })} />
+                                            <label className="form-label small fw-bold text-muted uppercase">Select Program</label>
+                                            <select 
+                                                className="form-select"
+                                                disabled={isEdit}
+                                                value={formData.program.programId}
+                                                onChange={(e) => setFormData({ ...formData, program: { programId: e.target.value } })}
+                                                required
+                                            >
+                                                <option value="">-- Choose Program --</option>
+                                                {programsList.map(p => (
+                                                    <option key={p.programId} value={p.programId}>{p.title}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <div className="col-6">
-                                            <label className="form-label small fw-bold text-muted uppercase">Faculty ID</label>
-                                            <input type="number" className="form-control no-spin"
-                                                placeholder="FID..."
-                                                value={formData.facultyId} onChange={(e) => setFormData({ ...formData, facultyId: e.target.value })} />
+                                            <label className="form-label small fw-bold text-muted uppercase">Select Faculty</label>
+                                            <select 
+                                                className="form-select"
+                                                value={formData.facultyId}
+                                                onChange={(e) => setFormData({ ...formData, facultyId: e.target.value })}
+                                                required
+                                            >
+                                                <option value="">-- Choose Faculty --</option>
+                                                {facultyList.map(f => (
+                                                    <option key={f.facultyId} value={f.facultyId}>{f.name}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
 

@@ -2,52 +2,74 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Eye, Loader2 } from 'lucide-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './UserManagement.css';
 
 const UserManagement = () => {
-
     const [allRecords, setAllRecords] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [userDocs, setUserDocs] = useState([]);
     const [activeTab, setActiveTab] = useState('basic');
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState(null);
+    
+    const [showModal, setShowModal] = useState(false);
 
-    const token = localStorage.getItem('token');
-
-    const fetchRecords = useCallback(async () => {
-        try {
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            const [studentRes, facultyRes] = await Promise.all([
-                axios.get('http://localhost:8002/students/all', config),
-                axios.get('http://localhost:8002/faculty/all', config)
-            ]);
-
-            const students = studentRes.data.map(u => ({
-                ...u, role: 'STUDENT', dbId: u.studentId
-            }));
-
-            const faculty = facultyRes.data.map(u => ({
-                ...u, role: 'FACULTY', dbId: u.facultyId
-            }));
-
-            setAllRecords([...students, ...faculty]);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    }, [token]);
+    const extractData = (res) => {
+        if (!res || !res.data) return [];
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.data.content)) return res.data.content;
+        return [];
+    };
 
     useEffect(() => {
-        fetchRecords();
-    }, [fetchRecords]);
+        let isMounted = true; 
+
+        const loadData = async () => {
+            const token = localStorage.getItem('token'); 
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+
+            try {
+                const [studentRes, facultyRes] = await Promise.all([
+                    axios.get('http://localhost:8002/students/all', config),
+                    axios.get('http://localhost:8002/faculty/all', config)
+                ]);
+
+                if (!isMounted) return; 
+
+                const safeStudents = extractData(studentRes);
+                const safeFaculty = extractData(facultyRes);
+
+                const students = safeStudents.map(u => ({
+                    ...u, 
+                    role: 'STUDENT', 
+                    dbId: u.studentId || u.id || u.userId || Math.random().toString(36).substr(2, 9)
+                }));
+
+                const faculty = safeFaculty.map(u => ({
+                    ...u, 
+                    role: 'FACULTY', 
+                    dbId: u.facultyId || u.id || u.userId || Math.random().toString(36).substr(2, 9)
+                }));
+
+                setAllRecords([...students, ...faculty]);
+            } catch (e) {
+                console.error("Failed to fetch users:", e);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        loadData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []); 
 
     const handleStatusUpdate = async (dbId, role, isApproved) => {
         const servicePath = role === 'STUDENT' ? 'students' : 'faculty';
         const action = isApproved ? 'approve' : 'decline';
+        const token = localStorage.getItem('token');
 
         setProcessingId(dbId);
 
@@ -65,9 +87,8 @@ const UserManagement = () => {
                         : user
                 )
             );
-
         } catch (e) {
-            console.error(e);
+            console.error("Status Update Error:", e);
         } finally {
             setProcessingId(null);
         }
@@ -76,7 +97,7 @@ const UserManagement = () => {
     const handleDocVerify = async (docId, isApproved) => {
         const statusValue = isApproved ? 'APPROVED' : 'DECLINED';
         const adminNotes = isApproved ? "Verified" : "Rejected";
-        const adminId = 1; 
+        const token = localStorage.getItem('token');
 
         setProcessingId(`doc-${docId}`);
         try {
@@ -87,7 +108,7 @@ const UserManagement = () => {
                     params: { 
                         status: statusValue,
                         notes: adminNotes,
-                        adminId: adminId
+                        adminId: 1
                     },
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -111,196 +132,233 @@ const UserManagement = () => {
         setSelectedUser(user);
         setActiveTab('basic');
         setUserDocs([]);
+        setShowModal(true); 
+    };
 
-        const modal = new window.bootstrap.Modal(
-            document.getElementById('viewModal')
-        );
-        modal.show();
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedUser(null);
     };
 
     const handleShowDocs = async () => {
         setActiveTab('docs');
+        const targetId = selectedUser?.userId || selectedUser?.dbId;
 
-        if (selectedUser?.userId) {
+        if (targetId) {
+            const token = localStorage.getItem('token');
             try {
                 const res = await axios.get(
-                    `http://localhost:8002/api/documents/user/${selectedUser.userId}`,
+                    `http://localhost:8002/api/documents/user/${targetId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                setUserDocs(res.data);
+                setUserDocs(Array.isArray(res.data) ? res.data : []);
             } catch {
                 setUserDocs([]);
             }
         }
     };
 
-    if (loading) return <div className="text-center p-5">Loading...</div>;
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+                <div className="text-secondary fw-bold fs-5 d-flex align-items-center">
+                    <Loader2 className="spinner me-2" size={24} /> Loading Institutional Data...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-4">
-            <table className="table table-borderless bg-white">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {allRecords.map(user => (
-                      <tr key={`${user.role}-${user.dbId}`}>
-                            <td>
-                                <b>{user.name}</b><br />
-                                {user.email}
-                            </td>
-                            <td>{user.role}</td>
-                            <td>
-                                <span className={`status-pill ${user.status?.toLowerCase()}`}>
-                                    {user.status}
-                                </span>
-                            </td>
-                            <td>
-                                <button
-                                    className="btn btn-primary btn-sm"
-                                    onClick={() => openModal(user)}
-                                >
-                                    <Eye size={14} /> View
-                                </button>
-                            </td>
-                            <td>
-                                {processingId === user.dbId ? (
-                                    <div className="processing-text">
-                                        <Loader2 className="spinner me-2" />
-                                        Processing...
-                                    </div>
-                                ) : (
-                                    <>
-                                        <button
-                                            className="btn btn-success btn-sm me-2"
-                                            disabled={user.status !== 'PENDING'}
-                                            onClick={() => handleStatusUpdate(user.dbId, user.role, true)}
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            disabled={user.status !== 'PENDING'}
-                                            onClick={() => handleStatusUpdate(user.dbId, user.role, false)}
-                                        >
-                                            Reject
-                                        </button>
-                                    </>
-                                )}
-                            </td>
+            <div className="table-responsive bg-white rounded shadow-sm p-3 border">
+                <table className="table table-borderless align-middle m-0">
+                    <thead className="bg-light border-bottom">
+                        <tr>
+                            <th className="py-3 text-secondary text-uppercase small">User Details</th>
+                            <th className="py-3 text-secondary text-uppercase small text-center">Role</th>
+                            <th className="py-3 text-secondary text-uppercase small text-center">Status</th>
+                            <th className="py-3 text-secondary text-uppercase small text-center">Profile</th>
+                            <th className="py-3 text-secondary text-uppercase small text-center">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {allRecords.length > 0 ? (
+                            allRecords.map((user, index) => (
+                                <tr key={`user-${user.dbId}-${index}`} className="border-bottom">
+                                    <td className="py-3">
+                                        <b className="text-dark d-block mb-1">{user.name || 'Unknown User'}</b>
+                                        <small className="text-muted">{user.email || 'No email provided'}</small>
+                                    </td>
+                                    <td className="text-center">
+                                        <span className="badge bg-secondary px-3 py-2">{user.role}</span>
+                                    </td>
+                                    <td className="text-center">
+                                        <span className={`status-pill ${user.status?.toLowerCase() || 'pending'}`}>
+                                            {user.status || 'PENDING'}
+                                        </span>
+                                    </td>
+                                    {/* 🟢 FIXED: Prevent text wrapping in actions column */}
+                                    <td className="text-center" style={{ whiteSpace: 'nowrap' }}>
+                                        <button
+                                            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 fw-bold"
+                                            onClick={() => openModal(user)}
+                                        >
+                                            <Eye size={14} /> View
+                                        </button>
+                                    </td>
+                                    <td style={{ whiteSpace: 'nowrap' }}>
+                                        {processingId === user.dbId ? (
+                                            <div className="processing-text justify-content-center small">
+                                                <Loader2 className="spinner me-1" size={14} /> Processing
+                                            </div>
+                                        ) : (
+                                            /* 🟢 FIXED: Added flex-nowrap to prevent buttons from stacking weirdly */
+                                            <div className="d-flex justify-content-center gap-2 flex-nowrap">
+                                                <button
+                                                    className="btn btn-success btn-sm px-3 fw-bold flex-fill"
+                                                    disabled={user.status !== 'PENDING'}
+                                                    onClick={() => handleStatusUpdate(user.dbId, user.role, true)}
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button
+                                                    className="btn btn-danger btn-sm px-3 fw-bold flex-fill"
+                                                    disabled={user.status !== 'PENDING'}
+                                                    onClick={() => handleStatusUpdate(user.dbId, user.role, false)}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="text-center text-muted p-5">
+                                    No records found in the database.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
-            <div className="modal fade" id="viewModal">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5>User Details</h5>
-                            <button className="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="tab-container">
-                                <button
-                                    className={`tab-btn ${activeTab === 'basic' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('basic')}
-                                >
-                                    Profile
-                                </button>
-                                <button
-                                    className={`tab-btn ${activeTab === 'docs' ? 'active' : ''}`}
-                                    onClick={handleShowDocs}
-                                >
-                                    Documents
-                                </button>
+            {/* MODAL LOGIC */}
+            {showModal && (
+                <div 
+                    className="modal fade show d-block" 
+                    tabIndex="-1" 
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} 
+                    onClick={closeModal} 
+                >
+                    <div 
+                        className="modal-dialog modal-lg modal-dialog-centered" 
+                        onClick={(e) => e.stopPropagation()} 
+                    >
+                        <div className="modal-content border-0 shadow-lg rounded-4">
+                            <div className="modal-header bg-light border-bottom-0 pb-0">
+                                <h5 className="modal-title fw-bold px-2 pt-2">User Administration</h5>
+                                <button type="button" className="btn-close me-2 mt-2" onClick={closeModal}></button>
                             </div>
-
-                            {activeTab === 'basic' && (
-                                <div className="details-grid">
-                                    {Object.entries(selectedUser || {})
-                                        .filter(([key]) =>
-                                            !['userId', 'studentId', 'facultyId', 'dbId', 'password']
-                                                .includes(key)
-                                        )
-                                        .map(([key, value]) => (
-                                            <div key={key} className="detail-card">
-                                                <div className="detail-label">
-                                                    {key.replace(/([A-Z])/g, ' $1')}
-                                                </div>
-                                                <div className="detail-value">
-                                                    {value?.toString() || 'N/A'}
-                                                </div>
-                                            </div>
-                                        ))}
+                            <div className="modal-body px-4 pb-4">
+                                <div className="tab-container mt-2">
+                                    <button
+                                        className={`tab-btn ${activeTab === 'basic' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('basic')}
+                                    >
+                                        Profile Information
+                                    </button>
+                                    <button
+                                        className={`tab-btn ${activeTab === 'docs' ? 'active' : ''}`}
+                                        onClick={handleShowDocs}
+                                    >
+                                        Verification Documents
+                                    </button>
                                 </div>
-                            )}
 
-                            {activeTab === 'docs' && (
-                                <div>
-                                    {userDocs.length > 0 ? (
-                                        userDocs.map(doc => (
-                                            <div className="doc-card" key={doc.documentId}>
-                                                <div style={{ flex: 1 }}>
-                                                    <div className="fw-bold">{doc.docType}</div>
-                                                    <div className="small text-muted">ID: {doc.documentId}</div>
-                                                    
-                                                    {/* VIEW DOCUMENT LINK RESTORED */}
-                                                    {doc.file_url && (
-                                                        <a
-                                                            href={doc.file_url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="btn btn-link px-0 mt-1 d-block"
-                                                        >
-                                                            View Document
-                                                        </a>
-                                                    )}
-                                                    
-                                                    <span className={`badge mt-2 ${doc.uploadStatus === 'APPROVED' ? 'bg-success' : doc.uploadStatus === 'DECLINED' ? 'bg-danger' : 'bg-warning'}`}>
-                                                        {doc.uploadStatus}
-                                                    </span>
+                                {activeTab === 'basic' && (
+                                    <div className="details-grid mt-4">
+                                        {Object.entries(selectedUser || {})
+                                            .filter(([key]) =>
+                                                !['userId', 'studentId', 'facultyId', 'dbId', 'password', 'authorities'].includes(key)
+                                            )
+                                            .map(([key, value]) => (
+                                                <div key={key} className="detail-card shadow-sm">
+                                                    <div className="detail-label text-uppercase mb-1 fw-bold text-primary" style={{fontSize: '0.75rem'}}>
+                                                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                                                    </div>
+                                                    <div className="detail-value text-dark fs-6">
+                                                        {value?.toString() || <span className="text-muted fst-italic">Not Provided</span>}
+                                                    </div>
                                                 </div>
+                                            ))}
+                                    </div>
+                                )}
 
-                                                <div className="ms-3">
-                                                    {processingId === `doc-${doc.documentId}` ? (
-                                                        <Loader2 className="spinner" />
-                                                    ) : (
-                                                        <div className="btn-group">
-                                                            <button 
-                                                                className="btn btn-outline-success btn-sm"
-                                                                disabled={doc.uploadStatus !== 'PENDING'}
-                                                                onClick={() => handleDocVerify(doc.documentId, true)}
+                                {activeTab === 'docs' && (
+                                    <div className="mt-4">
+                                        {userDocs.length > 0 ? (
+                                            userDocs.map(doc => (
+                                                <div className="doc-card shadow-sm" key={doc.documentId}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div className="fw-bold text-dark fs-5">{doc.docType}</div>
+                                                        <div className="small text-muted mb-2">Doc ID: {doc.documentId}</div>
+                                                        
+                                                        {doc.file_url && (
+                                                            <a
+                                                                href={doc.file_url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-decoration-none fw-bold"
                                                             >
-                                                                Approve
-                                                            </button>
-                                                            <button 
-                                                                className="btn btn-outline-danger btn-sm"
-                                                                disabled={doc.uploadStatus !== 'PENDING'}
-                                                                onClick={() => handleDocVerify(doc.documentId, false)}
-                                                            >
-                                                                Decline
-                                                            </button>
+                                                                <Eye size={16} className="me-1"/> View Source File
+                                                            </a>
+                                                        )}
+                                                        
+                                                        <div className="mt-3">
+                                                            <span className={`badge px-3 py-2 ${doc.uploadStatus === 'APPROVED' ? 'bg-success' : doc.uploadStatus === 'DECLINED' ? 'bg-danger' : 'bg-warning text-dark'}`}>
+                                                                Status: {doc.uploadStatus}
+                                                            </span>
                                                         </div>
-                                                    )}
+                                                    </div>
+
+                                                    <div className="ms-3 pe-3">
+                                                        {processingId === `doc-${doc.documentId}` ? (
+                                                            <Loader2 className="spinner text-primary" size={28}/>
+                                                        ) : (
+                                                            <div className="btn-group-vertical gap-2">
+                                                                <button 
+                                                                    className="btn btn-outline-success btn-sm fw-bold px-4 rounded"
+                                                                    disabled={doc.uploadStatus !== 'PENDING'}
+                                                                    onClick={() => handleDocVerify(doc.documentId, true)}
+                                                                >
+                                                                    Approve
+                                                                </button>
+                                                                <button 
+                                                                    className="btn btn-outline-danger btn-sm fw-bold px-4 rounded"
+                                                                    disabled={doc.uploadStatus !== 'PENDING'}
+                                                                    onClick={() => handleDocVerify(doc.documentId, false)}
+                                                                >
+                                                                    Decline
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center bg-light rounded p-5 mt-3 border">
+                                                <p className="text-muted fw-bold mb-0">No documents have been uploaded by this user.</p>
                                             </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-center mt-3">No documents found</p>
-                                    )}
-                                </div>
-                            )}
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

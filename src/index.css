@@ -5,9 +5,95 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc; /* Sets a consistent global background */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* =========================================
+   GLOBAL TABLE & ACTION BUTTON FIXES
+   (Fixes the overlaps from the screenshots)
+   ========================================= */
+
+/* 1. Resetting Table Cell Padding & Alignment */
+.table td, 
+.table th {
+  vertical-align: middle !important; /* Forces buttons and text to align to the center of the row */
+  padding: 16px 20px !important; /* Gives the row breathing room so buttons don't bleed over */
+  white-space: nowrap; /* Stops text from breaking awkwardly */
+}
+
+/* 2. Action Cell Flexbox Container */
+/* Add className="actions-cell" to the <td> wrapping your Approve/Reject buttons */
+.actions-cell,
+td:last-child {
+  display: flex !important;
+  gap: 10px; /* Forces exactly 10px of space between Approve and Reject */
+  align-items: center;
+  justify-content: flex-end; /* Pushes the buttons neatly to the right */
+  border-bottom: none !important; /* Prevents double borders in flex mode */
+}
+
+/* 3. Standardized Approval Buttons */
+.btn-approve, 
+.btn-reject, 
+.btn-decline {
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  border: none !important;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-approve {
+  background-color: #10B981 !important; /* EduGov Green */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-approve:hover {
+  background-color: #059669 !important;
+  transform: translateY(-1px);
+}
+
+.btn-reject, 
+.btn-decline {
+  background-color: #EF4444 !important; /* EduGov Red */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.btn-reject:hover, 
+.btn-decline:hover {
+  background-color: #DC2626 !important;
+  transform: translateY(-1px);
+}
+
+/* 4. Fix for vertically stacked buttons (Requests Dashboard) */
+.actions-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* 5. Status Badges Global Fix */
+.badge-pill,
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: center;
 }

@@ -1,13 +1,21 @@
-/* ✅ REMOVE TABLE LINES */
-.table td, .table th {
+/* src/component/Admin/UserManagement.css */
+
+/* ✅ TABLE LAYOUT FIXES */
+.table th, 
+.table td {
     border: none !important;
+    vertical-align: middle !important; /* Prevents awkward top/bottom alignment */
 }
 
 /* ✅ STATUS COLORS */
 .status-pill {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .status-pill.approved {
@@ -54,6 +62,11 @@
     border: none;
     background: #f3f4f6;
     font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background: #e5e7eb;
 }
 
 .tab-btn.active {
@@ -69,15 +82,21 @@
 }
 
 .detail-card {
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 6px;
-    background: #f9f9f9;
+    border: 1px solid #e5e7eb;
+    padding: 15px;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: box-shadow 0.2s;
+}
+
+.detail-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .detail-label {
     font-size: 11px;
-    color: gray;
+    color: #6b7280;
+    letter-spacing: 0.5px;
 }
 
 .detail-value {
@@ -90,11 +109,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     margin-bottom: 10px;
-    background: #f8fafc;
+    background: #ffffff;
 }
 
 .doc-status {

@@ -25,45 +25,43 @@ const StudentDashboard = () => {
     const [stats, setStats] = useState({ total: 0, approved: 0, pending: 0, rejected: 0 });
 
     useEffect(() => {
-        const syncAcademicDossier = async () => {
-            const identity = getStudentIdentity();
-            if (!identity?.studentId) return;
+    const syncAcademicDossier = async () => {
+        const identity = getStudentIdentity();
+        if (!identity?.studentId) return;
 
-            try {
-                setLoading(true);
-                
-                const [resApprove, resPending, resReject] = await Promise.all([
-                    EnrollmentAPI.getByStatus('APPROVE'),
-                    EnrollmentAPI.getByStatus('PENDING'),
-                    EnrollmentAPI.getByStatus('REJECT')
-                ]).catch(async () => {
-                    return [ {data: []}, {data: []}, {data: []} ];
-                });
+        try {
+            setLoading(true);
+            
+            // FIX: Fetch all records just like the Admin dashboard to bypass the 404 backend error
+            const res = await EnrollmentAPI.getAll();
+            const allData = res.data || [];
+            
+            // Filter locally by the student's ID
+            const personalData = allData.filter(e => 
+                String(e.studentId) === String(identity.studentId)
+            );
+            
+            setEnrollments(personalData);
 
-                const combinedData = [
-                    ...(resApprove?.data || []),
-                    ...(resPending?.data || []),
-                    ...(resReject?.data || [])
-                ];
-                
-                const personalData = combinedData.filter(e => e.studentId === identity.studentId);
-                
-                setEnrollments(personalData);
-                setStats({
-                    total: personalData.length,
-                    approved: personalData.filter(e => e.status === 'APPROVE' || e.status === 'ACTIVE').length,
-                    pending: personalData.filter(e => e.status === 'PENDING').length,
-                    rejected: personalData.filter(e => e.status === 'REJECT').length
-                });
+            // Safe, case-insensitive status matching
+            setStats({
+                total: personalData.length,
+                approved: personalData.filter(e => {
+                    const s = e.status?.toUpperCase().trim();
+                    return s === 'APPROVE' || s === 'ACTIVE';
+                }).length,
+                pending: personalData.filter(e => e.status?.toUpperCase().trim() === 'PENDING').length,
+                rejected: personalData.filter(e => e.status?.toUpperCase().trim() === 'REJECT').length
+            });
 
-            } catch (err) {
-                console.error("Governance Data Sync Failure", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        syncAcademicDossier();
-    }, []);
+        } catch (err) {
+            console.error("Governance Data Sync Failure", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    syncAcademicDossier();
+}, []);
 
     if (loading) {
         return (

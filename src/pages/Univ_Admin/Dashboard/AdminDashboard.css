@@ -1,0 +1,20 @@
+.dashboard-bg {
+    background-color: #f4f7fe;
+    min-height: 100vh;
+}
+ 
+.chart-card {
+    border-radius: 20px;
+    background: #ffffff;
+}
+ 
+.card {
+    transition: transform 0.2s ease;
+    border-radius: 12px;
+}
+ 
+.card:hover {
+    transform: translateY(-5px);
+}
+ 
+.fw-bold { font-weight: 700 !important; }

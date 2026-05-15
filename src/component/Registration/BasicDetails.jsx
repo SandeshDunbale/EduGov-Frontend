@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DocumentSubmission from './DocumentSubmission';
 import './BasicDetails.css';
 import API from '../../api/axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 const BasicDetails = () => {
     const [step, setStep] = useState(1);
@@ -53,6 +54,7 @@ const BasicDetails = () => {
             } else {
                 setEmailError("");
             }
+            
             return;
         }
 
@@ -80,7 +82,7 @@ const BasicDetails = () => {
     const handleNextTrigger = async (e) => {
         e.preventDefault();
         if (phoneError || passwordError || emailError) {
-            alert("Please fix errors before proceeding.");
+            toast.error("Please fix errors before proceeding.");
             return;
         }
 
@@ -94,21 +96,32 @@ const BasicDetails = () => {
             const id = response.data.userId || response.data.id || response.data.data?.id;
 
             if (!id) {
-                alert("User ID not received from server!");
+                toast.error("User ID not received from server!");
                 setIsProcessing(false);
                 return;
             }
 
+            toast.success("Details saved! Proceeding to document submission.");
             setUserId(id);
             setStep(2);
         } catch (error) {
-            console.error(error);
-            const message = error.response?.data?.message;
-            alert(message === "Email already registered" 
-                ? "This email is already registered." 
-                : (message || "Registration failed."));
-            setIsProcessing(false);
-        }
+    console.error(error);
+    const message = error.response?.data?.message || error.message;
+
+    // Check for the exact fallback string your backend sends
+    if (message && message.includes("The Identity Service is currently down")) {
+        toast.error("Registration failed: This email might already be registered, OR the system is temporarily down.");
+    } 
+    // Keep your original check just in case the backend ever gets fixed!
+    else if (message === "Email already registered") {
+        toast.error("This email is already registered.");
+    } 
+    else {
+        toast.error(message || "Registration failed.");
+    }
+    
+    setIsProcessing(false);
+}
     };
 
     if (step === 2)
@@ -133,10 +146,17 @@ const BasicDetails = () => {
 
     return (
         <div className="reg-page-wrapper">
+            <Toaster 
+                position="top-right"
+                toastOptions={{
+                    className: 'custom-toast',
+                    duration: 4000,
+                }}
+            />
             <div className="reg-left-sidebar">
                 <div className="logo">EDUGOV</div>
                 <h1>Official Portal Registration</h1>
-                <p>Secure digital identity registration.</p>
+                <p>Secure digital registration.</p>
             </div>
 
             <div className="reg-right-content">

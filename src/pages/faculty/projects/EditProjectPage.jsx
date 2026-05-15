@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import { ProjectAPI } from "../../../services/projectService"; // 👈 Import our service
 import './ProjectForm.css'; 
+import toast, { Toaster } from 'react-hot-toast';
 
 const EditProjectPage = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const EditProjectPage = () => {
           endDate: data.endDate || ''
         });
       } catch (error) {
-        alert("Failed to load project details. It may have been deleted.");
+        toast.error("Failed to load project details. It may have been deleted.");
         navigate('/faculty/projects');
       } finally {
         setLoading(false);
@@ -53,10 +54,13 @@ const EditProjectPage = () => {
       // Send the updated formData to Spring Boot via PUT
       await ProjectAPI.updateProject(projectId, formData);
       
-      alert(`Project Updated Successfully!`);
-      navigate('/faculty/projects'); 
+      toast.success(`Project Updated Successfully!`);
+      
+      setTimeout(() => {
+        navigate('/faculty/projects'); 
+      }, 1500);
     } catch (error) {
-      alert("Failed to update project. Please check your connection.");
+      toast.error("Failed to update project. Please check your connection.");
     }
   };
 
@@ -72,6 +76,14 @@ const EditProjectPage = () => {
 
   return (
     <div className="container py-4 form-container">
+      {/* Toast container configured for top-right */}
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          className: 'custom-toast',
+          duration: 3000,
+        }}
+      />
       
       <button 
         onClick={() => navigate('/faculty/projects')} 

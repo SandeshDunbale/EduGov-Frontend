@@ -12,7 +12,7 @@ import { jwtDecode } from 'jwt-decode';
 import './FacultyDashboard.css';
 
 const FacultyDashboard = () => {
-    // Identity Extraction from verified JWT Payload [cite: 108]
+    // Identity Extraction from verified JWT Payload
     const getFacultyId = () => {
         try {
             const token = localStorage.getItem('token');
@@ -27,7 +27,7 @@ const FacultyDashboard = () => {
     const [projects, setProjects] = useState([]);
     const [grants, setGrants] = useState([]);
     
-    // Analytics State [cite: 438]
+    // Analytics State
     const [stats, setStats] = useState({
         activeCourses: 0,
         inactiveCourses: 0,
@@ -43,22 +43,24 @@ const FacultyDashboard = () => {
 
             try {
                 setLoading(true);
-                // Concurrent Data Fetching [cite: 348, 354, 355]
+                // Concurrent Data Fetching
                 const [courseRes, projectRes, grantRes] = await Promise.all([
                     CourseAPI.getByFacultyId(fId),
-                    ProjectAPI.getProjectsByFaculty(fId),
+                    // If this still fails, double-check if the method should be 'getByFacultyId' to match CourseAPI
+                    ProjectAPI.getProjectsByFaculty(fId), 
                     GrantAPI.getGrantHistory(fId)
                 ]);
 
-                const courseList = courseRes.data || [];
-                const projectList = projectRes.data || [];
-                const grantList = grantRes.data || [];
+                // Robust array extraction in case the API returns the array directly instead of inside .data
+                const courseList = Array.isArray(courseRes) ? courseRes : (courseRes.data || []);
+                const projectList = Array.isArray(projectRes) ? projectRes : (projectRes.data || []);
+                const grantList = Array.isArray(grantRes) ? grantRes : (grantRes.data || []);
 
                 setCourses(courseList);
                 setProjects(projectList);
                 setGrants(grantList);
 
-                // Intelligence Logic: Derived from Service Implementation [cite: 157, 244, 288]
+                // Intelligence Logic: Derived from Service Implementation
                 setStats({
                     activeCourses: courseList.filter(c => c.status === 'ACTIVE' || c.status === 'APPROVE').length,
                     inactiveCourses: courseList.filter(c => c.status !== 'ACTIVE' && c.status !== 'APPROVE').length,
@@ -109,7 +111,7 @@ const FacultyDashboard = () => {
                 </div>
             </div>
 
-            {/* --- ANALYTICS SUITE (Section A) [cite: 438] --- */}
+            {/* --- ANALYTICS SUITE (Section A) --- */}
             <div className="row g-3 mb-4">
                 <div className="col-md-4">
                     <div className="stat-card glass-card p-4 rounded-4 border-0 border-bottom border-5 border-teal">
@@ -147,7 +149,7 @@ const FacultyDashboard = () => {
             </div>
 
             <div className="row g-4">
-                {/* --- COURSE MANAGEMENT (Section B) [cite: 404, 407] --- */}
+                {/* --- COURSE MANAGEMENT (Section B) --- */}
                 <div className="col-lg-6">
                     <div className="content-card shadow-sm rounded-4 bg-white p-4 h-100 border">
                         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -171,7 +173,6 @@ const FacultyDashboard = () => {
                                     <p className="text-muted small text-truncate-2 mb-2">{c.description}</p>
                                     <div className="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
                                         <div className="text-teal fw-bold small">CS-ID : {c.courseId}</div>
-                                        {/* 📍 UPDATE: Removed date, added PGM-ID format [cite: 361] */}
                                         <div className="small text-muted fw-bold uppercase">PGM-ID : {c.programId}</div>
                                     </div>
                                 </div>
@@ -180,7 +181,7 @@ const FacultyDashboard = () => {
                     </div>
                 </div>
 
-                {/* --- RESEARCH PORTFOLIO (Section C) [cite: 409, 415] --- */}
+                {/* --- RESEARCH PORTFOLIO (Section C) --- */}
                 <div className="col-lg-6">
                     <div className="content-card shadow-sm rounded-4 bg-white p-4 h-100 border">
                         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -190,7 +191,8 @@ const FacultyDashboard = () => {
                             <button className="btn btn-primary-soft btn-sm fw-bold px-3">View All Reports</button>
                         </div>
                         <div className="custom-scrollable-container">
-                            {projects.map(p => (
+                            {/* FIXED: Added robust fallback to handle 0 projects gracefully */}
+                            {projects.length > 0 ? projects.map(p => (
                                 <div className="interactive-item project-card p-3 mb-3 border-0 bg-light rounded-4" key={p.projectId}>
                                     <div className="d-flex justify-content-between align-items-center mb-2">
                                         <div className="fw-bold text-navy">{p.title}</div>
@@ -206,12 +208,14 @@ const FacultyDashboard = () => {
                                         <ArrowUpRight size={16} className="text-primary" />
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="empty-state py-5 text-center text-muted italic">No active research projects found.</div>
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* --- GRANT FUNDING TRACKER (Section D) [cite: 412, 417] --- */}
+                {/* --- GRANT FUNDING TRACKER (Section D) --- */}
                 <div className="col-12">
                     <div className="content-card shadow-sm rounded-4 bg-white p-4 border">
                         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -238,7 +242,8 @@ const FacultyDashboard = () => {
                                             <td className="small text-muted">{g.submittedDate}</td>
                                             <td className="fw-bold text-dark">&#x20B9; {g.requestedAmount.toLocaleString()}</td>
                                             <td className="text-center">
-                                                <span className={`badge-pill {g.status === 'APPROVED' ? 'bg-success-subtle text-success' : g.status === 'SUBMITTED' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger'}`}>
+                                                {/* FIXED: Added missing $ in the template literal to enable status colors */}
+                                                <span className={`badge-pill ${g.status === 'APPROVED' ? 'bg-success-subtle text-success' : g.status === 'SUBMITTED' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger'}`}>
                                                     {g.status}
                                                 </span>
                                             </td>

@@ -4,6 +4,7 @@ import { ArrowLeft, Save, X } from 'lucide-react';
 import { ProjectAPI } from "../../../services/projectService";
 import './ProjectForm.css'; 
 import { jwtDecode } from 'jwt-decode';
+import toast, { Toaster } from 'react-hot-toast';
 
 const CreateProjectPage = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const CreateProjectPage = () => {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        alert("Your session has expired. Please log in again.");
+        toast.error("Your session has expired. Please log in again.");
         return;
       }
 
@@ -40,7 +41,7 @@ const CreateProjectPage = () => {
 
       // 3. Safety check: Block students or unauthorized users
       if (!facultyId) {
-        alert("Action Denied: Only verified Faculty members can create projects.");
+        toast.error("Action Denied: Only verified Faculty members can create projects.");
         return;
       }
       
@@ -51,19 +52,29 @@ const CreateProjectPage = () => {
       const response = await ProjectAPI.createProject(facultyId, formData);
       
       console.log("Success! Backend responded with:", response);
-      alert("Project Created Successfully!");
+      toast.success("Project Created Successfully!");
       
       // Navigate back to the grid
-      navigate('/faculty/projects');
+      setTimeout(() => {
+        navigate('/faculty/projects');
+      }, 1500);
       
     } catch (error) {
       console.error("Submission Error:", error);
-      alert("Failed to create project. Please check your connection or server.");
+      toast.error("Failed to create project. Please check your connection or server.");
     }
   };
 
   return (
     <div className="container py-4 form-container">
+      {/* Toaster configuration for Top-Right placement */}
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          className: 'custom-toast',
+          duration: 3000,
+        }}
+      />
       
       {/* Back Button */}
       <button 

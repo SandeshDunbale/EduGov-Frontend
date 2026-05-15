@@ -179,3 +179,17 @@
     font-size: 1.5rem;
     font-weight: 700;
 }
+
+/* Toaster Customization for Blue/Navy Theme */
+.custom-toast {
+    background: #0f172a !important; /* Navy background */
+    color: #ffffff !important;      /* White text */
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Sky blue icon color for success/info */
+.custom-toast svg {
+    color: #38bdf8 !important;
+}

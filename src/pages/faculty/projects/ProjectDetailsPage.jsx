@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Info, Flag, DollarSign } from 'lucide-react';
+import { ArrowLeft, Calendar, Info, Flag } from 'lucide-react';
 import { ProjectAPI } from "../../../services/projectService";
-import { GrantAPI } from "../../../services/grantService"; // (Make sure you have all three ../ if needed!) // 👈 Import the new Grant Service
+import { GrantAPI } from "../../../services/grantService";
 import './ProjectDetailsPage.css';
 import { jwtDecode } from 'jwt-decode';
+import toast, { Toaster } from 'react-hot-toast';
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Data states
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 👈 NEW: Modal and Application States
   const [showModal, setShowModal] = useState(false);
   const [requestedAmount, setRequestedAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,59 +30,54 @@ const ProjectDetailsPage = () => {
         setLoading(false);
       }
     };
-
     fetchProjectDetails();
   }, [projectId]);
 
   const getStatusBadge = (status) => {
-    if (!status) return 'bg-light text-dark';
+    if (!status) return 'badge bg-light text-dark';
     switch (status) {
-      case 'DRAFT': return 'bg-secondary text-white';
-      case 'UNDER_REVIEW': return 'bg-info text-dark';
-      case 'COMPLETED': return 'bg-success text-white';
-      default: return 'bg-primary text-white';
+      case 'DRAFT': return 'badge bg-secondary text-white';
+      case 'UNDER_REVIEW': return 'badge bg-info text-dark';
+      case 'COMPLETED': return 'badge bg-success text-white';
+      default: return 'badge bg-primary text-white';
     }
   };
 
-  // 👈 UPDATED: Handle Grant Submission with Dynamic JWT Token
   const handleApplyForGrant = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // 1. Grab the token from Local Storage
       const token = localStorage.getItem('token');
 
       if (!token) {
-        alert("Your session has expired. Please log in again.");
+        toast.error("Your session has expired. Please log in again.");
         setIsSubmitting(false);
         return;
       }
 
-      // 2. Decode it to find out who is making this request
       const decodedToken = jwtDecode(token);
       const facultyId = decodedToken.facultyId;
 
-      // 3. Safety check: What if a Student somehow clicks this button?
       if (!facultyId) {
-        alert("Action Denied: Only verified Faculty members can apply for grants.");
+        toast.error("Only faculty can apply.");
         setIsSubmitting(false);
         return;
       }
 
-      // 4. Send the real dynamic ID to the backend!
       await GrantAPI.applyForGrant(projectId, facultyId, {
         requestedAmount: Number(requestedAmount)
       });
 
-      alert("Grant Application Submitted Successfully!");
+      toast.success("Grant Application Submitted!");
 
       setShowModal(false);
       setRequestedAmount('');
-      window.location.reload();
+
+      setTimeout(() => window.location.reload(), 1500);
 
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to submit grant application. You may have already applied for this project.");
+      toast.error(error.response?.data?.message || "Already applied or failed.");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,163 +85,144 @@ const ProjectDetailsPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-5 text-center text-muted">
-        <div className="spinner-border text-primary mb-3" role="status"></div>
-        <p>Loading project details...</p>
+      <div className="loader-box">
+        <div className="spinner-border text-primary"></div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="container py-5 text-center">
-        <div className="alert alert-danger d-inline-block" role="alert">{error}</div>
-        <br />
-        <button onClick={() => navigate('/faculty/projects')} className="btn btn-outline-primary mt-3">
-          Return to Projects
-        </button>
-      </div>
-    );
+    return <div className="error-box">{error}</div>;
   }
 
   return (
-    <div className="container py-4 details-container position-relative">
+    <div className="details-wrapper">
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/faculty/projects')}
-        className="btn btn-link btn-back d-flex align-items-center gap-2 p-0 mb-4 fw-medium text-decoration-none"
-      >
-        <ArrowLeft size={20} />
-        Back to Projects
+      {/* ✅ TOASTER FIXED */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1e3a5f',
+            color: '#fff',
+            borderRadius: '8px'
+          },
+          success: {
+            iconTheme: {
+              primary: '#0ea5e9',
+              secondary: '#fff'
+            }
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff'
+            }
+          }
+        }}
+      />
+
+      <button onClick={() => navigate('/faculty/projects')} className="back-btn">
+        <ArrowLeft size={18}/> Back to Projects
       </button>
 
-      {/* Details Container */}
-      <div className="card shadow-sm border-0 border-light rounded-3">
-        <div className="card-body p-4 p-md-5">
+      <div className="details-card">
 
-          {/* Header Row: Title, Status, and APPLY BUTTON */}
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
-            <div>
-              <h2 className="fw-bold text-navy mb-2">{project.title}</h2>
-              <span className={`badge rounded-pill px-3 py-2 fw-semibold fs-6 ${getStatusBadge(project.status)}`}>
-                {project.status ? project.status.replace('_', ' ') : 'N/A'}
-              </span>
-            </div>
-
-            {/* 👈 NEW: Only show the "Apply for Grant" button if it's a DRAFT */}
-            {project.status === 'DRAFT' && (
-              <button
-                onClick={() => setShowModal(true)}
-                className="btn btn-success d-flex align-items-center gap-2 px-4 shadow-sm"
-              >
-                {/* <DollarSign size={18} /> */}
-                Apply for Grant
-              </button>
-            )}
+        <div className="details-header">
+          <div>
+            <h2>{project.title}</h2>
+            <span className={getStatusBadge(project.status)}>
+              {project.status}
+            </span>
           </div>
 
-          {/* Description Box */}
-          <div className="info-grid-box p-4 mb-5">
-            <h5 className="fw-bold text-dark mb-3">Project Description</h5>
-            <p className="text-secondary mb-0" style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
-              {project.description}
-            </p>
+          {project.status === 'DRAFT' && (
+            <button onClick={() => setShowModal(true)} className="primary-btn">
+              Apply for Grant
+            </button>
+          )}
+        </div>
+
+        <div className="desc-box">
+          <h5>Project Description</h5>
+          <p>{project.description}</p>
+        </div>
+
+        <div className="info-grid">
+          <div className="info-card">
+            <Info size={16}/>
+            <span>Project ID</span>
+            <strong>#{project.projectId}</strong>
           </div>
 
-          {/* Metadata Grid */}
-          <div className="row g-4">
-            <div className="col-12 col-md-4">
-              <div className="p-3 border rounded bg-white shadow-sm h-100">
-                <h6 className="text-muted fw-bold text-uppercase tracking-wider mb-2 d-flex align-items-center gap-2">
-                  <Info size={16} className="text-primary" /> Project ID
-                </h6>
-                <p className="fs-5 fw-bold text-dark mb-0">#{project.projectId}</p>
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="p-3 border rounded bg-white shadow-sm h-100">
-                <h6 className="text-muted fw-bold text-uppercase tracking-wider mb-2 d-flex align-items-center gap-2">
-                  <Calendar size={16} className="text-primary" /> Start Date
-                </h6>
-                <p className="fs-5 text-dark mb-0">{project.startDate}</p>
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="p-3 border rounded bg-white shadow-sm h-100">
-                <h6 className="text-muted fw-bold text-uppercase tracking-wider mb-2 d-flex align-items-center gap-2">
-                  <Flag size={16} className="text-primary" /> End Date
-                </h6>
-                <p className="fs-5 text-dark mb-0">{project.endDate}</p>
-              </div>
-            </div>
+          <div className="info-card">
+            <Calendar size={16}/>
+            <span>Start Date</span>
+            <strong>{project.startDate}</strong>
+          </div>
+
+          <div className="info-card">
+            <Flag size={16}/>
+            <span>End Date</span>
+            <strong>{project.endDate}</strong>
           </div>
         </div>
+
       </div>
 
-      {/* 👈 NEW: THE BOOTSTRAP MODAL UI */}
-      {/* --- THE CORRECTED MODAL UI --- */}
+      {/* ✅ MODAL */}
       {showModal && (
         <>
-          <div className="modal-backdrop fade show" style={{ zIndex: 1040 }}></div>
-          <div className="modal fade show d-block" style={{ zIndex: 1050 }} tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content border-0 shadow-lg">
+          <div className="modal-backdrop fade show"></div>
 
-                <div className="modal-header bg-light border-bottom-0 pt-4 px-4 pb-0">
-                  <h5 className="modal-title fw-bold text-dark">Apply for Funding</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+          <div className="modal show d-block">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content custom-modal">
+
+                <div className="modal-header">
+                  <h5>Apply for Funding</h5>
+                  <button className="btn-close" onClick={()=>setShowModal(false)}></button>
                 </div>
 
                 <form onSubmit={handleApplyForGrant}>
-                  <div className="modal-body px-4 py-4">
-                    <p className="text-muted small mb-4">
-                      Submit a funding request for <strong>{project.title}</strong>.
-                    </p>
+                  <div className="modal-body">
 
-                    <label className="form-label fw-bold text-dark mb-2">
-                      Requested Amount (₹) <span className="text-danger">*</span>
-                    </label>
+                    <p>Request funding for <strong>{project.title}</strong></p>
 
-                    <div className="custom-input-wrapper">
-                      <span className="currency-label">₹</span>
+                    {/* ✅ FIXED INPUT GROUP */}
+                    <div className="custom-input-group">
+                      <span>₹</span>
                       <input
                         type="number"
                         required
                         min="1"
-                        className="amount-input-field"
-                        placeholder="e.g., 50000"
                         value={requestedAmount}
-                        onChange={(e) => setRequestedAmount(e.target.value)}
+                        onChange={(e)=>setRequestedAmount(e.target.value)}
                         disabled={isSubmitting}
+                        placeholder="e.g., 50000"
                       />
                     </div>
+
                   </div>
 
-                  <div className="modal-footer border-top-0 px-4 pb-4 pt-0">
-                    <button
-                      type="button"
-                      className="btn btn-light text-secondary fw-semibold"
-                      onClick={() => setShowModal(false)}
-                      disabled={isSubmitting}
-                    >
+                  <div className="modal-footer">
+                    <button type="button" onClick={()=>setShowModal(false)}>
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      className="btn btn-success fw-semibold px-4"
-                      disabled={isSubmitting || !requestedAmount}
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Submit Application'}
+
+                    <button type="submit" disabled={isSubmitting || !requestedAmount}>
+                      {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
                   </div>
-                </form> {/* 👈 Ensure this closing tag is present! */}
+                </form>
 
               </div>
             </div>
           </div>
         </>
       )}
+
     </div>
   );
 };

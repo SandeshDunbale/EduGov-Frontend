@@ -39,35 +39,50 @@ const StudentPrograms = () => {
 
     // Fetch Program Catalog on mount 
     useEffect(() => {
-        const loadPrograms = async () => {
-            setLoading(true);
-            try {
-                const res = await ProgramAPI.getAll();
-                setPrograms(res.data || []);
-            } catch (err) {
-                console.error("Catalog Load Failed", err);
-            } finally { setLoading(false); }
-        };
-        loadPrograms();
-    }, []);
+        const syncAcademicDossier = async () => {
+            const identity = getStudentIdentity();
+            if (!identity?.studentId) return;
 
-    // Fetch Courses when a program is selected
-    const handleViewCourses = async (program) => {
-        setLoading(true);
-        setCourseErrorMsg('');
-        setSelectedProgram(program);
-        try {
-            const res = await CourseAPI.getByProgramId(program.programId);
-            setCourses(res.data || []);
-        } catch (err) {
-            // Captures backend bold response if no courses found
-            setCourses([]);
-            setCourseErrorMsg(err.response?.data?.message || "NO COURSES REGISTERED FOR THIS PROGRAM YET.");
-        } finally { 
-            setLoading(false); 
-            setView('COURSES');
-        }
-    };
+            try {
+                setLoading(true);
+                
+                // 1. Create a helper function to catch errors on INDIVIDUAL requests
+                const safeFetch = (apiCall) => apiCall.catch(() => ({ data: [] }));
+
+                // 2. Wrap each call in safeFetch so one failure doesn't ruin the others
+                const [resApprove, resPending, resReject] = await Promise.all([
+                    safeFetch(EnrollmentAPI.getByStatus('APPROVE')),
+                    safeFetch(EnrollmentAPI.getByStatus('PENDING')),
+                    safeFetch(EnrollmentAPI.getByStatus('REJECT'))
+                ]);
+
+                const combinedData = [
+                    ...(resApprove?.data || []),
+                    ...(resPending?.data || []),
+                    ...(resReject?.data || [])
+                ];
+                
+                // 3. Convert both IDs to strings to prevent Number vs String strict equality failures
+                const personalData = combinedData.filter(
+                    e => String(e.studentId) === String(identity.studentId)
+                );
+                
+                setEnrollments(personalData);
+                setStats({
+                    total: personalData.length,
+                    approved: personalData.filter(e => e.status === 'APPROVE' || e.status === 'ACTIVE').length,
+                    pending: personalData.filter(e => e.status === 'PENDING').length,
+                    rejected: personalData.filter(e => e.status === 'REJECT').length
+                });
+
+            } catch (err) {
+                console.error("Governance Data Sync Failure", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        syncAcademicDossier();
+    }, []);
 
     // Trigger Enrollment POST
     const handleEnroll = async (courseId) => {

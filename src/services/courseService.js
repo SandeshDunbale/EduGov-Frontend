@@ -7,5 +7,6 @@ export const CourseAPI = {
     save: (data) => api.post('/courses/save', data),
     update: (id, data) => api.patch(`/courses/update/${id}`, data), 
     getByFacultyId: (fId) => api.get(`/courses/faculty/${fId}`)
+    
 };
 

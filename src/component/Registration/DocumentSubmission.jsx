@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './DocumentSubmission.css';
 import API from '../../api/axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 const DocumentSubmission = ({ prevStep, role, onComplete, userId }) => {
     const [idProof, setIdProof] = useState(null);
@@ -15,13 +16,13 @@ const DocumentSubmission = ({ prevStep, role, onComplete, userId }) => {
         const allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
 
         if (!allowedTypes.includes(file.type) || !allowedExtensions.exec(file.name)) {
-            alert(`Invalid file: ${file.name}. Only PDF, JPG, JPEG, and PNG are allowed.`);
+            toast.error(`Invalid file: ${file.name}. Only PDF, JPG, JPEG, and PNG are allowed.`);
             return false;
         }
         
         // Optional: Limit size (e.g., 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert(`File ${file.name} is too large. Max size is 5MB.`);
+            toast.error(`File ${file.name} is too large. Max size is 5MB.`);
             return false;
         }
 
@@ -32,7 +33,7 @@ const DocumentSubmission = ({ prevStep, role, onComplete, userId }) => {
         e.preventDefault();
         
         if (!userId) {
-            alert("Error: User ID not found. Please go back and try again.");
+            toast.error("Error: User ID not found. Please go back and try again.");
             return;
         }
 
@@ -59,11 +60,14 @@ const DocumentSubmission = ({ prevStep, role, onComplete, userId }) => {
             await uploadFile(idProof, 'ID_PROOF', 'ID-' + userId);
             await uploadFile(certificate, 'CERTIFICATE', 'CERT-' + userId);
 
-            alert("Documents uploaded and registration completed!");
-            onComplete();
+            toast.success("Documents uploaded and registration completed!");
+            
+            setTimeout(() => {
+                onComplete();
+            }, 1500);
         } catch (error) {
             console.error("Upload failed:", error);
-            alert("Upload failed: " + (error.response?.data?.message || "Server Error"));
+            toast.error("Upload failed: " + (error.response?.data?.message || "Server Error"));
         } finally {
             setLoading(false);
         }
@@ -71,6 +75,15 @@ const DocumentSubmission = ({ prevStep, role, onComplete, userId }) => {
 
     return (
         <div className="doc-page-wrapper">
+            {/* Toast container configured for top-right */}
+            <Toaster 
+                position="top-right"
+                toastOptions={{
+                    className: 'custom-toast',
+                    duration: 3000,
+                }}
+            />
+
             <div className="doc-sidebar">
                 <div className="doc-sidebar-content">
                     <div className="doc-logo">🎓 EduGov</div>
