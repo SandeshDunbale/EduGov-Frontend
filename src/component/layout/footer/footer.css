@@ -1,17 +1,17 @@
 /* src/components/layout/Footer/style.css */
-
+ 
 .edugov-footer {
-  background-color: #1E293B; 
-  color: #F8FAFC; 
+  background-color: #1E293B;
+  color: #F8FAFC;
   padding: 2rem 0 0.5rem; /* CHANGED: Reduced the last value (bottom padding) to 0.5rem */
   font-family: inherit;
-  border-top: 4px solid #0284C7; 
-  
+  border-top: 4px solid #0284C7;
+ 
   /* 👈 ADD THESE TWO LINES SO IT SITS ON TOP OF THE 3D CANVAS */
   position: relative;
   z-index: 10;
 }
-
+ 
 .footer-container {
   max-width: 1280px;
   margin: 0 auto;
@@ -20,7 +20,7 @@
   gap: 3rem;
   padding: 0 2rem;
 }
-
+ 
 .footer-logo {
   color: #FFFFFF; /* Primary: Crisp White for headers */
   font-size: 1.8rem;
@@ -29,16 +29,16 @@
   margin-bottom: 1rem;
   letter-spacing: 0.5px;
 }
-
+ 
 .brand-tagline {
   color: #F8FAFC;
   line-height: 1.6;
   font-size: 0.95rem;
   opacity: 0.9;
 }
-
+ 
 .section-title {
-  color: #FFFFFF; 
+  color: #FFFFFF;
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 0;
@@ -46,22 +46,22 @@
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-
+ 
 .footer-links {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
+ 
 .footer-links li {
   margin-bottom: 0.4rem; /* CHANGED: Reduced from 0.75rem */
 }
-
+ 
 .footer-bottom p {
   margin: 0; /* Strips out the default browser spacing */
   padding-bottom: 0.1rem; /* Adds just a tiny bit of breathing room at the very bottom */
 }
-
+ 
 .footer-links a {
   color: #F8FAFC; /* Warm Beige */
   text-decoration: none;
@@ -69,26 +69,92 @@
   transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
   display: inline-block;
 }
-
+ 
 /* Secondary & Interactive Engagement */
 .footer-links a:hover,
 .footer-links a:focus {
   color: #0284C7; /* Muted Teal */
   transform: translateX(4px); /* Subtle interaction feedback */
 }
-
+ 
 .contact-section .footer-links li {
   color: #F8FAFC;
   font-size: 0.95rem;
   margin-bottom: 0.75rem;
 }
-
+ 
 .footer-bottom {
   text-align: center;
   margin-top: 1rem; /* CHANGED: Reduced from 4rem */
   padding-top: 0.5rem; /*CHANGED: Reduced from 1.5rem */
-  border-top: 1px solid #2F4156; 
+  border-top: 1px solid #2F4156;
   color: #F8FAFC;
   font-size: 0.85rem;
   opacity: 0.8;
+}
+ 
+/* =========================================
+   RESPONSIVE WEB DESIGN (RWD) MEDIA QUERIES
+   ========================================= */
+ 
+/* Tablets and Small Laptops */
+@media (max-width: 1024px) {
+  .footer-container {
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+}
+ 
+/* Mobile Devices and Smaller Tablets */
+@media (max-width: 768px) {
+  .edugov-footer {
+    padding: 1.5rem 0 0.5rem; /* slightly less top padding */
+  }
+ 
+  .footer-container {
+    gap: 1.5rem; /* Reduces the massive vertical gap when columns stack */
+    padding: 0 1rem;
+    /* Redefining grid to ensure it stacks neatly on standard mobile */
+    grid-template-columns: 1fr;
+    text-align: center; /* Center-aligning footers looks much cleaner on mobile */
+  }
+ 
+  .footer-links a:hover,
+  .footer-links a:focus {
+    transform: translateY(-2px); /* Change hover slide from right to up for centered text */
+  }
+ 
+  .footer-logo {
+    margin-bottom: 0.5rem;
+  }
+ 
+  .section-title {
+    margin-top: 1rem; /* Give a little top spacing between stacked sections */
+  }
+}
+ 
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .footer-logo {
+    font-size: 1.5rem;
+  }
+ 
+  .brand-tagline {
+    font-size: 0.85rem;
+  }
+ 
+  .section-title {
+    font-size: 1rem;
+  }
+ 
+  .footer-links a,
+  .contact-section .footer-links li {
+    font-size: 0.85rem;
+    /* Increase touch target size for links on small screens */
+    padding: 0.2rem 0;
+  }
+ 
+  .footer-bottom {
+    font-size: 0.75rem;
+  }
 }

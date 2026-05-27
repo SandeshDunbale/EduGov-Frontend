@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const API = axios.create({
-
+//custom api client
   baseURL: 'http://localhost:8002',
 });
 
-// 🛡️ THE INTERCEPTOR: Automatically attach the JWT token to every request
+//  THE INTERCEPTOR: Automatically attach the JWT token to every request
 API.interceptors.request.use(
     (config) => {
         // 1. Grab the token from local storage

@@ -92,7 +92,7 @@ const ProjectsPage = () => {
         </div>
       ) : (
         <>
-          {/* ✅ FIXED GRID */}
+       
           <div className="edugov-grid">
             {currentProjects.map((project) => (
               <div key={project.projectId} className="edugov-card">
@@ -101,16 +101,13 @@ const ProjectsPage = () => {
 
                   <div className="edugov-card-header">
                     <h5>{project.title}</h5>
-                    <span className="edugov-badge">
+                    {/*  FIXED: Added dynamic class based on the project status */}
+                    <span className={`edugov-badge status-${(project.status || 'DRAFT').toLowerCase()}`}>
                       {project.status || 'DRAFT'}
                     </span>
                   </div>
 
-                  <p className="edugov-card-desc">
-                    {project.description || "No project description provided."}
-                  </p>
-
-                  <div className="edugov-card-footer">
+                  <div className="edugov-card-footer mt-4">
 
                     <div className="edugov-date-row">
                       <Calendar size={14} />

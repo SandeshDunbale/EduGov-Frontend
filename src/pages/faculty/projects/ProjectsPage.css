@@ -59,7 +59,7 @@
     border-radius: 8px;
 }
 
-/* ✅ GRID (MAIN FIX) */
+/* GRID (MAIN FIX) */
 .edugov-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -79,7 +79,7 @@
     }
 }
 
-/* ✅ CARD */
+/* CARD - FIXED MIN-HEIGHT */
 .edugov-card {
     background: #fff;
     border-radius: 12px;
@@ -88,10 +88,10 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 260px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-/* ✅ BLUE LINE */
+/*  BLUE LINE */
 .edugov-card::before {
     content: "";
     position: absolute;
@@ -107,42 +107,59 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 18px;
+    padding: 18px 18px 22px 22px; 
 }
 
 /* HEADER */
 .edugov-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 }
 
-/* BADGE */
+.edugov-card-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.4;
+}
+
+/*  BADGE & DYNAMIC STATUS COLORS */
 .edugov-badge {
     font-size: 10px;
-    background: #e2e8f0;
+    background: #e2e8f0; /* Default fallback background */
+    color: #475569;      /* Default fallback text */
     padding: 4px 8px;
     border-radius: 6px;
+    font-weight: 700;
+    white-space: nowrap; 
+    margin-left: 10px;
 }
 
-/* DESC */
-.edugov-card-desc {
-    margin: 10px 0;
-    font-size: 0.85rem;
-    color: #64748b;
-    flex-grow: 1;
+.edugov-badge.status-draft {
+    background-color: #FFA02E;
+    color: #ffffff;
 }
 
-/* FOOTER */
+.edugov-badge.status-completed {
+    background-color: #468432;
+    color: #ffffff;
+}
+
+/* FOOTER - FIXED PUSH DOWN */
 .edugov-card-footer {
-    margin-top: auto;
+    margin-top: 20px; 
 }
 
 /* DATE */
 .edugov-date-row {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: #64748b;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* BUTTONS */
@@ -156,17 +173,33 @@
     padding: 8px;
     border-radius: 6px;
     font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .edugov-btn.secondary {
     background: #f1f5f9;
-    border: none;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.edugov-btn.secondary:hover {
+    background: #e2e8f0;
 }
 
 .edugov-btn.primary {
     border: 1px solid #0ea5e9;
     background: white;
     color: #0ea5e9;
+}
+
+.edugov-btn.primary:hover {
+    background: #f0f9ff;
 }
 
 /* PAGINATION */
@@ -180,11 +213,17 @@
 .page-btn {
     width: 32px;
     height: 32px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 .page-btn.active {
     background: #1e3a5f;
     color: white;
+    border-color: #1e3a5f;
 }
 
 /* LOADER */
@@ -192,4 +231,86 @@
     display: flex;
     justify-content: center;
     margin-top: 50px;
+}
+
+/*  MOBILE (≤ 576px) */
+@media (max-width: 576px) {
+
+    .edugov-wrapper {
+        padding: 16px;
+    }
+
+    .edugov-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .edugov-controls {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .edugov-search-box {
+        width: 100%;
+    }
+
+    .edugov-search-box input {
+        width: 100%;
+    }
+
+    .btn-edugov-create {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .edugov-btn-group {
+        flex-direction: column;
+    }
+
+    .edugov-btn {
+        width: 100%;
+    }
+
+    .edugov-title {
+        font-size: 1.2rem;
+    }
+
+    .edugov-subtitle {
+        font-size: 0.8rem;
+    }
+}
+
+/*  TABLET (577px – 991px) */
+@media (min-width: 577px) and (max-width: 991px) {
+
+    .edugov-wrapper {
+        padding: 20px;
+    }
+
+    .edugov-header-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .edugov-controls {
+        flex-wrap: wrap;
+    }
+
+    .btn-edugov-create {
+        padding: 8px 14px;
+    }
+}
+
+/*  LARGE SCREENS (≥ 1400px) */
+@media (min-width: 1400px) {
+    .edugov-wrapper {
+        max-width: 1300px;
+        margin: auto;
+    }
+
+    .edugov-grid {
+        gap: 24px;
+    }
 }

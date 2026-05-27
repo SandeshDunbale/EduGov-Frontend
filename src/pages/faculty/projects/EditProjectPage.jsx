@@ -98,7 +98,7 @@ const EditProjectPage = () => {
         <div className="card-header form-header text-white d-flex justify-content-between align-items-center p-4">
           <div>
             <h3 className="fw-bold mb-1">Edit Research Project</h3>
-            <p className="text-white-50 small mb-0">Updating details for Project ID: {projectId}</p>
+            {/* <p className="text-white-50 small mb-0">Updating details for Project ID: {projectId}</p> */}
           </div>
           <span className="badge rounded-pill draft-badge px-3 py-2 text-uppercase fw-bold">
             Draft Mode

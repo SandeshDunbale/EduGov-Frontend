@@ -87,13 +87,13 @@ const GrantsPage = () => {
         switch (status) {
             case 'SUBMITTED':
             case 'UNDER_REVIEW':
-                return <span className="badge bg-warning text-dark px-3 py-2 rounded-pill"><Clock size={12} className="me-1" /> Pending Review</span>;
+                return <span className="badge bg-warning text-dark px-3 py-2 rounded-pill" style={{ display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", fontSize: "clamp(11px, 2vw, 13px)" }}><Clock size={14} className="me-0" /> Pending Review</span>;
             case 'APPROVED':
-                return <span className="badge bg-success text-white px-3 py-2 rounded-pill"><CheckCircle size={12} className="me-1" /> Approved</span>;
+                return <span className="badge bg-success text-white px-3 py-2 rounded-pill" style={{ display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", fontSize: "clamp(11px, 2vw, 13px)" }}><CheckCircle size={14} className="me-0" /> Approved</span>;
             case 'REJECTED':
-                return <span className="badge bg-danger text-white px-3 py-2 rounded-pill"><XCircle size={12} className="me-1" /> Rejected</span>;
+                return <span className="badge bg-danger text-white px-3 py-2 rounded-pill" style={{ display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", fontSize: "clamp(11px, 2vw, 13px)" }}><XCircle size={14} className="me-0" /> Rejected</span>;
             default:
-                return <span className="badge bg-secondary px-3 py-2 rounded-pill">{status}</span>;
+                return <span className="badge bg-secondary px-3 py-2 rounded-pill" style={{ display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap", fontSize: "clamp(11px, 2vw, 13px)" }}>{status}</span>;
         }
     };
 
@@ -161,30 +161,34 @@ const GrantsPage = () => {
                     ) : (
                         <>
                             <div className="table-responsive">
-                                <table className="table table-hover align-middle mb-0">
+                                <table className="table table-hover align-middle mb-0" style={{ minWidth: "900px" }}>
                                     <thead className="table-light text-muted small text-uppercase">
                                         <tr>
-                                            <th className="ps-4 py-3">App ID</th>
-                                            <th className="py-3">Project Title</th>
-                                            <th className="py-3">Date Submitted</th>
-                                            <th className="py-3 text-end">Amount Requested</th>
-                                            <th className="pe-4 py-3 text-center">Status</th>
+                                            <th className="ps-4 py-3" style={{ width: "8%", minWidth: "70px" }}>App ID</th>
+                                            <th className="py-3" style={{ width: "25%", minWidth: "150px" }}>Project Title</th>
+                                            <th className="py-3" style={{ width: "18%", minWidth: "120px" }}>Date Submitted</th>
+                                            <th className="py-3 text-center" style={{ width: "18%", minWidth: "130px" }}>Amount Requested</th>
+                                            <th className="pe-4 py-3 text-center" style={{ width: "31%", minWidth: "200px" }}>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="border-top-0">
                                         {currentApplications.map((app) => (
-                                            <tr key={app.applicationID || app.applicationId || app.id}>
-                                                <td className="ps-4 py-3 text-muted">
+                                            <tr key={app.applicationID || app.applicationId || app.id} style={{ transition: "background-color 0.2s ease" }}>
+                                                <td className="ps-4 py-3 text-muted" style={{ width: "8%", minWidth: "70px" }}>
                                                     {app.applicationID || app.applicationId || app.id || "N/A"}
                                                 </td>
-                                                <td className="py-3 fw-semibold text-dark">
-                                                    {app.projectTitle || "Unknown Project"}
+                                                <td className="py-3 fw-semibold text-dark" style={{ width: "25%", minWidth: "150px" }}>
+                                                    <span title={app.projectTitle} style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                        {app.projectTitle || "Unknown Project"}
+                                                    </span>
                                                 </td>
-                                                <td className="py-3 text-secondary">{app.submittedDate}</td>
-                                                <td className="py-3 text-end fw-bold text-dark">
+                                                <td className="py-3 text-secondary" style={{ width: "18%", minWidth: "120px" }}>
+                                                    {app.submittedDate || "N/A"}
+                                                </td>
+                                                <td className="py-3 text-center fw-bold text-dark" style={{ width: "18%", minWidth: "130px", whiteSpace: "nowrap" }}>
                                                     ₹{(app.requestedAmount || 0).toLocaleString()}
                                                 </td>
-                                                <td className="pe-4 py-3 text-center">
+                                                <td className="pe-4 py-3 text-center" style={{ width: "31%", minWidth: "200px" }}>
                                                     {getStatusBadge(app.status)}
                                                 </td>
                                             </tr>
@@ -194,44 +198,70 @@ const GrantsPage = () => {
                             </div>
 
                             {totalPages > 1 && (
-                                <div className="d-flex justify-content-center p-4 border-top">
-                                    <nav aria-label="Grants page navigation">
-                                        <ul className="pagination mb-0 shadow-sm">
-                                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                                    disabled={currentPage === 1}
-                                                >
-                                                    Previous
-                                                </button>
-                                            </li>
+                                <div style={{ display: "flex", justifyContent: "center", marginTop: "30px", gap: "8px", paddingBottom: "20px" }}>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                        style={{
+                                            width: "32px",
+                                            height: "32px",
+                                            border: currentPage === 1 ? "1px solid #e2e8f0" : "1px solid #d1d5db",
+                                            background: currentPage === 1 ? "#f3f4f6" : "white",
+                                            borderRadius: "4px",
+                                            cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                                            opacity: currentPage === 1 ? "0.5" : "1",
+                                            transition: "0.2s",
+                                            fontSize: "14px",
+                                            fontWeight: "500",
+                                            color: "#6b7280"
+                                        }}
+                                    >
+                                        ←
+                                    </button>
 
-                                            {[...Array(totalPages)].map((_, index) => {
-                                                const pageNumber = index + 1;
-                                                return (
-                                                    <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                                                        <button
-                                                            className="page-link"
-                                                            onClick={() => paginate(pageNumber)}
-                                                        >
-                                                            {pageNumber}
-                                                        </button>
-                                                    </li>
-                                                );
-                                            })}
+                                    {[...Array(totalPages)].map((_, index) => {
+                                        const pageNumber = index + 1;
+                                        return (
+                                            <button
+                                                key={pageNumber}
+                                                onClick={() => paginate(pageNumber)}
+                                                style={{
+                                                    width: "32px",
+                                                    height: "32px",
+                                                    border: currentPage === pageNumber ? "1px solid #1e3a5f" : "1px solid #e2e8f0",
+                                                    background: currentPage === pageNumber ? "#1e3a5f" : "white",
+                                                    color: currentPage === pageNumber ? "white" : "#1e293b",
+                                                    borderRadius: "4px",
+                                                    cursor: "pointer",
+                                                    transition: "0.2s",
+                                                    fontSize: "14px",
+                                                    fontWeight: "500"
+                                                }}
+                                            >
+                                                {pageNumber}
+                                            </button>
+                                        );
+                                    })}
 
-                                            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                                    disabled={currentPage === totalPages}
-                                                >
-                                                    Next
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage === totalPages}
+                                        style={{
+                                            width: "32px",
+                                            height: "32px",
+                                            border: currentPage === totalPages ? "1px solid #e2e8f0" : "1px solid #d1d5db",
+                                            background: currentPage === totalPages ? "#f3f4f6" : "white",
+                                            borderRadius: "4px",
+                                            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                                            opacity: currentPage === totalPages ? "0.5" : "1",
+                                            transition: "0.2s",
+                                            fontSize: "14px",
+                                            fontWeight: "500",
+                                            color: "#6b7280"
+                                        }}
+                                    >
+                                        →
+                                    </button>
                                 </div>
                             )}
                         </>

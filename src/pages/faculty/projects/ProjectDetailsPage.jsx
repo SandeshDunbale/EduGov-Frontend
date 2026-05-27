@@ -74,7 +74,11 @@ const ProjectDetailsPage = () => {
       setShowModal(false);
       setRequestedAmount('');
 
-      setTimeout(() => window.location.reload(), 1500);
+      //  FIXED: Replaced window.location.reload() with React Router SPA routing 
+      // This protects your active login session data structures from wiping out!
+      setTimeout(() => {
+        navigate('/faculty/projects');
+      }, 1500);
 
     } catch (error) {
       toast.error(error.response?.data?.message || "Already applied or failed.");
@@ -98,7 +102,6 @@ const ProjectDetailsPage = () => {
   return (
     <div className="details-wrapper">
 
-      {/* ✅ TOASTER FIXED */}
       <Toaster
         position="top-right"
         toastOptions={{
@@ -153,7 +156,7 @@ const ProjectDetailsPage = () => {
           <div className="info-card">
             <Info size={16}/>
             <span>Project ID</span>
-            <strong>#{project.projectId}</strong>
+            <strong>{project.projectId}</strong>
           </div>
 
           <div className="info-card">
@@ -171,7 +174,7 @@ const ProjectDetailsPage = () => {
 
       </div>
 
-      {/* ✅ MODAL */}
+      {/*  MODAL */}
       {showModal && (
         <>
           <div className="modal-backdrop fade show"></div>
@@ -190,7 +193,6 @@ const ProjectDetailsPage = () => {
 
                     <p>Request funding for <strong>{project.title}</strong></p>
 
-                    {/* ✅ FIXED INPUT GROUP */}
                     <div className="custom-input-group">
                       <span>₹</span>
                       <input

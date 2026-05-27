@@ -1,23 +1,25 @@
 /* src/component/layout/sidebar/sidebar.css */
-
+ 
 .edugov-sidebar {
   width: 270px; /* Slightly wider for breathing room */
-  background-color: #2F4156; 
+  background-color: #2F4156;
   color: #F8FAFC;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; 
+  flex-shrink: 0;
   border-right: 1px solid #1E293B;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.08); /* Deeper, softer shadow */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease; /* Added transition for mobile slide */
+  z-index: 999; /* Ensures it stays above content on mobile */
 }
-
+ 
 /* Header Area Upgrade */
 .sidebar-header {
   padding: 1.75rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 1rem;
 }
-
+ 
 .module-title {
   font-size: 1.15rem;
   font-weight: 700;
@@ -25,7 +27,7 @@
   margin: 0 0 0.5rem 0;
   letter-spacing: 0.5px;
 }
-
+ 
 .status-badge {
   display: flex;
   align-items: center;
@@ -34,7 +36,7 @@
   border-radius: 20px;
   width: max-content;
 }
-
+ 
 .status-indicator {
   width: 8px;
   height: 8px;
@@ -43,22 +45,22 @@
   margin-right: 0.4rem;
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); /* Glowing dot */
 }
-
+ 
 .module-status {
   font-size: 0.75rem;
-  color: #10B981; 
+  color: #10B981;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
+ 
 /* Navigation Links */
 .sidebar-menu {
   padding: 0 1rem 1rem 1rem;
-  overflow-y: auto; 
+  overflow-y: auto;
   flex: 1; /* Pushes the footer down */
 }
-
+ 
 /* Custom Scrollbar for the menu */
 .sidebar-menu::-webkit-scrollbar {
   width: 5px;
@@ -67,20 +69,20 @@
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
-
+ 
 .menu-group {
   margin-bottom: 1.75rem;
 }
-
+ 
 .group-label {
   font-size: 0.75rem;
-  color: #94A3B8; 
+  color: #94A3B8;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 1.2px;
   margin: 0 0 0.75rem 0.75rem;
 }
-
+ 
 /* Upgraded Interactive Links */
 .sidebar-link {
   display: flex;
@@ -95,7 +97,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 0.35rem;
 }
-
+ 
 /* SVG Icon Styling */
 .link-icon {
   width: 20px;
@@ -104,39 +106,39 @@
   opacity: 0.7;
   transition: opacity 0.3s ease;
 }
-
+ 
 /* Interaction States - The "Slide Right" Animation */
 .sidebar-link:hover {
-  background-color: rgba(2, 132, 199, 0.1); 
+  background-color: rgba(2, 132, 199, 0.1);
   color: #FFFFFF;
   border-left: 3px solid #0284C7; /* Teal accent appears */
   transform: translateX(4px); /* Slides slightly to the right */
 }
-
+ 
 .sidebar-link:hover .link-icon {
   opacity: 1;
 }
-
+ 
 /* Active Page State */
 .sidebar-link.active {
-  background-color: #0284C7; 
+  background-color: #0284C7;
   color: #FFFFFF;
   font-weight: 600;
   border-left: 3px solid #60A5FA; /* Lighter blue highlight for depth */
   box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
 }
-
+ 
 .sidebar-link.active .link-icon {
   opacity: 1;
 }
-
+ 
 /* New User Profile Footer */
 .sidebar-footer {
   padding: 1.25rem 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   background-color: rgba(30, 41, 59, 0.4); /* Darker backdrop */
 }
-
+ 
 .user-profile {
   display: flex;
   align-items: center;
@@ -145,11 +147,11 @@
   transition: background-color 0.2s ease;
   cursor: pointer;
 }
-
+ 
 .user-profile:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
-
+ 
 .user-avatar {
   width: 36px;
   height: 36px;
@@ -164,19 +166,76 @@
   margin-right: 0.75rem;
   border: 2px solid #1E293B;
 }
-
+ 
 .user-info {
   display: flex;
   flex-direction: column;
 }
-
+ 
 .user-name {
   font-size: 0.9rem;
   color: #F8FAFC;
   font-weight: 600;
 }
-
+ 
 .user-role {
   font-size: 0.75rem;
   color: #94A3B8;
+}
+ 
+/* =========================================
+   RESPONSIVE WEB DESIGN (RWD) MEDIA QUERIES
+   ========================================= */
+ 
+/* Tablets and Small Laptops */
+@media (max-width: 1024px) {
+  .edugov-sidebar {
+    width: 240px; /* Compress slightly to give content more room */
+  }
+}
+ 
+/* Mobile Devices and Smaller Tablets (Off-Canvas Menu Pattern) */
+@media (max-width: 768px) {
+  .edugov-sidebar {
+    position: fixed; /* Detach from layout */
+    top: 60px; /* Assuming navbar height is 60px */
+    left: 0;
+    height: calc(100vh - 60px); /* Full height minus navbar */
+    transform: translateX(-100%); /* Hide off-screen to the left by default */
+    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.5); /* Stronger shadow for overlay effect */
+  }
+ 
+  /*
+   * Apply this class dynamically in React:
+   * <div className={`edugov-sidebar ${isOpen ? 'sidebar-open' : ''}`}>
+   */
+  .edugov-sidebar.sidebar-open {
+    transform: translateX(0); /* Slide in */
+  }
+ 
+  /* Inside your existing max-width: 768px query */
+  .sidebar-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-close-btn {
+    display: block !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  .status-badge {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+ 
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .edugov-sidebar {
+    width: 80%; /* Don't take up the full screen so user can click outside to close */
+    max-width: 300px;
+  }
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Eye, Loader2 } from 'lucide-react';
+import { Eye, Loader2, X } from 'lucide-react'; // 🟢 FIXED: Added 'X' icon for modal header closure
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './UserManagement.css';
-
+ 
 const UserManagement = () => {
     const [allRecords, setAllRecords] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -11,46 +11,50 @@ const UserManagement = () => {
     const [activeTab, setActiveTab] = useState('basic');
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState(null);
-    
+ 
     const [showModal, setShowModal] = useState(false);
-
+ 
+    // ─── 🟢 ADDED: PAGINATION LOCAL STATE VARIABLES ───
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 10;
+ 
     const extractData = (res) => {
         if (!res || !res.data) return [];
         if (Array.isArray(res.data)) return res.data;
         if (Array.isArray(res.data.content)) return res.data.content;
         return [];
     };
-
+ 
     useEffect(() => {
-        let isMounted = true; 
-
+        let isMounted = true;
+ 
         const loadData = async () => {
-            const token = localStorage.getItem('token'); 
+            const token = localStorage.getItem('token');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-
+ 
             try {
                 const [studentRes, facultyRes] = await Promise.all([
                     axios.get('http://localhost:8002/students/all', config),
                     axios.get('http://localhost:8002/faculty/all', config)
                 ]);
-
-                if (!isMounted) return; 
-
+ 
+                if (!isMounted) return;
+ 
                 const safeStudents = extractData(studentRes);
                 const safeFaculty = extractData(facultyRes);
-
+ 
                 const students = safeStudents.map(u => ({
-                    ...u, 
-                    role: 'STUDENT', 
+                    ...u,
+                    role: 'STUDENT',
                     dbId: u.studentId || u.id || u.userId || Math.random().toString(36).substr(2, 9)
                 }));
-
+ 
                 const faculty = safeFaculty.map(u => ({
-                    ...u, 
-                    role: 'FACULTY', 
+                    ...u,
+                    role: 'FACULTY',
                     dbId: u.facultyId || u.id || u.userId || Math.random().toString(36).substr(2, 9)
                 }));
-
+ 
                 setAllRecords([...students, ...faculty]);
             } catch (e) {
                 console.error("Failed to fetch users:", e);
@@ -58,28 +62,28 @@ const UserManagement = () => {
                 if (isMounted) setLoading(false);
             }
         };
-
+ 
         loadData();
-
+ 
         return () => {
             isMounted = false;
         };
-    }, []); 
-
+    }, []);
+ 
     const handleStatusUpdate = async (dbId, role, isApproved) => {
         const servicePath = role === 'STUDENT' ? 'students' : 'faculty';
         const action = isApproved ? 'approve' : 'decline';
         const token = localStorage.getItem('token');
-
+ 
         setProcessingId(dbId);
-
+ 
         try {
             await axios.patch(
                 `http://localhost:8002/${servicePath}/${dbId}/${action}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
+ 
             setAllRecords(prev =>
                 prev.map(user =>
                     user.dbId === dbId
@@ -93,19 +97,19 @@ const UserManagement = () => {
             setProcessingId(null);
         }
     };
-
+ 
     const handleDocVerify = async (docId, isApproved) => {
         const statusValue = isApproved ? 'APPROVED' : 'DECLINED';
         const adminNotes = isApproved ? "Verified" : "Rejected";
         const token = localStorage.getItem('token');
-
+ 
         setProcessingId(`doc-${docId}`);
         try {
             await axios.patch(
                 `http://localhost:8002/api/documents/verify/${docId}`,
                 null,
                 {
-                    params: { 
+                    params: {
                         status: statusValue,
                         notes: adminNotes,
                         adminId: 1
@@ -113,7 +117,7 @@ const UserManagement = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 }
             );
-
+ 
             setUserDocs(prev =>
                 prev.map(doc =>
                     doc.documentId === docId
@@ -127,23 +131,23 @@ const UserManagement = () => {
             setProcessingId(null);
         }
     };
-
+ 
     const openModal = (user) => {
         setSelectedUser(user);
         setActiveTab('basic');
         setUserDocs([]);
-        setShowModal(true); 
+        setShowModal(true);
     };
-
+ 
     const closeModal = () => {
         setShowModal(false);
         setSelectedUser(null);
     };
-
+ 
     const handleShowDocs = async () => {
         setActiveTab('docs');
         const targetId = selectedUser?.userId || selectedUser?.dbId;
-
+ 
         if (targetId) {
             const token = localStorage.getItem('token');
             try {
@@ -157,7 +161,7 @@ const UserManagement = () => {
             }
         }
     };
-
+ 
     if (loading) {
         return (
             <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
@@ -167,7 +171,13 @@ const UserManagement = () => {
             </div>
         );
     }
-
+ 
+    // ─── 🟢 ADDED: CALCULATE SUBDIVIDED CHUNKS FOR CURRENT PAGE ───
+    const indexOfLastRecord = currentPage * recordsPerPage;
+    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+    const currentRecords = allRecords.slice(indexOfFirstRecord, indexOfLastRecord);
+    const totalPages = Math.ceil(allRecords.length / recordsPerPage);
+ 
     return (
         <div className="p-4">
             <div className="table-responsive bg-white rounded shadow-sm p-3 border">
@@ -182,8 +192,9 @@ const UserManagement = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {allRecords.length > 0 ? (
-                            allRecords.map((user, index) => (
+                        {/* 🟢 CHANGED: Loops through currentRecords (10 items) instead of allRecords */}
+                        {currentRecords.length > 0 ? (
+                            currentRecords.map((user, index) => (
                                 <tr key={`user-${user.dbId}-${index}`} className="border-bottom">
                                     <td className="py-3">
                                         <b className="text-dark d-block mb-1">{user.name || 'Unknown User'}</b>
@@ -197,7 +208,6 @@ const UserManagement = () => {
                                             {user.status || 'PENDING'}
                                         </span>
                                     </td>
-                                    {/* 🟢 FIXED: Prevent text wrapping in actions column */}
                                     <td className="text-center" style={{ whiteSpace: 'nowrap' }}>
                                         <button
                                             className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 fw-bold"
@@ -212,17 +222,16 @@ const UserManagement = () => {
                                                 <Loader2 className="spinner me-1" size={14} /> Processing
                                             </div>
                                         ) : (
-                                            /* 🟢 FIXED: Added flex-nowrap to prevent buttons from stacking weirdly */
-                                            <div className="d-flex justify-content-center gap-2 flex-nowrap">
+                                            <div className="d-flex justify-content-end gap-2 flex-nowrap">
                                                 <button
-                                                    className="btn btn-success btn-sm px-3 fw-bold flex-fill"
+                                                    className="btn btn-success btn-sm px-3 fw-bold"
                                                     disabled={user.status !== 'PENDING'}
                                                     onClick={() => handleStatusUpdate(user.dbId, user.role, true)}
                                                 >
                                                     Approve
                                                 </button>
                                                 <button
-                                                    className="btn btn-danger btn-sm px-3 fw-bold flex-fill"
+                                                    className="btn btn-danger btn-sm px-3 fw-bold"
                                                     disabled={user.status !== 'PENDING'}
                                                     onClick={() => handleStatusUpdate(user.dbId, user.role, false)}
                                                 >
@@ -243,24 +252,78 @@ const UserManagement = () => {
                     </tbody>
                 </table>
             </div>
-
+ 
+            {/* ─── 🟢 ADDED: BOOTSTRAP PAGINATION CONTROL LAYER ─── */}
+            {allRecords.length > recordsPerPage && (
+                <div className="d-flex justify-content-between align-items-center mt-3 px-2">
+                    <div className="text-secondary small fw-bold">
+                        Showing {indexOfFirstRecord + 1} to {Math.min(indexOfLastRecord, allRecords.length)} of {allRecords.length} entries
+                    </div>
+                    <nav>
+                        <ul className="pagination pagination-sm m-0 gap-1">
+                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-primary btn-sm px-3 fw-bold"
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                >
+                                    Previous
+                                </button>
+                            </li>
+                           
+                            {[...Array(totalPages)].map((_, i) => (
+                                <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                    <button
+                                        type="button"
+                                        className={`btn btn-sm px-3 fw-bold ${currentPage === i + 1 ? 'btn-primary' : 'btn-light text-primary border'}`}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                </li>
+                            ))}
+ 
+                            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-primary btn-sm px-3 fw-bold"
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                >
+                                    Next
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            )}
+ 
             {/* MODAL LOGIC */}
             {showModal && (
-                <div 
-                    className="modal fade show d-block" 
-                    tabIndex="-1" 
-                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} 
-                    onClick={closeModal} 
+                <div
+                    className="modal fade show d-block"
+                    tabIndex="-1"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    onClick={closeModal}
                 >
-                    <div 
-                        className="modal-dialog modal-lg modal-dialog-centered" 
-                        onClick={(e) => e.stopPropagation()} 
+                    <div
+                        className="modal-dialog modal-lg modal-dialog-centered"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-content border-0 shadow-lg rounded-4">
-                            <div className="modal-header bg-light border-bottom-0 pb-0">
-                                <h5 className="modal-title fw-bold px-2 pt-2">User Administration</h5>
-                                <button type="button" className="btn-close me-2 mt-2" onClick={closeModal}></button>
+                           
+                            {/* ─── 🟢 FIXED: VISIBLE TOP RIGHT X OVER DARK CSS BACKGROUND ─── */}
+                            <div className="modal-header bg-light border-bottom-0 pb-0 d-flex justify-content-between align-items-center">
+                                <h5 className="modal-title fw-bold px-2 pt-2 text-white">User Administration</h5>
+                                <button
+                                    type="button"
+                                    className="btn p-0 border-0 me-2 mt-2"
+                                    style={{ background: 'none', color: '#ffffff' }}
+                                    onClick={closeModal}
+                                >
+                                    <X size={22} />
+                                </button>
                             </div>
+                           
                             <div className="modal-body px-4 pb-4">
                                 <div className="tab-container mt-2">
                                     <button
@@ -276,7 +339,7 @@ const UserManagement = () => {
                                         Verification Documents
                                     </button>
                                 </div>
-
+ 
                                 {activeTab === 'basic' && (
                                     <div className="details-grid mt-4">
                                         {Object.entries(selectedUser || {})
@@ -285,7 +348,7 @@ const UserManagement = () => {
                                             )
                                             .map(([key, value]) => (
                                                 <div key={key} className="detail-card shadow-sm">
-                                                    <div className="detail-label text-uppercase mb-1 fw-bold text-primary" style={{fontSize: '0.75rem'}}>
+                                                    <div className="detail-label text-uppercase mb-1 fw-bold text-primary" style={{ fontSize: '0.75rem' }}>
                                                         {key.replace(/([A-Z])/g, ' $1').trim()}
                                                     </div>
                                                     <div className="detail-value text-dark fs-6">
@@ -295,7 +358,7 @@ const UserManagement = () => {
                                             ))}
                                     </div>
                                 )}
-
+ 
                                 {activeTab === 'docs' && (
                                     <div className="mt-4">
                                         {userDocs.length > 0 ? (
@@ -304,7 +367,7 @@ const UserManagement = () => {
                                                     <div style={{ flex: 1 }}>
                                                         <div className="fw-bold text-dark fs-5">{doc.docType}</div>
                                                         <div className="small text-muted mb-2">Doc ID: {doc.documentId}</div>
-                                                        
+ 
                                                         {doc.file_url && (
                                                             <a
                                                                 href={doc.file_url}
@@ -312,30 +375,30 @@ const UserManagement = () => {
                                                                 rel="noopener noreferrer"
                                                                 className="text-decoration-none fw-bold"
                                                             >
-                                                                <Eye size={16} className="me-1"/> View Source File
+                                                                <Eye size={16} className="me-1" /> View Source File
                                                             </a>
                                                         )}
-                                                        
+ 
                                                         <div className="mt-3">
                                                             <span className={`badge px-3 py-2 ${doc.uploadStatus === 'APPROVED' ? 'bg-success' : doc.uploadStatus === 'DECLINED' ? 'bg-danger' : 'bg-warning text-dark'}`}>
                                                                 Status: {doc.uploadStatus}
                                                             </span>
                                                         </div>
                                                     </div>
-
+ 
                                                     <div className="ms-3 pe-3">
                                                         {processingId === `doc-${doc.documentId}` ? (
-                                                            <Loader2 className="spinner text-primary" size={28}/>
+                                                            <Loader2 className="spinner text-primary" size={28} />
                                                         ) : (
                                                             <div className="btn-group-vertical gap-2">
-                                                                <button 
+                                                                <button
                                                                     className="btn btn-outline-success btn-sm fw-bold px-4 rounded"
                                                                     disabled={doc.uploadStatus !== 'PENDING'}
                                                                     onClick={() => handleDocVerify(doc.documentId, true)}
                                                                 >
                                                                     Approve
                                                                 </button>
-                                                                <button 
+                                                                <button
                                                                     className="btn btn-outline-danger btn-sm fw-bold px-4 rounded"
                                                                     disabled={doc.uploadStatus !== 'PENDING'}
                                                                     onClick={() => handleDocVerify(doc.documentId, false)}
@@ -354,6 +417,18 @@ const UserManagement = () => {
                                         )}
                                     </div>
                                 )}
+ 
+                                {/* ─── 🟢 ADDED: EXPLICIT BOTTOM CLOSE WINDOW ACTION BUTTON ─── */}
+                                <div className="d-flex justify-content-end mt-4 pt-3 border-top">
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary px-4 fw-bold"
+                                        onClick={closeModal}
+                                    >
+                                        Close Window
+                                    </button>
+                                </div>
+ 
                             </div>
                         </div>
                     </div>
@@ -362,5 +437,5 @@ const UserManagement = () => {
         </div>
     );
 };
-
+ 
 export default UserManagement;

@@ -1,31 +1,31 @@
-// src/pages/home/Home.jsx
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Float, PresentationControls, ContactShadows } from '@react-three/drei';
+import { useAuth } from '../../context/AuthContext'; // 📍 IMPORT AUTH CONTEXT
 import {
   ArrowRight, BookOpen, FileText, ShieldCheck,
   BarChart, ChevronLeft, ChevronRight, Users, Building, Globe
 } from 'lucide-react';
 import * as THREE from 'three';
 import './home.css';
-
+ 
 // --- Education-Themed Glass Shapes ---
 const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpeed = 1 }) => {
   const groupRef = useRef();
-
+ 
   useFrame((state) => {
     if (!groupRef.current) return;
     groupRef.current.rotation.x += 0.003 * rotationSpeed;
     groupRef.current.rotation.y += 0.005 * rotationSpeed;
-    
+   
     // Smooth, subtle mouse follow
     const targetX = position[0] + (state.mouse.x * 1.5);
     const targetY = position[1] + (state.mouse.y * 1.5);
     groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, 0.02);
     groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, 0.02);
   });
-
+ 
   const glassProps = {
     transmission: 1,
     roughness: 0.1,
@@ -37,7 +37,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
     clearcoat: 1,
     color: "#ffffff"
   };
-
+ 
   return (
     <Float speed={floatSpeed} rotationIntensity={0.5} floatIntensity={1}>
       <group ref={groupRef} scale={scale}>
@@ -54,7 +54,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
             </mesh>
           </group>
         )}
-
+ 
         {/* 📖 OPEN BOOK */}
         {type === 'book' && (
           <group rotation={[0, 0, 0.2]}>
@@ -68,7 +68,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
             </mesh>
           </group>
         )}
-
+ 
         {/* 🏛️ GOVERNANCE PILLAR */}
         {type === 'pillar' && (
           <group>
@@ -86,7 +86,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
             </mesh>
           </group>
         )}
-
+ 
         {/* 🌎 GLOBAL EDUCATION (Globe) */}
         {type === 'globe' && (
           <group>
@@ -104,7 +104,7 @@ const EducationShape = ({ position, type, scale = 1, floatSpeed = 1, rotationSpe
     </Float>
   );
 };
-
+ 
 // --- Carousel Content Data ---
 const carouselSlides = [
   {
@@ -115,8 +115,7 @@ const carouselSlides = [
   },
   {
     id: 2,
-    // 📍 Image integrated from origin/module2_nidhi
-    image: "https://media.licdn.com/dms/image/v2/D4E12AQEdISWdLj7S_Q/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1660066499542?e=2147483647&v=beta&t=FeND2ZO_bn3_GC5KMXyicoe2QLEoz08oL0-weUDgKF4",
+    image: "https://media.licdn.com/dms/image/v2/D4E12AQEdISWdLj7S_Q/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1660066499542?e=2147483647&v=beta&t=FeND2ZO_bn3_GC5KMXyicoe2QLEoz08oL0-weUDgKF4%22%22",
     title: "Data-Driven Intelligence",
     subtitle: "Real-time analytics dashboards for complete administrative and financial oversight."
   },
@@ -127,11 +126,13 @@ const carouselSlides = [
     subtitle: "Cloud-native architecture ensuring seamless compliance and military-grade security."
   }
 ];
-
+ 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
+ 
+  const { user } = useAuth(); // 📍 CONSUME USER DATA FROM CONTEXT
+ 
   // Auto-play Carousel with Pause on Hover
   useEffect(() => {
     if (isHovered) return;
@@ -140,13 +141,37 @@ const Home = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [isHovered]);
-
+ 
   const nextSlide = () => setCurrentSlide(currentSlide === carouselSlides.length - 1 ? 0 : currentSlide + 1);
   const prevSlide = () => setCurrentSlide(currentSlide === 0 ? carouselSlides.length - 1 : currentSlide - 1);
-
+ 
+  // 🔒 RESOLVE DYNAMIC WORKSPACE ENDPOINT BASED ON LOGGED-IN ROLE
+  const getWorkspaceUrl = () => {
+    if (!user || !user.role) return "/login";
+ 
+    const normalizedRole = user.role.replace('ROLE_', '');
+   
+    switch (normalizedRole) {
+      case 'STUDENT':
+        return '/dashboard/student';
+      case 'FACULTY':
+        return '/dashboard/faculty';
+      case 'UNIV_ADMIN':
+        return '/dashboard/admin';
+      case 'PROG_MANAGER':
+        return '/manager/dashboard';
+      case 'COMPLIANCE_OFFICER':
+        return '/dashboard/compliance';
+      case 'GOVT_AUDITOR':
+        return '/dashboard/auditor';
+      default:
+        return '/dashboard/default';
+    }
+  };
+ 
   return (
     <div className="premium-3d-wrapper">
-      
+     
       {/* 1. THE 3D CANVAS */}
       <div className="canvas-background">
         <Canvas camera={{ position: [0, 0, 12], fov: 45 }}>
@@ -154,7 +179,7 @@ const Home = () => {
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#3B82F6" />
           <spotLight position={[-10, -10, -10]} angle={0.15} penumbra={1} intensity={2} color="#F43F5E" />
           <Environment preset="city" />
-          
+         
           <PresentationControls
             global
             config={{ mass: 2, tension: 500 }}
@@ -169,31 +194,32 @@ const Home = () => {
             <EducationShape type="globe" position={[5, 4, -3]} scale={0.9} floatSpeed={1.4} />
             <EducationShape type="cap" position={[0, -6, -8]} scale={1.5} floatSpeed={1} />
           </PresentationControls>
-
+ 
           <ContactShadows position={[0, -6, 0]} opacity={0.4} scale={20} blur={2} far={10} />
         </Canvas>
       </div>
-
+ 
       {/* 2. THE UI OVERLAY */}
       <div className="ui-overlay">
-        
+       
         {/* HERO */}
         <div className="premium-hero">
           <div className="hero-badge">Next-Generation Platform</div>
           <h1 className="hero-title">
             Transforming Academic<br/> Governance.
           </h1>
-          <p className="hero-subtitle">
+          <div className="hero-subtitle">
             An intelligent, unified ecosystem for the modern university. Unify your data, automate compliance, and empower your institution.
-          </p>
+          </div>
           <div className="hero-actions">
-            <Link to="/demo" className="btn-premium-glass">
+            {/* 📍 LINK PATH GENERATED DYNAMICALLY NOW */}
+            <Link to={getWorkspaceUrl()} className="btn-premium-glass">
               Enter Workspace <ArrowRight className="btn-icon-right" />
             </Link>
             <p className="hero-hint">Interact with the digital space to explore ✦</p>
           </div>
         </div>
-
+ 
         {/* 📊 IMPACT METRICS BANNER */}
         <div className="impact-metrics-banner">
           <div className="metric">
@@ -212,9 +238,9 @@ const Home = () => {
             <p>Countries</p>
           </div>
         </div>
-
+ 
         {/* 📍 PREMIUM GLASS CAROUSEL */}
-        <div 
+        <div
           className="glass-carousel-container"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -230,14 +256,14 @@ const Home = () => {
               </div>
             ))}
           </div>
-          
+         
           <button className="carousel-btn prev" onClick={prevSlide} aria-label="Previous slide">
             <ChevronLeft size={24} />
           </button>
           <button className="carousel-btn next" onClick={nextSlide} aria-label="Next slide">
             <ChevronRight size={24} />
           </button>
-          
+         
           <div className="carousel-dots">
             {carouselSlides.map((_, index) => (
               <button
@@ -249,32 +275,32 @@ const Home = () => {
             ))}
           </div>
         </div>
-
+ 
         {/* BENTO/GLASS GRID */}
         <div className="section-header">
           <h2>Core Capabilities</h2>
           <p>Everything you need to govern effectively.</p>
         </div>
-
+ 
         <div className="premium-glass-grid">
           <div className="glass-panel">
             <div className="panel-icon-wrap"><BookOpen /></div>
             <h3>Curriculum Design</h3>
             <p>Agile workflows and seamless routing for new program approvals and syllabus tracking.</p>
           </div>
-          
+         
           <div className="glass-panel">
             <div className="panel-icon-wrap"><FileText /></div>
             <h3>Grant Management</h3>
             <p>Optimized financial oversight, fund allocation, and real-time infrastructure ledgers.</p>
           </div>
-
+ 
           <div className="glass-panel">
             <div className="panel-icon-wrap"><ShieldCheck /></div>
             <h3>Automated Compliance</h3>
             <p>Military-grade encryption ensuring constant regional, state, and federal audit readiness.</p>
           </div>
-
+ 
           <div className="glass-panel">
             <div className="panel-icon-wrap"><BarChart /></div>
             <h3>Predictive Analytics</h3>
@@ -285,5 +311,5 @@ const Home = () => {
     </div>
   );
 };
-
+ 
 export default Home;

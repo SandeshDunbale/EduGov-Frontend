@@ -10,3 +10,15 @@ export const CourseAPI = {
     
 };
 
+// import api from "../api/axios";
+
+// export const CourseAPI = {
+//     // 🟢 FIXED: Added '/api' prefix to all routes to match the Gateway
+//     getAll: () => api.get('/api/courses/all'), 
+//     getById: (id) => api.get(`/api/courses/${id}`), 
+//     getByProgramId: (pId) => api.get(`/api/courses/program/${pId}`),
+//     save: (data) => api.post('/api/courses/save', data),
+//     update: (id, data) => api.patch(`/api/courses/update/${id}`, data), 
+//     getByFacultyId: (fId) => api.get(`/api/courses/faculty/${fId}`)
+// };
+

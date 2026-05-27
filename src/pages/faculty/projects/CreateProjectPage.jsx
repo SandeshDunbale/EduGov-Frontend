@@ -47,9 +47,16 @@ const CreateProjectPage = () => {
       
       console.log("Sending data to Spring Boot for Faculty ID:", facultyId);
       
-      // ✅ FIXED: Changed to ProjectAPI (Capital P) and swapped arguments to (facultyId, formData)
+      // FIXED: Changed to ProjectAPI (Capital P) and swapped arguments to (facultyId, formData)
       // This ensures the ID goes into the URL and the Data goes into the Body.
       const response = await ProjectAPI.createProject(facultyId, formData);
+      
+      //  NEW FIX: Catch the backend fallback response!
+      // If the backend returns a string with "exists" or a null projectId, it's a duplicate.
+      if (!response || response.projectId === null || (typeof response === 'string' && response.toLowerCase().includes('exists'))) {
+          toast.error("A project with this title already exists.");
+          return; // Stop execution here so it doesn't show success or navigate!
+      }
       
       console.log("Success! Backend responded with:", response);
       toast.success("Project Created Successfully!");
@@ -91,7 +98,7 @@ const CreateProjectPage = () => {
         {/* Header */}
         <div className="card-header form-header text-white p-4">
           <h3 className="fw-bold mb-1">Create New Research Project</h3>
-          <p className="text-white-50 small mb-0">Draft a new proposal. You can update these details later.</p>
+          <p className="text-white-50 small mb-0"></p>
         </div>
 
         {/* Form Body */}
@@ -179,7 +186,7 @@ const CreateProjectPage = () => {
               className="btn btn-primary-custom d-flex align-items-center gap-2 px-4 fw-semibold"
             >
               <Save size={18} />
-              Save Project Draft
+              Save
             </button>
           </div>
 

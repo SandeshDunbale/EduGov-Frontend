@@ -1,14 +1,14 @@
 /* src/component/layout/navbar/navbar.css */
-
+ 
 .edugov-navbar-alt {
-  background-color: #1E293B;
+  background-color: #1E293B !important; /* Forces dark background over Bootstrap */
   position: sticky;
   top: 0;
   z-index: 1000;
   border-bottom: 3px solid #0284C7;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-
+ 
 .navbar-container-alt {
   max-width: 1280px;
   margin: 0 auto;
@@ -18,20 +18,23 @@
   justify-content: space-between;
   align-items: center;
 }
-
+ 
 .navbar-brand-alt {
   flex: 1;
   display: flex;
+  flex-direction: row; /* Forces horizontal alignment */
+  align-items: center; /* Prevents vertical stacking */
   justify-content: flex-start;
+  gap: 12px;
 }
-
+ 
 .navbar-links-alt {
   flex: 2;
   display: flex;
   justify-content: center;
-  gap: 2.5rem; 
+  gap: 2.5rem;
 }
-
+ 
 .navbar-actions-alt {
   flex: 1;
   display: flex;
@@ -39,7 +42,7 @@
   align-items: center;
   gap: 1.25rem;
 }
-
+ 
 /* Brand Identity */
 .logo-link {
   display: flex;
@@ -47,38 +50,38 @@
   text-decoration: none;
   gap: 0.2rem;
 }
-
+ 
 .edugov-svg-icon {
   display: block;
   transition: transform 0.3s ease;
 }
-
+ 
 .logo-link:hover .edugov-svg-icon {
   transform: translateY(-3px);
 }
-
+ 
 .brand-text-container {
   display: flex;
   align-items: baseline;
 }
-
+ 
 .brand-edu {
   color: #0284C7;
   font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: 0.5px;
 }
-
+ 
 .brand-gov {
   color: #FFFFFF;
   font-size: 1.6rem;
   font-weight: 300;
   letter-spacing: 1px;
 }
-
+ 
 /* Navigation Links */
 .nav-item-alt {
-  color: #F8FAFC; 
+  color: #F8FAFC;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -86,19 +89,19 @@
   transition: color 0.2s ease, transform 0.2s ease;
   padding-bottom: 3px;
 }
-
-.nav-item-alt:hover, 
+ 
+.nav-item-alt:hover,
 .nav-item-alt:focus {
-  color: #0284C7; 
+  color: #0284C7;
   transform: translateY(-2px);
 }
-
+ 
 /* Auth Button (Logged Out) */
 .auth-button-alt {
   padding: 0.4rem 1.1rem;
   background-color: transparent;
   color: #F8FAFC;
-  border: 2px solid #0284C7; 
+  border: 2px solid #0284C7;
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.85rem;
@@ -106,33 +109,33 @@
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-
+ 
 .auth-button-alt:hover {
   background-color: #0284C7;
   color: #FFFFFF;
 }
-
+ 
 .auth-button-alt:active {
   transform: scale(0.96);
 }
-
+ 
 /* --- Shared Dropdown Logic --- */
 .auth-dropdown-container {
   position: relative;
   display: inline-block;
 }
-
+ 
 .dropdown-arrow {
   font-size: 0.8rem;
   margin-left: 0.4rem;
   transition: transform 0.2s ease;
   display: inline-block;
 }
-
+ 
 .auth-dropdown-container:hover .dropdown-arrow {
   transform: rotate(180deg);
 }
-
+ 
 .auth-dropdown-menu {
   position: absolute;
   top: 100%;
@@ -148,7 +151,7 @@
   z-index: 1050;
   animation: slideDown 0.2s ease forwards;
 }
-
+ 
 /* The Invisible Hover Bridge */
 .auth-dropdown-menu::before {
   content: "";
@@ -157,9 +160,9 @@
   left: 0;
   right: 0;
   height: 15px;
-  background-color: transparent; 
+  background-color: transparent;
 }
-
+ 
 .dropdown-item {
   padding: 0.85rem 1.25rem;
   color: #F8FAFC;
@@ -172,7 +175,7 @@
   transition: background-color 0.2s ease, padding-left 0.2s ease;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
+ 
 .dropdown-item:last-child {
   border-bottom: none;
   border-radius: 0 0 8px 8px;
@@ -180,30 +183,30 @@
 .dropdown-item:first-child {
   border-radius: 8px 8px 0 0;
 }
-
+ 
 .dropdown-item:hover {
-  background-color: #0284C7; 
+  background-color: #0284C7;
   color: #FFFFFF;
-  padding-left: 1.5rem; 
+  padding-left: 1.5rem;
 }
-
+ 
 .dropdown-icon {
   font-size: 1.1rem;
 }
-
+ 
 .admin-item {
-  color: #94A3B8; 
+  color: #94A3B8;
 }
-
+ 
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
+ 
 /* =========================================
    USER PROFILE BUTTON & DROPDOWN (LOGGED IN)
    ========================================= */
-
+ 
 .navbar-user-profile {
   display: flex;
   align-items: center;
@@ -215,12 +218,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+ 
 .navbar-user-profile:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
-
+ 
 .nav-avatar {
   width: 32px;
   height: 32px;
@@ -233,7 +236,7 @@
   font-weight: 700;
   font-size: 0.9rem;
 }
-
+ 
 .nav-user-name {
   color: #FFFFFF;
   font-weight: 500;
@@ -241,12 +244,11 @@
   display: flex;
   align-items: center;
 }
-
-/* Specific styling for the profile dropdown menu */
+ 
 .profile-dropdown-menu {
-  min-width: 200px; /* Slightly narrower than the login menu */
+  min-width: 200px;
 }
-
+ 
 .user-info-header {
   pointer-events: none;
   padding-bottom: 0.75rem;
@@ -254,7 +256,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   justify-content: center;
 }
-
+ 
 .user-role-badge {
   font-size: 0.7rem;
   background: rgba(2, 132, 199, 0.2);
@@ -265,26 +267,169 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-
+ 
 .logout-dropdown-btn {
   width: 100%;
   text-align: left;
   background: none;
   border: none;
   cursor: pointer;
-  color: #FCA5A5; 
+  color: #FCA5A5;
   font-weight: 600;
 }
-
+ 
 .logout-dropdown-btn:hover {
-  background-color: rgba(239, 68, 68, 0.1) !important; 
+  background-color: rgba(239, 68, 68, 0.1) !important;
   color: #EF4444 !important;
-
 }
-
+ 
 .edugov-img-icon {
-  height: 40px; /* Adjust this value to make the logo bigger or smaller */
+  height: 40px;
   width: auto;
   object-fit: contain;
-  margin-right: 10px; /* Adds a little space between the shield and the text */
+  margin-right: 10px;
+}
+ 
+/* =========================================
+   MOBILE MENU TOGGLE BUTTON (Nuking Bootstrap styling)
+   ========================================= */
+ 
+.mobile-menu-btn {
+  display: none;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+ 
+.mobile-menu-btn:active {
+  transform: scale(0.9);
+}
+ 
+/* =========================================
+   RESPONSIVE WEB DESIGN (RWD) MEDIA QUERIES
+   ========================================= */
+ 
+/* Tablets and Small Laptops */
+@media (max-width: 1024px) {
+  .navbar-container-alt {
+    padding: 0 1.5rem;
+  }
+  .navbar-links-alt {
+    gap: 1.5rem;
+  }
+}
+ 
+/* Mobile Devices and Smaller Tablets */
+@media (max-width: 768px) {
+  .navbar-container-alt {
+    padding: 0 0.75rem;
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Forces everything on one line */
+    align-items: center;
+  }
+ 
+  .mobile-menu-btn {
+    display: flex;
+  }
+ 
+  .navbar-links-alt {
+    display: none;
+  }
+ 
+  /* Active state for public mobile menu */
+  .navbar-links-alt.mobile-active {
+    display: flex;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: #1E293B;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+    gap: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    border-bottom: 3px solid #0284C7;
+    z-index: 990;
+    animation: slideDownNav 0.2s ease forwards;
+  }
+ 
+  .navbar-links-alt.mobile-active .nav-item-alt {
+    font-size: 1.2rem;
+    padding: 0.5rem 2rem;
+    width: 100%;
+    text-align: center;
+  }
+ 
+  @keyframes slideDownNav {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  .brand-edu, .brand-gov {
+    font-size: 1.2rem; /* Reduced to fit small screens */
+  }
+ 
+  .edugov-img-icon {
+    height: 28px;
+    margin-right: 4px;
+  }
+ 
+  .navbar-actions-alt {
+    flex: unset;
+    gap: 0.5rem;
+  }
+ 
+  .auth-button-alt {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+ 
+  .auth-dropdown-menu,
+  .profile-dropdown-menu {
+    min-width: 200px;
+    right: -10px;
+  }
+}
+ 
+/* Small Mobile Devices (iPhone SE / 375px screens) */
+@media (max-width: 480px) {
+  .navbar-container-alt {
+    padding: 0 0.5rem;
+  }
+ 
+  .brand-edu, .brand-gov {
+    font-size: 1rem;
+  }
+ 
+  .auth-button-alt {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+ 
+  /* Hide the username on very small screens, show only the avatar */
+  .nav-user-name,
+  .dropdown-arrow {
+    display: none;
+  }
+ 
+  .navbar-user-profile {
+    padding: 2px;
+    gap: 0;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+  }
+ 
+  .navbar-user-profile:hover {
+    background: transparent;
+    transform: scale(1.05);
+  }
 }

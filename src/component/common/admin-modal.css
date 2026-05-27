@@ -1,5 +1,5 @@
 /* src/components/common/admin-modal.css */
-
+ 
 /* The Darkened Background */
 .admin-modal-overlay {
   position: fixed;
@@ -10,8 +10,9 @@
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(4px); /* Blurs the homepage slightly */
+  padding: 1rem; /* 📍 ADDED: Ensures modal never touches the absolute screen edge */
 }
-
+ 
 /* The White Form Card */
 .admin-modal-card {
   background-color: #FFFFFF;
@@ -20,11 +21,12 @@
   border-radius: 12px;
   padding: 2.5rem 2rem;
   position: relative;
+  box-sizing: border-box; /* 📍 ADDED: Keeps padding inside the width */
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
   border-top: 5px solid #1E293B; /* Navy top border for authority */
   animation: modalPopIn 0.2s ease-out forwards;
 }
-
+ 
 /* Close Button */
 .admin-modal-close {
   position: absolute;
@@ -37,36 +39,36 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
-
+ 
 .admin-modal-close:hover {
   color: #1E293B;
 }
-
+ 
 /* Header & Typography */
 .admin-modal-header {
   text-align: center;
   margin-bottom: 2rem;
 }
-
+ 
 .admin-modal-icon {
   width: 42px;
   height: 42px;
   color: #1E293B;
   margin-bottom: 0.5rem;
 }
-
+ 
 .admin-modal-header h3 {
   font-size: 1.5rem;
   color: #1E293B;
   margin: 0 0 0.25rem 0;
 }
-
+ 
 .admin-modal-header p {
   color: #64748B;
   font-size: 0.9rem;
   margin: 0 0 1rem 0;
 }
-
+ 
 .security-badge {
   font-size: 0.75rem;
   font-weight: 600;
@@ -76,12 +78,12 @@
   border-radius: 20px;
   display: inline-block;
 }
-
+ 
 /* Form Inputs */
 .modal-input-group {
   margin-bottom: 1.25rem;
 }
-
+ 
 .modal-input-group label {
   display: block;
   font-size: 0.85rem;
@@ -89,13 +91,13 @@
   color: #475569;
   margin-bottom: 0.5rem;
 }
-
+ 
 .modal-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
-
+ 
 .input-icon {
   position: absolute;
   left: 1rem;
@@ -103,7 +105,7 @@
   height: 18px;
   color: #94A3B8;
 }
-
+ 
 .modal-input-wrapper input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.5rem;
@@ -112,13 +114,14 @@
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease;
+  box-sizing: border-box; /* 📍 ADDED: Prevents input from overflowing */
 }
-
+ 
 .modal-input-wrapper input:focus {
   border-color: #0284C7;
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
 }
-
+ 
 .password-toggle {
   position: absolute;
   right: 0.75rem;
@@ -126,26 +129,26 @@
   border: none;
   cursor: pointer;
 }
-
+ 
 .eye-icon {
   width: 18px;
   height: 18px;
   color: #64748B;
 }
-
+ 
 /* Actions & Buttons */
 .modal-actions {
   text-align: right;
   margin-bottom: 1.5rem;
 }
-
+ 
 .recovery-link {
   font-size: 0.8rem;
   font-weight: 600;
   color: #0284C7;
   text-decoration: none;
 }
-
+ 
 .admin-submit-btn {
   width: 100%;
   padding: 0.85rem;
@@ -162,27 +165,27 @@
   gap: 0.5rem;
   transition: all 0.2s ease;
 }
-
+ 
 .admin-submit-btn:hover {
   background-color: #0F172A;
   transform: translateY(-2px);
 }
-
+ 
 .submit-icon {
   width: 18px;
   height: 18px;
   transition: transform 0.2s ease;
 }
-
+ 
 .admin-submit-btn:hover .submit-icon {
   transform: translateX(4px);
 }
-
+ 
 @keyframes modalPopIn {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
+ 
 .modal-error-banner {
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
@@ -192,13 +195,61 @@
   margin-top: 1rem;
   border: 1px solid rgba(220, 38, 38, 0.2);
 }
-
+ 
 .spinner-icon {
   animation: spin 1s linear infinite;
   margin-left: 10px;
 }
-
+ 
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+ 
+/* =========================================
+   RESPONSIVE WEB DESIGN (RWD) MEDIA QUERIES
+   ========================================= */
+ 
+/* Mobile Phones (480px and below) */
+@media (max-width: 480px) {
+  .admin-modal-card {
+    /* Reduce padding so the inputs have more horizontal space */
+    padding: 2rem 1.5rem;
+  }
+ 
+  .admin-modal-close {
+    top: 0.75rem;
+    right: 1rem;
+  }
+ 
+  .admin-modal-header {
+    margin-bottom: 1.5rem;
+  }
+ 
+  .admin-modal-icon {
+    width: 36px;
+    height: 36px;
+  }
+ 
+  .admin-modal-header h3 {
+    font-size: 1.3rem; /* Scaled down slightly */
+  }
+ 
+  .admin-modal-header p {
+    font-size: 0.85rem;
+  }
+ 
+  .modal-input-wrapper input {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem 0.7rem 2.25rem; /* Reduced left padding slightly */
+  }
+ 
+  .input-icon {
+    left: 0.75rem; /* Moved icon slightly to match new padding */
+  }
+ 
+  .admin-submit-btn {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
 }

@@ -68,9 +68,7 @@ export const AuthProvider = ({ children }) => {
             console.error("Server logout failed, but clearing local session anyway.", error);
             
         } finally {
-            // 2. Clear React state and LocalStorage
-            // The 'finally' block ensures this ALWAYS runs, even if the backend API call fails.
-            // Using clear() to ensure the new userId and dbId are also wiped.
+           
             localStorage.clear();
             setToken(null);
             setUser(null);

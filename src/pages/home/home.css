@@ -1,5 +1,5 @@
 /* src/pages/home/home.css */
-
+ 
 .premium-3d-wrapper {
   position: relative;
   width: 100%;
@@ -10,7 +10,7 @@
   font-family: system-ui, -apple-system, sans-serif;
   color: #F8FAFC;
 }
-
+ 
 /* --- 1. The 3D Canvas Layer --- */
 .canvas-background {
   position: fixed;
@@ -21,7 +21,7 @@
   z-index: 0;
   pointer-events: auto; /* Allows grabbing and rotating the scene */
 }
-
+ 
 /* --- 2. The HTML Content Overlay --- */
 .ui-overlay {
   position: relative;
@@ -34,20 +34,22 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-
+ 
 .ui-overlay a,
 .ui-overlay button,
-.glass-panel {
-  pointer-events: auto; /* Reactivates clicking for buttons and cards */
+.glass-panel,
+.impact-metrics-banner,
+.glass-carousel-container {
+  pointer-events: auto; /* Reactivates clicking for interactive elements */
 }
-
+ 
 /* --- Hero Section --- */
 .premium-hero {
   text-align: center;
   margin-bottom: 6rem;
   max-width: 800px;
 }
-
+ 
 .hero-badge {
   display: inline-block;
   background: rgba(255, 255, 255, 0.05);
@@ -63,7 +65,7 @@
   letter-spacing: 2px;
   margin-bottom: 2rem;
 }
-
+ 
 .hero-title {
   font-size: 5rem;
   font-weight: 800;
@@ -73,7 +75,7 @@
   margin-bottom: 1.5rem;
   text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-
+ 
 .hero-subtitle {
   font-size: 1.25rem;
   color: #94A3B8;
@@ -81,7 +83,7 @@
   margin-bottom: 3.5rem;
   text-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
-
+ 
 .btn-premium-glass {
   display: inline-flex;
   align-items: center;
@@ -99,24 +101,31 @@
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
-
+ 
 .btn-premium-glass:hover {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-5px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
-
+ 
 .btn-icon-right {
   width: 20px;
   height: 20px;
   transition: transform 0.3s ease;
 }
-
+ 
 .btn-premium-glass:hover .btn-icon-right {
   transform: translateX(5px);
 }
-
+ 
+.hero-hint {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-top: 1.5rem;
+  opacity: 0.7;
+}
+ 
 /* --- Impact Metrics Banner --- */
 .impact-metrics-banner {
   display: flex;
@@ -128,34 +137,32 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
-  pointer-events: auto;
 }
-
+ 
 .metric {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
+ 
 .metric-icon {
-  color: #3B82F6; /* Premium Blue Accent */
+  color: #3B82F6;
   width: 32px;
   height: 32px;
   margin-bottom: 1rem;
   opacity: 0.8;
 }
-
+ 
 .metric h2 {
   font-size: 3rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  /* Premium Metallic Text Gradient */
   background: linear-gradient(to right, #FFFFFF, #94A3B8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
+ 
 .metric p {
   color: #94A3B8;
   font-size: 1rem;
@@ -164,73 +171,7 @@
   letter-spacing: 1px;
   margin: 0;
 }
-
-/* --- High-End Glassmorphism Grid --- */
-.premium-glass-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  width: 100%;
-}
-
-.glass-panel {
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.glass-panel:hover {
-  transform: translateY(-10px);
-  background: rgba(30, 41, 59, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  border-left: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
-}
-
-.panel-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
-}
-
-.glass-panel h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: #F8FAFC;
-}
-
-.glass-panel p {
-  color: #94A3B8;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* Responsive Constraints */
-@media (max-width: 1200px) {
-  .premium-glass-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .hero-title { font-size: 3.5rem; }
-  .premium-glass-grid { grid-template-columns: 1fr; }
-}
-
+ 
 /* --- Premium Glass Carousel --- */
 .glass-carousel-container {
   width: 100%;
@@ -241,30 +182,28 @@
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-  /* The border creates the glass edge effect */
   border: 1px solid rgba(255, 255, 255, 0.15);
-  pointer-events: auto; /* Required to click arrows/dots */
 }
-
+ 
 .carousel-track {
   display: flex;
   height: 100%;
   transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
-
+ 
 .carousel-slide {
   min-width: 100%;
   height: 100%;
   position: relative;
 }
-
+ 
 .carousel-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
+ 
 .carousel-glass-caption {
   position: absolute;
   bottom: 2rem;
@@ -278,20 +217,19 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #F8FAFC;
 }
-
+ 
 .carousel-glass-caption h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.5rem;
   font-weight: 700;
 }
-
+ 
 .carousel-glass-caption p {
   margin: 0;
   color: #CBD5E1;
   font-size: 1rem;
 }
-
-/* Controls */
+ 
 .carousel-btn {
   position: absolute;
   top: 50%;
@@ -310,16 +248,15 @@
   transition: all 0.3s ease;
   z-index: 2;
 }
-
+ 
 .carousel-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-50%) scale(1.1);
 }
-
+ 
 .carousel-btn.prev { left: 1.5rem; }
 .carousel-btn.next { right: 1.5rem; }
-
-/* Dots */
+ 
 .carousel-dots {
   position: absolute;
   bottom: 1rem;
@@ -329,7 +266,7 @@
   gap: 8px;
   z-index: 2;
 }
-
+ 
 .carousel-dots .dot {
   width: 10px;
   height: 10px;
@@ -339,18 +276,172 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
+ 
 .carousel-dots .dot.active {
-  background: #3B82F6; /* Matches your accent light */
+  background: #3B82F6;
   transform: scale(1.3);
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
-
+ 
+/* --- Section Header (Missing from original CSS) --- */
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  width: 100%;
+}
+ 
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+ 
+.section-header p {
+  color: #94A3B8;
+  font-size: 1.1rem;
+}
+ 
+/* --- High-End Glassmorphism Grid --- */
+.premium-glass-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+ 
+.glass-panel {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+ 
+.glass-panel:hover {
+  transform: translateY(-10px);
+  background: rgba(30, 41, 59, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
+}
+ 
+.panel-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+ 
+.glass-panel h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #F8FAFC;
+}
+ 
+.glass-panel p {
+  color: #94A3B8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+ 
+/* =========================================
+   RESPONSIVE WEB DESIGN (RWD) MEDIA QUERIES
+   ========================================= */
+ 
+/* Tablets / Small Desktop (1024px) */
+@media (max-width: 1200px) {
+  .premium-glass-grid { grid-template-columns: repeat(2, 1fr); }
+  .impact-metrics-banner { gap: 3rem; }
+}
+ 
+/* Tablets & Mobile Navigation (768px) */
 @media (max-width: 768px) {
-  .glass-carousel-container { height: 350px; }
-  .carousel-glass-caption { left: 1rem; right: 1rem; bottom: 1rem; padding: 1rem; }
+  .ui-overlay {
+    padding: 4rem 1.5rem;
+  }
+ 
+  .hero-title {
+    font-size: 3.2rem;
+    letter-spacing: -1px;
+  }
+ 
+  .premium-hero {
+    margin-bottom: 4rem;
+  }
+ 
+  /* Stack metrics vertically */
+  .impact-metrics-banner {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 2.5rem 0;
+    margin-bottom: 4rem;
+  }
+ 
+  .premium-glass-grid {
+    grid-template-columns: 1fr;
+  }
+ 
+  .glass-carousel-container {
+    height: 350px;
+    margin-bottom: 4rem;
+  }
+ 
+  .carousel-glass-caption {
+    left: 1rem; right: 1rem; bottom: 1rem; padding: 1rem;
+  }
+ 
   .carousel-glass-caption h3 { font-size: 1.2rem; }
+ 
   .carousel-btn { width: 36px; height: 36px; }
   .carousel-btn.prev { left: 0.5rem; }
   .carousel-btn.next { right: 0.5rem; }
+}
+ 
+/* Small Mobile Phones (480px) */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.4rem;
+  }
+ 
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+ 
+  .btn-premium-glass {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+ 
+  .metric h2 {
+    font-size: 2.5rem;
+  }
+ 
+  .glass-carousel-container {
+    height: 280px;
+  }
+ 
+  .section-header h2 {
+    font-size: 2rem;
+  }
+ 
+  .glass-panel {
+    padding: 2rem 1.5rem;
+  }
 }

@@ -45,14 +45,99 @@
 
 /* Toaster Customization for Blue Theme */
 .custom-toast {
-  background: #1e3a5f !important; /* Blue background */
-  color: #fff !important;         /* White text */
+  background: #1e3a5f !important;
+  color: #fff !important;
   border-radius: 8px !important;
   font-weight: 500 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Ensure the toast icons match the theme */
 .custom-toast svg {
-  color: #0ea5e9 !important;      /* Sky blue icons */
+  color: #0ea5e9 !important;
+}
+
+/* ADDED CHANGE (DO NOT MODIFY EXISTING JSX) */
+.form-header h3 {
+  color: #0ea5e9 !important;
+}
+
+/*  MOBILE (≤ 576px) */
+@media (max-width: 576px) {
+
+  .form-container {
+    max-width: 100%;
+    padding: 0 12px;
+  }
+
+  .card-header {
+    padding: 16px !important;
+    text-align: center;
+  }
+
+  .card-body {
+    padding: 16px !important;
+  }
+
+  .btn-back {
+    font-size: 0.9rem;
+  }
+
+  .border-top {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .border-top button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  textarea {
+    rows: 4;
+  }
+
+  .row.g-4 {
+    gap: 12px !important;
+  }
+}
+
+/* TABLET (577px – 991px) */
+@media (min-width: 577px) and (max-width: 991px) {
+
+  .form-container {
+    max-width: 95%;
+  }
+
+  .card-body {
+    padding: 24px !important;
+  }
+
+  .card-header {
+    padding: 20px !important;
+  }
+
+  .btn-back {
+    font-size: 0.95rem;
+  }
+
+  .row.g-4 {
+    gap: 16px;
+  }
+}
+
+/* LARGE SCREENS (≥ 1400px) */
+@media (min-width: 1400px) {
+
+  .form-container {
+    max-width: 1000px;
+  }
+
+  .card-body {
+    padding: 40px !important;
+  }
+
+  .card-header {
+    padding: 28px !important;
+  }
 }

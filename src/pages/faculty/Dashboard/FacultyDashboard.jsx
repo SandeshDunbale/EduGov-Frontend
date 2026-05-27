@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    LayoutDashboard, BookOpen, Microscope, Wallet, 
-    CheckCircle2, Clock, XCircle, Calendar, 
+import {
+    LayoutDashboard, BookOpen, Microscope, Wallet,
+    CheckCircle2, Clock, XCircle, Calendar,
     ArrowUpRight, BarChart3, PieChart, Activity,
     TrendingUp, FileText, Globe, ShieldCheck
 } from 'lucide-react';
@@ -18,7 +18,7 @@ const FacultyDashboard = () => {
             const token = localStorage.getItem('token');
             if (!token) return null;
             const decoded = jwtDecode(token);
-            return decoded.facultyId; 
+            return decoded.facultyId;
         } catch (error) { return null; }
     };
 
@@ -26,7 +26,7 @@ const FacultyDashboard = () => {
     const [courses, setCourses] = useState([]);
     const [projects, setProjects] = useState([]);
     const [grants, setGrants] = useState([]);
-    
+
     // Analytics State
     const [stats, setStats] = useState({
         activeCourses: 0,
@@ -39,38 +39,47 @@ const FacultyDashboard = () => {
     useEffect(() => {
         const syncFacultyDossier = async () => {
             const fId = getFacultyId();
-            if (!fId) return;
+            if (!fId) {
+                setLoading(false);
+                return;
+            }
 
             try {
                 setLoading(true);
-                // Concurrent Data Fetching
-                const [courseRes, projectRes, grantRes] = await Promise.all([
+
+                // 🟢 FIXED: Changed to Promise.allSettled. Now, if Courses 404s, Projects and Grants will STILL load!
+                const [courseRes, projectRes, grantRes] = await Promise.allSettled([
                     CourseAPI.getByFacultyId(fId),
-                    // If this still fails, double-check if the method should be 'getByFacultyId' to match CourseAPI
-                    ProjectAPI.getProjectsByFaculty(fId), 
+                    ProjectAPI.getProjectsByFaculty(fId),
                     GrantAPI.getGrantHistory(fId)
                 ]);
 
-                // Robust array extraction in case the API returns the array directly instead of inside .data
-                const courseList = Array.isArray(courseRes) ? courseRes : (courseRes.data || []);
-                const projectList = Array.isArray(projectRes) ? projectRes : (projectRes.data || []);
-                const grantList = Array.isArray(grantRes) ? grantRes : (grantRes.data || []);
+                // 🟢 Aggressive data extraction
+                const extractData = (result) => {
+                    if (result.status !== 'fulfilled') return [];
+                    const data = result.value?.data || result.value;
+                    return Array.isArray(data) ? data : [];
+                };
+
+                const courseList = extractData(courseRes);
+                const projectList = extractData(projectRes);
+                const grantList = extractData(grantRes);
 
                 setCourses(courseList);
                 setProjects(projectList);
                 setGrants(grantList);
 
-                // Intelligence Logic: Derived from Service Implementation
+                // Intelligence Logic
                 setStats({
                     activeCourses: courseList.filter(c => c.status === 'ACTIVE' || c.status === 'APPROVE').length,
                     inactiveCourses: courseList.filter(c => c.status !== 'ACTIVE' && c.status !== 'APPROVE').length,
                     projectTotal: projectList.length,
                     pendingGrantAmt: grantList
                         .filter(g => g.status === 'SUBMITTED')
-                        .reduce((sum, g) => sum + (g.requestedAmount || 0), 0),
+                        .reduce((sum, g) => sum + (Number(g.requestedAmount) || 0), 0),
                     approvedGrantAmt: grantList
                         .filter(g => g.status === 'APPROVED')
-                        .reduce((sum, g) => sum + (g.requestedAmount || 0), 0)
+                        .reduce((sum, g) => sum + (Number(g.requestedAmount) || 0), 0)
                 });
 
             } catch (err) {
@@ -120,7 +129,7 @@ const FacultyDashboard = () => {
                                 <label className="d-block text-muted small fw-bold uppercase mb-1">Academic Load</label>
                                 <h2 className="fw-bold text-navy mb-0">{stats.activeCourses} <span className="fs-6 text-muted fw-normal">Courses</span></h2>
                             </div>
-                            <div className="stat-icon-box bg-teal-subtle text-teal"><BookOpen size={24}/></div>
+                            <div className="stat-icon-box bg-teal-subtle text-teal"><BookOpen size={24} /></div>
                         </div>
                     </div>
                 </div>
@@ -131,7 +140,7 @@ const FacultyDashboard = () => {
                                 <label className="d-block text-muted small fw-bold uppercase mb-1">Project Portfolio</label>
                                 <h2 className="fw-bold text-navy mb-0">{stats.projectTotal} <span className="fs-6 text-muted fw-normal">Projects</span></h2>
                             </div>
-                            <div className="stat-icon-box bg-primary-subtle text-primary"><Microscope size={24}/></div>
+                            <div className="stat-icon-box bg-primary-subtle text-primary"><Microscope size={24} /></div>
                         </div>
                     </div>
                 </div>
@@ -142,7 +151,7 @@ const FacultyDashboard = () => {
                                 <label className="d-block text-muted small fw-bold uppercase mb-1">Total Funding</label>
                                 <h2 className="fw-bold text-navy mb-0">&#x20B9; {stats.approvedGrantAmt.toLocaleString()}</h2>
                             </div>
-                            <div className="stat-icon-box bg-warning-subtle text-warning"><Wallet size={24}/></div>
+                            <div className="stat-icon-box bg-warning-subtle text-warning"><Wallet size={24} /></div>
                         </div>
                     </div>
                 </div>
@@ -164,7 +173,7 @@ const FacultyDashboard = () => {
                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                         <div>
                                             <h6 className="fw-bold text-dark mb-1">{c.title}</h6>
-                                            <span className="small text-muted uppercase fw-bold" style={{fontSize:'10px'}}>Program: {c.programTitle}</span>
+                                            <span className="small text-muted uppercase fw-bold" style={{ fontSize: '10px' }}>Program: {c.programTitle}</span>
                                         </div>
                                         <span className={`badge-pill ${c.status === 'ACTIVE' || c.status === 'APPROVE' ? 'bg-success-subtle text-success' : 'bg-light text-muted'}`}>
                                             {c.status}
@@ -200,10 +209,10 @@ const FacultyDashboard = () => {
                                             <span className="dot"></span> {p.status}
                                         </div>
                                     </div>
-                                    <div className="text-muted mb-3" style={{fontSize: '11px', lineHeight:'1.4'}}>{p.description}</div>
+                                    <div className="text-muted mb-3" style={{ fontSize: '11px', lineHeight: '1.4' }}>{p.description}</div>
                                     <div className="d-flex justify-content-between align-items-center border-top border-white pt-2">
                                         <div className="small text-muted d-flex align-items-center gap-1">
-                                            <Calendar size={12}/> {p.startDate} — {p.endDate}
+                                            <Calendar size={12} /> {p.startDate} — {p.endDate}
                                         </div>
                                         <ArrowUpRight size={16} className="text-primary" />
                                     </div>
@@ -232,13 +241,15 @@ const FacultyDashboard = () => {
                                         <th className="border-0">Requested Date</th>
                                         <th className="border-0">Requested Amount</th>
                                         <th className="border-0 text-center">Status</th>
-                                        <th className="border-0 text-center">Governance Audit</th>
+                                        <th className="border-0 text-center">Program Manager</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {grants.length > 0 ? grants.map(g => (
-                                        <tr key={g.applicationID}>
-                                            <td className="ps-3 fw-bold text-navy">APP-ID : {g.applicationID}</td>
+                                        <tr key={g.applicationID || g.applicationId || g.id}>
+                                            <td className="ps-3 fw-bold text-navy">
+                                                 {g.applicationID || g.applicationId || g.id}
+                                            </td>
                                             <td className="small text-muted">{g.submittedDate}</td>
                                             <td className="fw-bold text-dark">&#x20B9; {g.requestedAmount.toLocaleString()}</td>
                                             <td className="text-center">
@@ -248,9 +259,9 @@ const FacultyDashboard = () => {
                                                 </span>
                                             </td>
                                             <td className="text-center">
-                                                {g.status === 'APPROVED' ? <CheckCircle2 className="text-success shadow-sm" size={20}/> : 
-                                                 g.status === 'SUBMITTED' ? <Clock className="text-warning shadow-sm" size={20}/> : 
-                                                 <XCircle className="text-danger shadow-sm" size={20}/>}
+                                                {g.status === 'APPROVED' ? <CheckCircle2 className="text-success shadow-sm" size={20} /> :
+                                                    g.status === 'SUBMITTED' ? <Clock className="text-warning shadow-sm" size={20} /> :
+                                                        <XCircle className="text-danger shadow-sm" size={20} />}
                                             </td>
                                         </tr>
                                     )) : (

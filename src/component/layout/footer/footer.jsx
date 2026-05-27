@@ -1,20 +1,20 @@
 import React from 'react';
 import './footer.css';
-
+ 
 const Footer = () => {
   return (
     <footer className="edugov-footer">
       <div className="footer-container">
-        
+       
         {/* Section 1: Brand & Identity */}
         <div className="footer-section brand-section">
           <h3 className="footer-logo">EduGov</h3>
           <p className="brand-tagline">
-            Higher Education & Research Governance System. 
+            Higher Education & Research Governance System.
             Ensuring compliance and fostering academic growth.
           </p>
         </div>
-
+ 
         {/* Section 2: About Us */}
         <div className="footer-section">
           <h4 className="section-title">About Us</h4>
@@ -25,7 +25,7 @@ const Footer = () => {
             <li><a href="/careers">Careers</a></li>
           </ul>
         </div>
-
+ 
         {/* Section 3: Committees (Commots) */}
         <div className="footer-section">
           <h4 className="section-title">Committees</h4>
@@ -36,7 +36,7 @@ const Footer = () => {
             <li><a href="/curriculum">Curriculum Oversight</a></li>
           </ul>
         </div>
-
+ 
         {/* Section 4: Contact */}
         <div className="footer-section contact-section">
           <h4 className="section-title">Contact</h4>
@@ -47,9 +47,9 @@ const Footer = () => {
             <li>Global Helpdesk</li>
           </ul>
         </div>
-
+ 
       </div>
-      
+     
       {/* Copyright & Legal */}
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} EduGov. All rights reserved.</p>
@@ -57,5 +57,5 @@ const Footer = () => {
     </footer>
   );
 };
-
+ 
 export default Footer;
